@@ -1,1 +1,43 @@
-CONTEXT.md
+# =============================================================================
+# Haia — .gitignore
+# =============================================================================
+
+# Environment variables — NEVER commit real secrets
+.env
+.env.local
+.env.*.local
+api/.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+.pytest_cache/
+
+# Node / Next.js
+node_modules/
+web/.next/
+web/out/
+web/build/
+
+# Generated schedule PNGs (Playwright renderer output)
+*.schedule.png
+/tmp/haia-*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+npm-debug.log*

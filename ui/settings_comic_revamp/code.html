@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Parker Settings | Productivity Ace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Hanken+Grotesk:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#351000",
+                        "surface-container-low": "#f4f4f2",
+                        "surface-muted": "#EDEDEA",
+                        "primary-fixed": "#e2dfff",
+                        "secondary-container": "#feae2c",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#e8e8e6",
+                        "border-hairline": "#E5E5E2",
+                        "outline-variant": "#c7c4d8",
+                        "surface-variant": "#e2e3e1",
+                        "secondary-fixed-dim": "#ffb955",
+                        "on-secondary": "#ffffff",
+                        "outline": "#777587",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface": "#1a1c1b",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#dad7ff",
+                        "error": "#ba1a1a",
+                        "inverse-surface": "#2f3130",
+                        "surface-container-highest": "#e2e3e1",
+                        "surface-dim": "#dadad8",
+                        "surface-bright": "#f9f9f7",
+                        "primary-container": "#4f46e5",
+                        "on-tertiary-container": "#ffd2be",
+                        "background": "#f9f9f7",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "tertiary": "#7e3000",
+                        "inverse-primary": "#c3c0ff",
+                        "on-secondary-container": "#6b4500",
+                        "on-secondary-fixed": "#291800",
+                        "inverse-on-surface": "#f1f1ef",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "xp-gold": "#F5A623",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "tertiary-container": "#a44100",
+                        "surface-tint": "#4d44e3",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "surface": "#f9f9f7",
+                        "indigo-deep": "#4F46E5",
+                        "on-secondary-fixed-variant": "#633f00",
+                        "secondary-fixed": "#ffddb4",
+                        "on-primary-fixed": "#0f0069",
+                        "secondary": "#835500",
+                        "on-surface-variant": "#464555",
+                        "on-background": "#1a1c1b",
+                        "tertiary-fixed": "#ffdbcc",
+                        "surface-container": "#eeeeec",
+                        "primary": "#3525cd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "max-width-content": "1100px",
+                        "gutter": "24px",
+                        "sidebar-expanded": "240px",
+                        "margin-desktop": "48px",
+                        "margin-mobile": "16px",
+                        "sidebar-width": "64px"
+                    },
+                    "fontFamily": {
+                        "label-xp": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "display-hero": ["Hanken Grotesk"],
+                        "label-caps": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-xp": ["14px", {"lineHeight": "1.0", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "headline-lg": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "display-hero": ["72px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                        "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-md": ["15px", {"lineHeight": "1.5", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .halftone-bg {
+            background-color: #f9f9f7;
+            background-image: radial-gradient(#d1d1d1 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+        .ink-line {
+            border-bottom: 1px solid #1a1c1b;
+        }
+        .pop-shadow {
+            box-shadow: 4px 4px 0px 0px #1a1c1b;
+        }
+        .pop-shadow-active {
+            box-shadow: 2px 2px 0px 0px #1a1c1b;
+            transform: translate(2px, 2px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="halftone-bg text-on-surface font-body-md min-h-screen flex flex-col md:flex-row">
+<!-- Sidebar (Shared Component Style Mapping) -->
+<aside class="w-sidebar-width hover:w-sidebar-expanded transition-all duration-300 h-screen sticky left-0 top-0 border-r border-on-surface bg-surface flex flex-col py-unit-4 overflow-hidden z-50 group">
+<div class="px-4 mb-8 flex items-center gap-4">
+<img alt="Logo" class="w-8 h-8 flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqz6p-dXO2TZxfMYyqLWBm-24XleuBYDlZxuXHdyyYIl82JM81FfPTYh2Sg0AYp8ODoPqFv07IgrKHvIVT0yRwM-EXNk_80lTGnQ3I9SbhV-lSrQHSSHEXh7tlMncAawHUuFHa4Y3jV2H_f4zTdkhfi-5JUzGb_TAuix30-J8Vm3tUehgucxrdAQM1HddA7xvP-oA4uUfWuIj07Yw5UbcWJmDOsCDqAS-tYGq8ESVGEs83rc0CV1H1FaBdR1Qw3k46JpsM-rsvOwM"/>
+<span class="font-headline-md text-headline-md font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">PARKER</span>
+</div>
+<nav class="flex-1 space-y-2">
+<!-- Mapping Active/Inactive from JSON Logic -->
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-lowest transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md opacity-0 group-hover:opacity-100 transition-opacity">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-lowest transition-colors" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="font-body-md opacity-0 group-hover:opacity-100 transition-opacity">Chat</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-lowest transition-colors" href="#">
+<span class="material-symbols-outlined">workspace_premium</span>
+<span class="font-body-md opacity-0 group-hover:opacity-100 transition-opacity">Goals &amp; Habits</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-lowest transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-body-md opacity-0 group-hover:opacity-100 transition-opacity">Calendar</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-lowest transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-body-md opacity-0 group-hover:opacity-100 transition-opacity">Profile</span>
+</a>
+</nav>
+<div class="mt-auto space-y-2 pt-4 border-t border-on-surface">
+<!-- ACTIVE STATE: Settings -->
+<a class="flex items-center gap-4 px-4 py-3 text-primary border-l-4 border-primary bg-surface-container-low font-bold" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md opacity-0 group-hover:opacity-100 transition-opacity">Settings</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-lowest transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md opacity-0 group-hover:opacity-100 transition-opacity">Help</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto">
+<!-- Top App Bar -->
+<header class="h-16 px-margin-desktop sticky top-0 bg-surface/80 backdrop-blur-md border-b border-on-surface flex items-center justify-between z-40">
+<div class="flex items-center gap-6">
+<img alt="HAIA Branding" class="h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhKa-xvd4Fh3lzswWzbTZz04Hii2FSX1s-p9jGnj-v3RLWG49J-SOUORppW_9ZRt1zzfXK3xEwCSoC5KwFdAs6yyU4AYeVPpbzQ8X_7WpkLX4JO0st8FJeTgKTKJmdZk2g6leFCNLOl32Xm-sUG31agBTQdIovvkBNsVrY41-xnqrmtCzn4cLLvLZ872pwPkUj8PlqeNQ0IlwOPWUaWDpVrF9EwQFqtNqW6Qf2y7Sh992dVIcWSE-UVN3gyUGf7aI3enk0DeSEYBw"/>
+<nav class="hidden md:flex gap-6">
+<a class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors" href="#">Focus</a>
+<a class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors" href="#">Quests</a>
+<a class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors" href="#">Archive</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-indigo-deep text-white px-4 py-2 rounded-lg font-label-caps text-label-caps pop-shadow active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all">CAPTURE</button>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-xp-gold" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-label-caps text-label-caps">STREAK: 12</span>
+</div>
+<div class="w-8 h-8 rounded-full border border-on-surface bg-surface-muted flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A high-contrast, professional headshot of a young adult with a sharp, focused expression. The style is minimalist with flat lighting, against a solid pastel lavender background. Fine-art digital photography aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVrGC_pwz4JhfiZRN0oQzyJ46BmML-h5uQblpBTSawVg0tBYZ4tHemZtRBcaccQIAhsXf695j-ZWvw-o3uBk8V-sjmAlEOy-NBV94CUU5reIrugKtIqV51d0bxRUrTWoTm_P3Py4DlYGt-zlLAUFnjMOyvIk7_dVPDySZOTQWdyPgKPCzkuDbrk6O8Ok8yaWkiGz__O8WQwq0l47obOchb4owTedUGizlOjcTDflO-fShQ9o9ovRi1vt-kvf9q38hC3Zb7QU9e-Z4"/>
+</div>
+</div>
+</header>
+<!-- Settings Canvas -->
+<div class="max-w-max-width-content mx-auto py-12 px-margin-desktop">
+<h1 class="font-display-hero text-headline-lg md:text-display-hero mb-12">Settings</h1>
+<div class="space-y-16">
+<!-- Account Section -->
+<section>
+<div class="flex items-center gap-4 mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">account_circle</span>
+<h2 class="font-headline-md text-headline-md uppercase tracking-tight">Account Identity</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="p-6 bg-white border border-on-surface pop-shadow rounded-xl">
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2">Display Name</label>
+<input class="w-full bg-surface-bright border border-on-surface p-3 font-body-lg focus:ring-0 focus:border-indigo-deep outline-none" type="text" value="Parker Ace"/>
+</div>
+<div class="p-6 bg-white border border-on-surface pop-shadow rounded-xl">
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2">Email Address</label>
+<input class="w-full bg-surface-bright border border-on-surface p-3 font-body-lg focus:ring-0 focus:border-indigo-deep outline-none" type="email" value="parker@productivity.haia"/>
+</div>
+</div>
+</section>
+<!-- Notifications Section -->
+<section>
+<div class="flex items-center gap-4 mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">notifications_active</span>
+<h2 class="font-headline-md text-headline-md uppercase tracking-tight">Alert Protocol</h2>
+</div>
+<div class="bg-white border border-on-surface pop-shadow rounded-xl divide-y divide-on-surface">
+<div class="p-6 flex items-center justify-between">
+<div>
+<h3 class="font-body-lg font-bold">Deep Work Mode</h3>
+<p class="text-on-surface-variant text-body-md">Suppress all non-essential pings during focus sessions.</p>
+</div>
+<button class="w-14 h-8 bg-indigo-deep rounded-full relative transition-colors border-2 border-on-surface" onclick="this.classList.toggle('bg-indigo-deep'); this.classList.toggle('bg-surface-muted')">
+<div class="absolute right-1 top-1 w-5 h-5 bg-white rounded-full border border-on-surface"></div>
+</button>
+</div>
+<div class="p-6 flex items-center justify-between">
+<div>
+<h3 class="font-body-lg font-bold">Quest Reminders</h3>
+<p class="text-on-surface-variant text-body-md">Hourly check-ins on your current active productivity quest.</p>
+</div>
+<button class="w-14 h-8 bg-surface-muted rounded-full relative transition-colors border-2 border-on-surface" onclick="this.classList.toggle('bg-indigo-deep'); this.classList.toggle('bg-surface-muted')">
+<div class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full border border-on-surface"></div>
+</button>
+</div>
+</div>
+</section>
+<!-- Experience & Gamification -->
+<section>
+<div class="flex items-center gap-4 mb-6">
+<span class="material-symbols-outlined text-xp-gold text-3xl" style="font-variation-settings: 'FILL' 1;">stars</span>
+<h2 class="font-headline-md text-headline-md uppercase tracking-tight">Leveling System</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="p-8 bg-on-surface text-white rounded-xl flex flex-col items-center justify-center space-y-4 pop-shadow">
+<span class="font-label-caps text-label-caps opacity-70">CURRENT RANK</span>
+<span class="font-display-hero text-4xl text-xp-gold">LEVEL 24</span>
+<div class="w-full bg-white/20 h-2 rounded-full overflow-hidden">
+<div class="bg-xp-gold h-full w-[72%]"></div>
+</div>
+<span class="font-label-xp text-label-xp">4,200 / 6,000 XP</span>
+</div>
+<div class="col-span-1 md:col-span-2 p-8 bg-secondary-container border border-on-surface rounded-xl pop-shadow">
+<h3 class="font-headline-md mb-4 text-on-secondary-fixed">Global Prestige Mode</h3>
+<p class="font-body-md text-on-secondary-fixed mb-6">Enable public leaderboards to compare your focus stats with other high-level Productivity Aces.</p>
+<button class="bg-on-surface text-white px-8 py-3 rounded-lg font-label-caps text-label-caps hover:bg-opacity-90 transition-all flex items-center gap-2">
+                                ACTIVATE CHALLENGE
+                                <span class="material-symbols-outlined text-sm">rocket_launch</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Visuals & Aesthetics -->
+<section>
+<div class="flex items-center gap-4 mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">palette</span>
+<h2 class="font-headline-md text-headline-md uppercase tracking-tight">Interface Skin</h2>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-4">
+<div class="flex-shrink-0 w-48 border-2 border-primary bg-surface p-4 rounded-xl pop-shadow">
+<div class="w-full h-24 halftone-bg border border-on-surface mb-3 rounded flex items-center justify-center">
+<span class="text-on-surface-variant font-label-caps">POP-ART</span>
+</div>
+<span class="font-label-caps text-label-caps block text-center">ACTIVE</span>
+</div>
+<div class="flex-shrink-0 w-48 border border-on-surface bg-inverse-surface p-4 rounded-xl opacity-60 grayscale hover:grayscale-0 transition-all cursor-pointer">
+<div class="w-full h-24 bg-zinc-900 border border-white/20 mb-3 rounded flex items-center justify-center">
+<span class="text-white font-label-caps">NEO-NOIR</span>
+</div>
+<span class="font-label-caps text-label-caps block text-center text-white">SELECT</span>
+</div>
+<div class="flex-shrink-0 w-48 border border-on-surface bg-surface-bright p-4 rounded-xl opacity-60 grayscale hover:grayscale-0 transition-all cursor-pointer">
+<div class="w-full h-24 bg-white border border-on-surface mb-3 rounded flex items-center justify-center shadow-inner">
+<span class="text-on-surface-variant font-label-caps">PAPER-CUT</span>
+</div>
+<span class="font-label-caps text-label-caps block text-center">SELECT</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Danger Zone -->
+<footer class="mt-24 pt-12 border-t-4 border-on-surface">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+<div>
+<h2 class="font-headline-md text-error mb-2">Destruction Protocol</h2>
+<p class="text-on-surface-variant font-body-md max-w-md">Once account data is purged, your XP, Streaks, and Quest History cannot be recovered from the HAIA servers.</p>
+</div>
+<button class="px-8 py-4 border-2 border-error text-error font-bold rounded-xl hover:bg-error hover:text-white transition-all pop-shadow hover:shadow-none active:translate-x-1 active:translate-y-1">
+                        DELETE ALL DATA
+                    </button>
+</div>
+</footer>
+</div>
+</main>
+<!-- Interactive Layer: FAB Capture (Contextual Suppression Logic handled by layout) -->
+<div class="fixed bottom-8 right-8 z-50">
+<!-- Floating Shadow applied to the group -->
+<button class="w-16 h-16 bg-primary-container text-white rounded-full flex items-center justify-center pop-shadow hover:scale-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                btn.style.transform = 'translate(2px, 2px)';
+                btn.style.boxShadow = '2px 2px 0px 0px #1a1c1b';
+            });
+            btn.addEventListener('mouseup', () => {
+                btn.style.transform = '';
+                btn.style.boxShadow = '';
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = '';
+                btn.style.boxShadow = '';
+            });
+        });
+    </script>
+</body></html>

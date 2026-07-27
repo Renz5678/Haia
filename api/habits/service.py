@@ -1,0 +1,74 @@
+from datetime import date
+from core.supabase import get_supabase_service_client
+from habits.schemas import HabitCreate, HabitUpdate, HabitLogCreate
+
+
+def create_habit(user_id: str, data: HabitCreate) -> dict:
+    client = get_supabase_service_client()
+    payload = {
+        **data.model_dump(exclude={"goal_ids", "target_time"}),
+        "user_id": user_id,
+        "subject_id": str(data.subject_id) if data.subject_id else None,
+        "target_time": data.target_time.isoformat() if data.target_time else None,
+    }
+    response = client.schema("haia").table("habits").insert(payload).execute()
+    habit = response.data[0]
+
+    if data.goal_ids:
+        links = [{"habit_id": habit["id"], "goal_id": str(gid)} for gid in data.goal_ids]
+        client.schema("haia").table("habit_goals").insert(links).execute()
+
+    # Create streak tracking row for this habit
+    client.schema("haia").table("streaks").insert({
+        "user_id": user_id,
+        "habit_id": habit["id"],
+        "streak_type": "habit",
+    }).execute()
+
+    return habit
+
+
+def list_habits(user_id: str, active_only: bool = True) -> list[dict]:
+    client = get_supabase_service_client()
+    query = client.schema("haia").table("habits").select("*").eq("user_id", user_id)
+    if active_only:
+        query = query.eq("is_active", True)
+    return query.order("created_at").execute().data
+
+
+def log_habit(user_id: str, habit_id: str, data: HabitLogCreate) -> dict:
+    """Record a habit completion and update streak."""
+    from gamification.service import award_xp_for_habit
+
+    client = get_supabase_service_client()
+
+    # Get the habit to find xp_value
+    habit = client.schema("haia").table("habits").select("xp_value").eq("id", habit_id).single().execute().data
+    xp = habit["xp_value"]
+
+    log_payload = {
+        "habit_id": habit_id,
+        "user_id": user_id,
+        "logged_date": data.logged_date.isoformat(),
+        "note": data.note,
+        "xp_awarded": xp,
+    }
+    response = client.schema("haia").table("habit_logs").upsert(log_payload, on_conflict="habit_id,logged_date").execute()
+    log = response.data[0]
+
+    award_xp_for_habit(user_id=user_id, habit_id=habit_id, log_id=log["id"], xp=xp, logged_date=data.logged_date)
+
+    return log
+
+
+def get_habit_logs(user_id: str, habit_id: str, limit: int = 90) -> list[dict]:
+    client = get_supabase_service_client()
+    return (
+        client.schema("haia").table("habit_logs")
+        .select("*")
+        .eq("habit_id", habit_id)
+        .eq("user_id", user_id)
+        .order("logged_date", desc=True)
+        .limit(limit)
+        .execute().data
+    )

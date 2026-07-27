@@ -1,0 +1,411 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Parker | Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Hanken+Grotesk:wght@600;700;800&amp;family=Anton&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#eeeeec",
+                        "secondary-container": "#feae2c",
+                        "on-primary-fixed": "#0f0069",
+                        "surface-dim": "#dadad8",
+                        "on-primary-container": "#dad7ff",
+                        "on-surface": "#1a1c1b",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#c7c4d8",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#7e3000",
+                        "primary-container": "#4f46e5",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "on-background": "#1a1c1b",
+                        "inverse-surface": "#2f3130",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#ffddb4",
+                        "surface-container-low": "#f4f4f2",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdbcc",
+                        "on-surface-variant": "#464555",
+                        "outline": "#777587",
+                        "inverse-on-surface": "#f1f1ef",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "indigo-deep": "#4F46E5",
+                        "secondary": "#835500",
+                        "surface": "#f9f9f7",
+                        "surface-variant": "#e2e3e1",
+                        "xp-gold": "#F5A623",
+                        "on-tertiary-fixed": "#351000",
+                        "primary": "#3525cd",
+                        "surface-tint": "#4d44e3",
+                        "background": "#f9f9f7",
+                        "secondary-fixed-dim": "#ffb955",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#ffd2be",
+                        "surface-container-high": "#e8e8e6",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#6b4500",
+                        "surface-container-highest": "#e2e3e1",
+                        "primary-fixed": "#e2dfff",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed-variant": "#633f00",
+                        "surface-bright": "#f9f9f7",
+                        "border-hairline": "#E5E5E2",
+                        "on-secondary-fixed": "#291800",
+                        "tertiary-container": "#a44100",
+                        "inverse-primary": "#c3c0ff",
+                        "surface-muted": "#EDEDEA",
+                        "on-tertiary-fixed-variant": "#7b2f00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sidebar-width": "64px",
+                        "max-width-content": "1100px",
+                        "sidebar-expanded": "240px",
+                        "gutter": "24px",
+                        "unit": "4px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "48px"
+                    },
+                    "fontFamily": {
+                        "label-xp": ["Hanken Grotesk"],
+                        "label-caps": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-lg": ["Inter"],
+                        "display-hero": ["Anton"],
+                        "anton": ["Anton"]
+                    },
+                    "fontSize": {
+                        "label-xp": ["14px", {"lineHeight": "1.0", "fontWeight": "700"}],
+                        "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-md": ["15px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "display-hero": ["84px", {"lineHeight": "1.0", "letterSpacing": "-0.02em", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .comic-border { border: 2px solid #1a1c1b; }
+        .comic-shadow { box-shadow: 6px 6px 0px 0px #1a1c1b; }
+        .comic-shadow-sm { box-shadow: 4px 4px 0px 0px #1a1c1b; }
+        .halftone-bg {
+            background-image: radial-gradient(#1a1c1b 1px, transparent 0);
+            background-size: 8px 8px;
+            opacity: 0.05;
+        }
+        .custom-checkbox:checked { background-color: #4F46E5; border-color: #1a1c1b; }
+        .anton-text { font-family: 'Anton', sans-serif; text-transform: uppercase; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-x-hidden relative">
+<!-- Halftone Texture Overlay -->
+<div class="halftone-bg fixed inset-0 pointer-events-none z-0"></div>
+<!-- App Wrapper -->
+<div class="flex min-h-screen relative z-10">
+<!-- SideNavBar (Matches COMPONENTS_16) -->
+<aside class="w-64 border-r-2 border-on-surface bg-surface flex flex-col h-screen sticky top-0 overflow-y-auto p-4 space-y-6">
+<div class="flex flex-col gap-2 px-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary border-2 border-on-surface rounded-lg flex items-center justify-center shrink-0 shadow-[4px_4px_0px_0px_rgba(20,27,43,1)]"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuASwRCg7oWWBTlePQyfO736zHn6TeW2WrTZ_BS579QFroLZifkcmOngUhnBFshwrqtOcZ-984NKjCsvYQl_Tn85-GLiZaidjw7Bc-818Dd_vM-tL_mGwEV_vtSDWWGkylz3EUxORtQckrMPUBHaV1rm59Lkqujzzxj8gekYEy18X_zMBWm1Fztc_wf1CUMbF6vLSmwQnYH_Z2a35klPnO5zdYib6IP3ihnqM7azb2ds6dnoWXDDpvb6Y7M8UisyvNjlzCrYh3dg3p8" alt="Logo" class="w-7 h-7 object-contain"></div>
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAInTwv1LR_AfUYxRlIFqPcTyvTFaiuTgzoRKIR-AN_ft2WOdZzvSyKRD768nhpZIWnWKgJ8QwlXyxg5sCngWjPDyTvRPP69Gk2qhW5SN3-slyRaRqHl8u6OmyLTVP1SFwqdgArlB2rQTKDLB9a6XLj8Mv6uGKjm0ygBwTjbFOfigdhi5ZMLwYB_USIFEZGEJjfMIx9cviizWMcPFPct0bsIBv6f7exwDZSqRu-bes4MRX4L7GX_b2QaK8Xleh2Ryj2oM6Bj2IvfY" alt="PARKER" class="h-10 w-auto object-contain">
+</div>
+<div class="mt-4 flex items-center gap-3 p-2 bg-surface-container rounded-xl border-2 border-on-surface">
+<div class="w-10 h-10 rounded-full border-2 border-on-surface overflow-hidden bg-white shrink-0">
+<img alt="User profile ink-sketch" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7EPfH6F7hKTZIMj4MwtWocUng-5zFrCQlWiUNnIQcVQzPULaNaFrXIjkTdSRGXV2SpMmRnC7mXkUFw9pHMOfdtkCVeK4JvW6G30sOTIwWXw6HN5cu947panNqssvnk6hiWQp8nYYT_m4Nod_X_gbsqZU5nTZMn88C0M901WN7OXIXCYUULMsr9A0cUcIn_LPs8VacSPQjRa5_sKzWdC8rECfM_A5QpPqeehJE7jsPpNwtgRsEzSbGerPYZ8pG_13cJwDGlIIQE10">
+</div>
+<div class="min-w-0">
+<p class="text-label-md font-bold truncate">Hero Level 24</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider truncate">Arch-Mage Apprentice</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<!-- Dashboard - Active -->
+<a class="flex items-center gap-4 px-4 py-3 bg-primary text-on-primary border-2 border-on-surface shadow-[4px_4px_0px_0px_rgba(20,27,43,1)] rounded-lg transition-transform active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined shrink-0">dashboard</span>
+<span class="font-label-md font-bold">Dashboard</span>
+</a>
+<!-- Academy -->
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined shrink-0">school</span>
+<span class="font-label-md">Academy</span>
+</a>
+<!-- Inventory -->
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined shrink-0">inventory_2</span>
+<span class="font-label-md">Inventory</span>
+</a>
+<!-- Guilds -->
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined shrink-0">group</span>
+<span class="font-label-md">Guilds</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined shrink-0">settings</span>
+<span class="font-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t-2 border-on-surface/10">
+<p class="px-4 py-2 text-[10px] uppercase font-bold text-on-surface-variant opacity-50">v2.4.0 Comics Edition</p>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 min-w-0">
+<!-- TopAppBar -->
+<header class="h-20 px-margin-desktop flex justify-between items-center bg-surface border-b-2 border-on-surface sticky top-0 z-40 shadow-[4px_4px_0px_0px_rgba(20,27,43,1)]">
+<div class="flex items-center gap-8">
+<nav class="hidden md:flex gap-8">
+<a class="font-label-caps text-label-caps uppercase tracking-[0.2em] text-primary border-b-4 border-primary pb-1" href="#">Focus</a>
+<a class="font-label-caps text-label-caps uppercase tracking-[0.2em] text-on-surface-variant hover:text-primary transition-colors" href="#">Quests</a>
+<a class="font-label-caps text-label-caps uppercase tracking-[0.2em] text-on-surface-variant hover:text-primary transition-colors" href="#">Archive</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center bg-surface-container-high comic-border rounded-full px-5 py-1.5 gap-2 comic-shadow-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none cursor-default">
+<span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-label-caps text-label-caps font-black italic">STREAK: 12</span>
+</div>
+<div class="flex gap-3">
+<button class="w-12 h-12 rounded-full comic-border bg-white hover:bg-surface-container transition-colors flex items-center justify-center comic-shadow-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
+<span class="material-symbols-outlined text-on-surface" data-icon="notifications">notifications</span>
+</button>
+<button class="w-12 h-12 rounded-full comic-border bg-white hover:bg-surface-container transition-colors flex items-center justify-center comic-shadow-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
+<span class="material-symbols-outlined text-on-surface" data-icon="settings">settings</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Dashboard Content Container -->
+<div class="max-w-max-width-content mx-auto px-margin-desktop py-12 space-y-12">
+<!-- Hero Header -->
+<section class="relative">
+<p class="font-label-caps text-label-caps uppercase tracking-[0.3em] text-on-surface-variant mb-4 font-black italic">TODAY • FRIDAY</p>
+<div class="relative inline-block">
+<h1 class="font-display-hero text-display-hero anton-text leading-none text-on-surface drop-shadow-[4px_4px_0px_#4F46E5]">HEY ALEX 👋</h1>
+</div>
+</section>
+<!-- Stat Strip -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Streak -->
+<div class="bg-white p-6 rounded-lg comic-border comic-shadow flex items-center gap-4 transition-all hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_#1a1c1b]">
+<div class="w-14 h-14 rounded-full bg-secondary-fixed comic-border flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-headline-md" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-caps text-label-caps font-black italic">CURRENT STREAK</p>
+<p class="font-headline-md text-headline-md text-on-surface anton-text">12 DAYS</p>
+</div>
+</div>
+<!-- XP -->
+<div class="bg-white p-6 rounded-lg comic-border comic-shadow flex items-center gap-4 transition-all hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_#1a1c1b]">
+<div class="w-14 h-14 rounded-full bg-tertiary-fixed comic-border flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-headline-md" style="font-variation-settings: 'FILL' 1;">stars</span>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-caps text-label-caps font-black italic">TOTAL XP</p>
+<p class="font-headline-md text-headline-md text-on-surface anton-text">14,250</p>
+</div>
+</div>
+<!-- Level -->
+<div class="bg-primary-container p-6 rounded-lg comic-border comic-shadow text-white flex items-center gap-4 transition-all hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_#1a1c1b]">
+<div class="w-14 h-14 rounded-full bg-white/20 comic-border border-white flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-headline-md" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<div>
+<p class="text-white/80 font-label-caps text-label-caps font-black italic">LEVEL PROGRESS</p>
+<p class="font-headline-md text-headline-md anton-text">LEVEL 24 <span class="text-sm font-normal opacity-70 anton-text ml-2">ACE</span></p>
+</div>
+</div>
+</section>
+<!-- Filter & Content Layout -->
+<div class="space-y-8">
+<!-- Segmented Control -->
+<div class="flex bg-surface-container-high p-1.5 rounded-lg comic-border w-fit comic-shadow-sm">
+<button class="px-8 py-2.5 bg-primary text-white rounded font-label-caps text-label-caps font-black italic uppercase">All</button>
+<button class="px-8 py-2.5 text-on-surface-variant font-label-caps text-label-caps hover:text-on-surface transition-colors font-black italic uppercase">School</button>
+<button class="px-8 py-2.5 text-on-surface-variant font-label-caps text-label-caps hover:text-on-surface transition-colors font-black italic uppercase">Personal</button>
+<button class="px-8 py-2.5 text-on-surface-variant font-label-caps text-label-caps hover:text-on-surface transition-colors font-black italic uppercase">Habits</button>
+</div>
+<!-- Main Dashboard Grid -->
+<div class="grid grid-cols-12 gap-gutter items-start">
+<!-- Left Column: Tasks -->
+<div class="col-span-12 lg:col-span-7 space-y-6">
+<div class="flex justify-between items-end mb-2 border-b-4 border-on-surface pb-2">
+<h2 class="font-headline-md text-headline-md anton-text">DEEP WORK LIST</h2>
+<span class="text-on-surface font-black italic text-label-caps uppercase">4 REMAINING</span>
+</div>
+<!-- Task Card 1 -->
+<div class="group bg-white p-6 rounded-lg comic-border comic-shadow-sm flex items-center justify-between hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+<div class="flex items-center gap-5">
+<input class="w-7 h-7 rounded comic-border text-primary focus:ring-primary transition-all custom-checkbox cursor-pointer" type="checkbox">
+<div>
+<h3 class="font-body-lg text-body-lg font-black text-on-surface group-hover:text-primary transition-colors">Finish Economics Chapter 4 Analysis</h3>
+<p class="text-on-surface-variant font-black italic text-xs uppercase mt-1">DUE TODAY • <span class="text-secondary">SCHOOL</span></p>
+</div>
+</div>
+<div class="bg-secondary-fixed text-on-secondary-container px-4 py-1.5 comic-border rounded-full font-label-xp text-label-xp flex items-center gap-1 font-black italic">
+<span class="">+150</span> <span class="text-[10px] opacity-70">XP</span>
+</div>
+</div>
+<!-- Task Card 2 -->
+<div class="group bg-white p-6 rounded-lg comic-border comic-shadow-sm flex items-center justify-between hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+<div class="flex items-center gap-5">
+<input class="w-7 h-7 rounded comic-border text-primary focus:ring-primary transition-all custom-checkbox cursor-pointer" type="checkbox">
+<div>
+<h3 class="font-body-lg text-body-lg font-black text-on-surface group-hover:text-primary transition-colors">15m Meditation Habit</h3>
+<p class="text-on-surface-variant font-black italic text-xs uppercase mt-1">DAILY GOAL • <span class="text-primary-container">PERSONAL</span></p>
+</div>
+</div>
+<div class="bg-secondary-fixed text-on-secondary-container px-4 py-1.5 comic-border rounded-full font-label-xp text-label-xp flex items-center gap-1 font-black italic">
+<span class="">+50</span> <span class="text-[10px] opacity-70">XP</span>
+</div>
+</div>
+<!-- Task Card 3 -->
+<div class="group bg-white p-6 rounded-lg comic-border comic-shadow-sm flex items-center justify-between hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+<div class="flex items-center gap-5">
+<input class="w-7 h-7 rounded comic-border text-primary focus:ring-primary transition-all custom-checkbox cursor-pointer" type="checkbox">
+<div>
+<h3 class="font-body-lg text-body-lg font-black text-on-surface group-hover:text-primary transition-colors">Email Professor regarding Thesis</h3>
+<p class="text-on-surface-variant font-black italic text-xs uppercase mt-1">URGENT • <span class="text-secondary">SCHOOL</span></p>
+</div>
+</div>
+<div class="bg-secondary-fixed text-on-secondary-container px-4 py-1.5 comic-border rounded-full font-label-xp text-label-xp flex items-center gap-1 font-black italic">
+<span class="">+75</span> <span class="text-[10px] opacity-70">XP</span>
+</div>
+</div>
+<!-- Task Card 4 (Completed) -->
+<div class="bg-surface-container-low p-6 rounded-lg comic-border flex items-center justify-between opacity-60">
+<div class="flex items-center gap-5">
+<div class="w-7 h-7 rounded bg-on-surface flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm" data-icon="check">check</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg font-bold text-on-surface-variant line-through">Morning Workout (Lower Body)</h3>
+<p class="text-on-surface-variant font-black italic text-xs uppercase mt-1">COMPLETED AT 08:30 AM</p>
+</div>
+</div>
+<div class="bg-surface-container-highest text-on-surface-variant px-4 py-1.5 comic-border rounded-full font-label-xp text-label-xp font-black italic">
+<span class="">DONE</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Goals Progress -->
+<div class="col-span-12 lg:col-span-5 space-y-8">
+<div class="bg-white p-8 rounded-lg comic-border comic-shadow">
+<h2 class="font-headline-md text-headline-md anton-text mb-8 border-b-2 border-on-surface inline-block">TODAY'S PROGRESS</h2>
+<div class="space-y-10">
+<!-- Goal 1 -->
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<span class="font-label-caps text-label-caps text-on-surface uppercase font-black italic">DAILY XP GOAL</span>
+<span class="font-label-xp text-label-xp text-primary anton-text text-lg">850 / 1200</span>
+</div>
+<div class="w-full h-4 bg-surface-container comic-border rounded-full overflow-hidden">
+<div class="h-full bg-primary-container border-r-2 border-on-surface transition-all duration-1000" style="width: 70%;"></div>
+</div>
+</div>
+<!-- Goal 2 -->
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<span class="font-label-caps text-label-caps text-on-surface uppercase font-black italic">FOCUS HOURS</span>
+<span class="font-label-xp text-label-xp text-secondary anton-text text-lg">3.5 / 5.0 HRS</span>
+</div>
+<div class="w-full h-4 bg-surface-container comic-border rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container border-r-2 border-on-surface transition-all duration-1000" style="width: 65%;"></div>
+</div>
+</div>
+<!-- Goal 3 -->
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<span class="font-label-caps text-label-caps text-on-surface uppercase font-black italic">TASKS COMPLETED</span>
+<span class="font-label-xp text-label-xp text-on-surface-variant anton-text text-lg">4 / 8</span>
+</div>
+<div class="w-full h-4 bg-surface-container comic-border rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-container border-r-2 border-on-surface transition-all duration-1000" style="width: 50%;"></div>
+</div>
+</div>
+</div>
+<div class="mt-12 p-6 bg-surface-container-low comic-border rounded-lg relative overflow-hidden">
+<div class="absolute top-0 right-0 p-1 bg-primary text-white text-[10px] font-black italic comic-border-b comic-border-l transform rotate-3">PRO-TIP</div>
+<div class="flex gap-4 items-start relative z-10">
+<div class="w-12 h-12 rounded bg-primary/10 comic-border flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<div>
+<p class="font-body-md font-black text-on-surface mb-2 uppercase italic text-sm">PARKER'S RADAR</p>
+<p class="text-on-surface-variant font-medium text-sm leading-relaxed italic">"You're only 350 XP away from hitting your daily streak target! Complete that Economics analysis to level up."</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Mini Quest Card -->
+<div class="relative group overflow-hidden rounded-lg comic-border h-52 transition-all comic-shadow hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_#1a1c1b]">
+<div class="absolute inset-0 bg-cover bg-center grayscale contrast-125" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDPM7HJZQCN2KtNauFQwOqVLXemp07w9DzzMGGruTBv20s9QbmAr3PIVS_PAQxwUGINSasFbuqAkF_CxW871ZML75Vt_U41IJBWFEb5AZEjQx7sC3mUJBioT7GbSG-myyw-KmBruZn08rVVJKQNeIPMkPln-_iQpb-lG7XinoQ9HMrN6LCy8vgluoHLt_R36iKzVOR4wuAx-xpq-lvuslNYqnoNNG-HyQC-q7wi-wfSA5O2nNwQaaBqpIVNFIlMWt_bS7GWntXyk2I')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-6 w-full">
+<p class="text-white font-black italic text-[10px] uppercase tracking-[0.3em] mb-1">ACTIVE QUEST</p>
+<h3 class="text-white anton-text text-2xl uppercase leading-none mb-3">MIDNIGHT OIL: 2HR STUDY SESSION</h3>
+<div class="flex items-center justify-between">
+<span class="text-secondary-container font-black italic text-sm">+300 BONUS XP</span>
+<button class="bg-white text-on-surface text-xs font-black italic px-6 py-2 comic-border rounded hover:bg-secondary-container transition-colors uppercase">Join Now</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Floating Action Button -->
+<button class="fixed bottom-10 right-10 w-20 h-20 bg-primary-container text-white rounded-lg comic-border comic-shadow hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_#1a1c1b] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all flex items-center justify-center z-50 group">
+<span class="material-symbols-outlined text-headline-lg font-black" data-icon="add">add</span>
+<span class="absolute right-24 bg-on-surface text-white px-5 py-2 comic-border text-sm font-black italic opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none uppercase">NEW QUEST</span>
+</button>
+<script>
+    // Interactivity for checkbox effects
+    document.querySelectorAll('.custom-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const card = this.closest('.group') || this.closest('div.flex.items-center');
+            if (this.checked) {
+                if (card.classList.contains('comic-shadow-sm')) {
+                    card.style.opacity = '0.6';
+                    card.style.boxShadow = 'none';
+                    card.style.transform = 'translate(4px, 4px)';
+                }
+            } else {
+                if (card.classList.contains('comic-shadow-sm')) {
+                    card.style.opacity = '1';
+                    card.style.boxShadow = '4px 4px 0px 0px #1a1c1b';
+                    card.style.transform = 'none';
+                }
+            }
+        });
+    });
+</script>
+
+
+</body></html>

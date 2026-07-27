@@ -1,0 +1,415 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Hanken+Grotesk:wght@600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Custom scrollbar for a cleaner messenger feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1a1c1b;
+            border: 2px solid #f9f9f7;
+            border-radius: 10px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #dad7ff;
+            border: 2px solid #1a1c1b;
+        }
+
+        /* Comic Book Aesthetic Classes */
+        .paper-texture {
+            background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+        }
+        
+        .bubble-bot {
+            position: relative;
+            border: 3px solid #1a1c1b;
+            box-shadow: 4px 4px 0px 0px #1a1c1b;
+        }
+        .dark .bubble-bot {
+            border-color: #c7c4d8;
+            box-shadow: 4px 4px 0px 0px #c7c4d8;
+        }
+        .bubble-bot::before {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            left: 20px;
+            border-width: 15px 15px 0 0;
+            border-style: solid;
+            border-color: #1a1c1b transparent transparent transparent;
+            display: none; /* Simplification for tail if needed, but using pseudo for classic look */
+        }
+        /* Tail for bot */
+        .tail-bot {
+            position: absolute;
+            bottom: 0;
+            left: -10px;
+            width: 20px;
+            height: 20px;
+            background: inherit;
+            border-left: 3px solid #1a1c1b;
+            border-bottom: 3px solid #1a1c1b;
+            transform: skewX(45deg);
+            z-index: -1;
+        }
+        .dark .tail-bot { border-color: #c7c4d8; }
+
+        .bubble-user {
+            position: relative;
+            border: 3px solid #1a1c1b;
+            box-shadow: -4px 4px 0px 0px #1a1c1b;
+        }
+        .dark .bubble-user {
+            border-color: #c7c4d8;
+            box-shadow: -4px 4px 0px 0px #c7c4d8;
+        }
+        /* Tail for user */
+        .tail-user {
+            position: absolute;
+            bottom: 0;
+            right: -10px;
+            width: 20px;
+            height: 20px;
+            background: inherit;
+            border-right: 3px solid #1a1c1b;
+            border-bottom: 3px solid #1a1c1b;
+            transform: skewX(-45deg);
+            z-index: -1;
+        }
+        .dark .tail-user { border-color: #c7c4d8; }
+
+        .ink-border {
+            border: 3px solid #1a1c1b;
+        }
+        .dark .ink-border {
+            border-color: #c7c4d8;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed-dim": "#ffb695",
+                      "on-primary": "#ffffff",
+                      "primary-container": "#4f46e5",
+                      "tertiary": "#7e3000",
+                      "inverse-surface": "#2f3130",
+                      "primary": "#3525cd",
+                      "primary-fixed": "#e2dfff",
+                      "outline": "#777587",
+                      "surface-container": "#eeeeec",
+                      "on-secondary": "#ffffff",
+                      "surface": "#f9f9f7",
+                      "on-background": "#1a1c1b",
+                      "surface-dim": "#dadad8",
+                      "surface-container-high": "#e8e8e6",
+                      "secondary-container": "#feae2c",
+                      "surface-container-highest": "#e2e3e1",
+                      "primary-fixed-dim": "#c3c0ff",
+                      "on-primary-fixed-variant": "#3323cc",
+                      "surface-container-lowest": "#ffffff",
+                      "on-surface": "#1a1c1b",
+                      "on-primary-fixed": "#0f0069",
+                      "on-tertiary-fixed-variant": "#7b2f00",
+                      "surface-container-low": "#f4f4f2",
+                      "on-secondary-fixed": "#291800",
+                      "secondary": "#835500",
+                      "surface-tint": "#4d44e3",
+                      "surface-bright": "#f9f9f7",
+                      "xp-gold": "#F5A623",
+                      "indigo-deep": "#4F46E5",
+                      "on-primary-container": "#dad7ff",
+                      "border-hairline": "#E5E5E2",
+                      "tertiary-container": "#a44100",
+                      "on-surface-variant": "#464555",
+                      "on-error-container": "#93000a",
+                      "tertiary-fixed": "#ffdbcc",
+                      "on-error": "#ffffff",
+                      "on-tertiary-fixed": "#351000",
+                      "on-tertiary-container": "#ffd2be",
+                      "on-tertiary": "#ffffff",
+                      "background": "#f9f9f7",
+                      "error-container": "#ffdad6",
+                      "secondary-fixed": "#ffddb4",
+                      "surface-variant": "#e2e3e1",
+                      "inverse-primary": "#c3c0ff",
+                      "inverse-on-surface": "#f1f1ef",
+                      "outline-variant": "#c7c4d8",
+                      "secondary-fixed-dim": "#ffb955",
+                      "error": "#ba1a1a",
+                      "on-secondary-container": "#6b4500",
+                      "surface-muted": "#EDEDEA",
+                      "on-secondary-fixed-variant": "#633f00"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "max-width-content": "1100px",
+                      "margin-desktop": "48px",
+                      "margin-mobile": "16px",
+                      "gutter": "24px",
+                      "sidebar-expanded": "240px",
+                      "sidebar-width": "64px"
+              },
+              "fontFamily": {
+                      "label-caps": ["Inter"],
+                      "body-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-lg-mobile": ["Hanken Grotesk"],
+                      "display-hero": ["Hanken Grotesk"],
+                      "label-xp": ["Hanken Grotesk"],
+                      "headline-md": ["Hanken Grotesk"],
+                      "headline-lg": ["Hanken Grotesk"]
+              },
+              "fontSize": {
+                      "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "body-md": ["15px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "display-hero": ["72px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                      "label-xp": ["14px", {"lineHeight": "1.0", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "headline-lg": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-surface dark:bg-inverse-surface text-on-surface dark:text-inverse-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container h-screen overflow-hidden">
+<div class="flex h-full w-full overflow-hidden">
+<!-- SideNavBar (Comic Themed based on COMPONENTS_16) -->
+<aside class="w-64 border-r-2 border-on-surface dark:border-outline-variant bg-surface dark:bg-surface-container-lowest flex flex-col h-screen relative before:absolute before:inset-0 before:bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] before:opacity-5 before:pointer-events-none z-50">
+<div class="p-6 mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center border-2 border-on-surface shadow-[2px_2px_0px_0px_rgba(26,28,27,1)]">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuASwRCg7oWWBTlePQyfO736zHn6TeW2WrTZ_BS579QFroLZifkcmOngUhnBFshwrqtOcZ-984NKjCsvYQl_Tn85-GLiZaidjw7Bc-818Dd_vM-tL_mGwEV_vtSDWWGkylz3EUxORtQckrMPUBHaV1rm59Lkqujzzxj8gekYEy18X_zMBWm1Fztc_wf1CUMbF6vLSmwQnYH_Z2a35klPnO5zdYib6IP3ihnqM7azb2ds6dnoWXDDpvb6Y7M8UisyvNjlzCrYh3dg3p8" alt="Logo" class="w-6 h-6 object-contain">
+</div>
+<div>
+<h2 class="font-headline-md text-xl font-bold text-primary dark:text-primary-fixed-dim tracking-tight">Hero Lvl 24</h2>
+<p class="text-label-caps text-[10px] text-on-surface-variant uppercase">Arch-Mage Apprentice</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-2 px-4">
+<!-- Active -->
+<a class="flex items-center px-4 py-3 bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container border-2 border-on-surface dark:border-outline shadow-[4px_4px_0px_0px_rgba(26,28,27,1)] transition-transform active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined fill-icon">chat_bubble</span>
+<span class="ml-4 font-bold">Chat</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center px-4 py-3 text-on-surface-variant dark:text-outline border-2 border-transparent hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="ml-4">Dashboard</span>
+</a>
+<a class="flex items-center px-4 py-3 text-on-surface-variant dark:text-outline border-2 border-transparent hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="ml-4">Academy</span>
+</a>
+<a class="flex items-center px-4 py-3 text-on-surface-variant dark:text-outline border-2 border-transparent hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="ml-4">Inventory</span>
+</a>
+<a class="flex items-center px-4 py-3 text-on-surface-variant dark:text-outline border-2 border-transparent hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="ml-4">Guilds</span>
+</a>
+</nav>
+<div class="mt-auto p-4 border-t-2 border-on-surface dark:border-outline-variant">
+<a class="flex items-center px-4 py-3 text-on-surface-variant dark:text-outline border-2 border-transparent hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="ml-4">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col relative overflow-hidden bg-surface dark:bg-inverse-surface paper-texture">
+<!-- TopAppBar (Comic themed based on COMPONENTS_16) -->
+<header class="h-16 flex justify-between items-center px-margin-desktop w-full border-b-2 border-on-surface dark:border-outline-variant bg-surface dark:bg-surface-container-lowest shadow-[4px_4px_0px_0px_rgba(26,28,27,1)] dark:shadow-[4px_4px_0px_0px_rgba(199,196,216,1)] z-40">
+<div class="flex items-center gap-gutter">
+<div class="h-10 flex items-center"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAInTwv1LR_AfUYxRlIFqPcTyvTFaiuTgzoRKIR-AN_ft2WOdZzvSyKRD768nhpZIWnWKgJ8QwlXyxg5sCngWjPDyTvRPP69Gk2qhW5SN3-slyRaRqHl8u6OmyLTVP1SFwqdgArlB2rQTKDLB9a6XLj8Mv6uGKjm0ygBwTjbFOfigdhi5ZMLwYB_USIFEZGEJjfMIx9cviizWMcPFPct0bsIBv6f7exwDZSqRu-bes4MRX4L7GX_b2QaK8Xleh2Ryj2oM6Bj2IvfY" alt="PARKER!" class="h-full object-contain drop-shadow-[2px_2px_0px_rgba(26,28,27,1)]"></div>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Focus</a>
+<a class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Quests</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-3 py-1 bg-xp-gold border-2 border-on-surface rounded-full shadow-[2px_2px_0px_0px_rgba(26,28,27,1)]">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuASwRCg7oWWBTlePQyfO736zHn6TeW2WrTZ_BS579QFroLZifkcmOngUhnBFshwrqtOcZ-984NKjCsvYQl_Tn85-GLiZaidjw7Bc-818Dd_vM-tL_mGwEV_vtSDWWGkylz3EUxORtQckrMPUBHaV1rm59Lkqujzzxj8gekYEy18X_zMBWm1Fztc_wf1CUMbF6vLSmwQnYH_Z2a35klPnO5zdYib6IP3ihnqM7azb2ds6dnoWXDDpvb6Y7M8UisyvNjlzCrYh3dg3p8" alt="Streak" class="w-4 h-4 object-contain">
+<span class="font-label-caps text-label-caps text-on-secondary-fixed">STREAK: 12</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary active:translate-y-0.5 transition-all">notifications</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-on-surface shadow-[2px_2px_0px_0px_rgba(26,28,27,1)]">
+<img alt="User profile ink-sketch" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTJA_XKUCjO9jp4DXYiIlFAGi6y3I-q7w_qs-CL8QZYsEmn3HUYB4Hf8nu7gh600gP-zm0msO5Bxsw96AIJE7fLHwhk1e883dmG_q5mx0IzeqKQM0sNS9heno6bvWcpPbzSIZx5cH9L6HU6jyTz8zX2QtkS6teLM9dzimQI71_dzGMLaxY5GR9VViOPZh-HWFupcMEcANcZBHjRu_hiZ8Tw4tlUyqG12WcvbYKwYaDi1HSUVMDM7Sz9MI_qtqR3F7rXKIJxN0IYss">
+</div>
+</div>
+</header>
+<!-- Layout: Chat + Recently Logged Side Panel -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Chat View -->
+<section class="flex-1 flex flex-col relative h-full">
+<div class="flex-1 overflow-y-auto px-margin-desktop py-8 scroll-smooth">
+<div class="max-w-[720px] mx-auto w-full space-y-12">
+<!-- Day Separator -->
+<div class="flex justify-center">
+<span class="bg-primary text-white px-4 py-1 border-2 border-on-surface shadow-[3px_3px_0px_0px_rgba(26,28,27,1)] font-label-caps uppercase italic tracking-widest text-xs">Today</span>
+</div>
+<!-- Chat History -->
+<div class="flex flex-col gap-10">
+<!-- AI Message -->
+<div class="flex flex-col gap-3 max-w-[85%] relative">
+<div class="bubble-bot p-5 rounded-2xl rounded-bl-none bg-surface dark:bg-surface-container-high">
+<div class="tail-bot"></div>
+<p class="font-body-md text-on-surface dark:text-inverse-on-surface font-semibold italic">Welcome back! Ready to tackle the day? You have <span class="text-primary dark:text-primary-fixed font-extrabold underline">3 tasks pending</span> for your Computer Science project. ZAP!</p>
+</div>
+<span class="text-[10px] font-label-caps text-on-surface-variant uppercase tracking-tighter px-1">08:15 AM - Parker</span>
+</div>
+<!-- User Message -->
+<div class="flex flex-col items-end gap-3 self-end max-w-[85%] relative">
+<div class="bubble-user p-5 rounded-2xl rounded-br-none bg-indigo-deep text-white">
+<div class="tail-user"></div>
+<p class="font-body-md font-bold tracking-tight">Gym session tomorrow morning!</p>
+</div>
+<span class="text-[10px] font-label-caps text-on-surface-variant uppercase tracking-tighter px-1">09:42 AM - Hero</span>
+</div>
+<!-- AI Message Action -->
+<div class="flex flex-col gap-3 max-w-[85%] relative">
+<div class="bubble-bot p-5 rounded-2xl rounded-bl-none bg-surface dark:bg-surface-container-high">
+<div class="tail-bot"></div>
+<div class="space-y-4">
+<p class="font-body-md text-on-surface dark:text-inverse-on-surface font-semibold italic">KAPOW! Logged as a Habit → <span class="text-primary dark:text-primary-fixed-dim font-black">FITNESS</span>. Reminder set for 7:00 AM sharp.</p>
+<!-- Action Confirmation Comic Card -->
+<div class="flex items-center gap-4 p-4 bg-surface-container-low dark:bg-inverse-surface border-2 border-on-surface dark:border-outline-variant rounded-xl shadow-[2px_2px_0px_0px_rgba(26,28,27,1)]">
+<div class="w-12 h-12 rounded-lg bg-xp-gold flex items-center justify-center border-2 border-on-surface">
+<span class="material-symbols-outlined text-on-secondary-fixed text-2xl fill-icon">fitness_center</span>
+</div>
+<div class="flex-1">
+<h4 class="font-headline-md text-sm font-black uppercase italic text-on-surface dark:text-inverse-on-surface">Gym Session</h4>
+<p class="text-[12px] font-bold text-on-surface-variant">Tomorrow, 07:00 AM</p>
+</div>
+<div class="px-3 py-1 bg-xp-gold border-2 border-on-surface rounded text-[12px] font-black text-on-secondary-fixed italic">
+                                                +50 XP!
+                                            </div>
+</div>
+</div>
+</div>
+<span class="text-[10px] font-label-caps text-on-surface-variant uppercase tracking-tighter px-1">09:42 AM - Parker</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Input Bar -->
+<div class="p-margin-desktop pt-0 pb-12 w-full">
+<div class="max-w-[720px] mx-auto relative group">
+<div class="absolute -inset-1 bg-on-surface/10 blur-md group-focus-within:bg-primary/20 transition-all rounded-full"></div>
+<div class="relative bg-surface dark:bg-surface-container-high ink-border rounded-full p-2 pl-8 flex items-center gap-4 shadow-[6px_6px_0px_0px_rgba(26,28,27,1)] focus-within:translate-x-[2px] focus-within:translate-y-[2px] focus-within:shadow-none transition-all">
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-on-surface dark:text-inverse-on-surface placeholder:text-on-surface-variant/50 font-body-md py-3 font-bold italic" placeholder="WHAT'S THE PLAN, BOSS?..." type="text">
+<button class="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-2xl">mic</span>
+</button>
+<button class="w-12 h-12 bg-primary-container border-2 border-on-surface rounded-full flex items-center justify-center text-white active:scale-90 transition-transform shadow-[3px_3px_0px_0px_rgba(26,28,27,1)]">
+<span class="material-symbols-outlined font-black">arrow_upward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Recently Logged Panel (Right) -->
+<aside class="hidden xl:flex w-[340px] border-l-2 border-on-surface dark:border-outline-variant flex-col bg-surface-container-low/50 dark:bg-inverse-surface/50 backdrop-blur-sm relative before:absolute before:inset-0 before:bg-[url('https://www.transparenttextures.com/patterns/dust.png')] before:opacity-5 before:pointer-events-none">
+<div class="p-8">
+<h3 class="font-label-caps text-xs font-black uppercase tracking-widest text-on-surface-variant mb-8 flex items-center justify-between italic">
+                        Recently Logged
+                        <span class="material-symbols-outlined text-sm font-black">history</span>
+</h3>
+<div class="space-y-6">
+<!-- Logged Item 1 -->
+<div class="p-4 bg-white dark:bg-surface-container-highest border-2 border-on-surface shadow-[4px_4px_0px_0px_rgba(26,28,27,1)] hover:-translate-y-1 transition-transform cursor-default relative overflow-hidden group">
+<div class="flex justify-between items-start mb-3">
+<span class="px-2 py-0.5 border border-on-surface bg-secondary-fixed text-[10px] font-black text-on-secondary-fixed italic">HABIT</span>
+<span class="text-[9px] font-black text-on-surface-variant/70">1M AGO</span>
+</div>
+<h4 class="font-headline-md text-base font-black italic mb-1 uppercase tracking-tight">Gym Session</h4>
+<div class="flex items-center gap-2 text-[11px] font-bold text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+                                TOMORROW, 7:00 AM
+                            </div>
+</div>
+<!-- Logged Item 2 -->
+<div class="p-4 bg-white dark:bg-surface-container-highest border-2 border-on-surface shadow-[4px_4px_0px_0px_rgba(26,28,27,1)] hover:-translate-y-1 transition-transform cursor-default relative overflow-hidden">
+<div class="flex justify-between items-start mb-3">
+<span class="px-2 py-0.5 border border-on-surface bg-tertiary-fixed text-[10px] font-black text-on-tertiary-fixed italic">QUEST</span>
+<span class="text-[9px] font-black text-on-surface-variant/70">2H AGO</span>
+</div>
+<h4 class="font-headline-md text-base font-black italic mb-1 uppercase tracking-tight">Finish UI Design</h4>
+<div class="flex items-center gap-2 text-[11px] font-bold text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">category</span>
+                                CS PROJECT
+                            </div>
+</div>
+<!-- Daily Progress Stat -->
+<div class="mt-12 p-6 bg-indigo-deep border-2 border-on-surface shadow-[6px_6px_0px_0px_rgba(26,28,27,1)] text-white relative overflow-hidden">
+<div class="relative z-10">
+<span class="font-label-caps text-[10px] uppercase font-black tracking-widest italic opacity-90">Progress Meter</span>
+<h4 class="font-display-hero text-3xl font-black italic mt-2">1,240 XP</h4>
+<div class="mt-6 w-full bg-white/20 h-4 border-2 border-on-surface overflow-hidden">
+<div class="bg-xp-gold h-full w-[72%] border-r-2 border-on-surface"></div>
+</div>
+<p class="mt-3 text-[10px] font-black uppercase italic opacity-80 tracking-tighter">Level up in: 260 XP</p>
+</div>
+<div class="absolute -right-6 -bottom-6 opacity-20 pointer-events-none">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuASwRCg7oWWBTlePQyfO736zHn6TeW2WrTZ_BS579QFroLZifkcmOngUhnBFshwrqtOcZ-984NKjCsvYQl_Tn85-GLiZaidjw7Bc-818Dd_vM-tL_mGwEV_vtSDWWGkylz3EUxORtQckrMPUBHaV1rm59Lkqujzzxj8gekYEy18X_zMBWm1Fztc_wf1CUMbF6vLSmwQnYH_Z2a35klPnO5zdYib6IP3ihnqM7azb2ds6dnoWXDDpvb6Y7M8UisyvNjlzCrYh3dg3p8" alt="" class="w-[120px] h-[120px] object-contain opacity-20">
+</div>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+</div>
+<script>
+    const inputField = document.querySelector('input');
+    const sendButton = document.querySelector('button.bg-primary-container');
+    
+    inputField.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    sendButton.addEventListener('click', sendMessage);
+
+    function sendMessage() {
+        const text = inputField.value.trim();
+        if (text === '') return;
+        
+        inputField.value = '';
+        
+        const container = inputField.closest('.relative');
+        container.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            container.style.transform = '';
+        }, 100);
+    }
+</script>
+
+
+</body></html>

@@ -1,0 +1,102 @@
+/**
+ * Typed API client for the Haia FastAPI backend.
+ *
+ * All requests include the user's Supabase JWT as the Authorization header.
+ * Token is retrieved from the Supabase browser client on each call.
+ *
+ * Usage:
+ *   const api = createApiClient(accessToken);
+ *   const tasks = await api.tasks.list();
+ */
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
+
+function makeHeaders(token: string): HeadersInit {
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+}
+
+async function request<T>(
+  token: string,
+  method: string,
+  path: string,
+  body?: unknown
+): Promise<T> {
+  const res = await fetch(`${API_BASE}/api/v1${path}`, {
+    method,
+    headers: makeHeaders(token),
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  if (!res.ok) {
+    const error = await res.text();
+    throw new Error(`API error ${res.status}: ${error}`);
+  }
+
+  if (res.status === 204) return undefined as T;
+  return res.json();
+}
+
+export function createApiClient(accessToken: string) {
+  const get  = <T>(path: string) => request<T>(accessToken, "GET",    path);
+  const post = <T>(path: string, body: unknown) => request<T>(accessToken, "POST",   path, body);
+  const patch = <T>(path: string, body: unknown) => request<T>(accessToken, "PATCH",  path, body);
+  const del  = <T>(path: string) => request<T>(accessToken, "DELETE", path);
+
+  return {
+    tasks: {
+      list:     (params?: { task_status?: string; area?: string }) =>
+                  get(`/tasks${params ? `?${new URLSearchParams(params as Record<string, string>)}` : ""}`),
+      create:   (body: unknown) => post("/tasks", body),
+      get:      (id: string) => get(`/tasks/${id}`),
+      update:   (id: string, body: unknown) => patch(`/tasks/${id}`, body),
+      complete: (id: string) => post(`/tasks/${id}/complete`, {}),
+      delete:   (id: string) => del(`/tasks/${id}`),
+    },
+
+    habits: {
+      list:    (active_only?: boolean) =>
+                 get(`/habits${active_only !== undefined ? `?active_only=${active_only}` : ""}`),
+      create:  (body: unknown) => post("/habits", body),
+      log:     (habitId: string, body: unknown) => post(`/habits/${habitId}/log`, body),
+      getLogs: (habitId: string, limit?: number) =>
+                 get(`/habits/${habitId}/logs${limit ? `?limit=${limit}` : ""}`),
+    },
+
+    goals: {
+      list:   (goal_status?: string) =>
+                get(`/goals${goal_status ? `?goal_status=${goal_status}` : ""}`),
+      create: (body: unknown) => post("/goals", body),
+      update: (id: string, body: unknown) => patch(`/goals/${id}`, body),
+    },
+
+    courses: {
+      list: (semester_id?: string) =>
+              get(`/courses${semester_id ? `?semester_id=${semester_id}` : ""}`),
+    },
+
+    gamification: {
+      stats:     () => get("/gamification/stats"),
+      xpEvents:  (limit?: number) => get(`/gamification/xp-events${limit ? `?limit=${limit}` : ""}`),
+      streaks:   () => get("/gamification/streaks"),
+    },
+
+    chat: {
+      history: (limit?: number) => get(`/chat/history${limit ? `?limit=${limit}` : ""}`),
+      send:    (content: string, channel: "web" | "telegram" = "web") =>
+                 post("/chat/message", { content, channel }),
+    },
+
+    subjects: {
+      list:   (area?: string) => get(`/subjects${area ? `?area=${area}` : ""}`),
+      create: (body: unknown) => post("/subjects", body),
+    },
+
+    parse: {
+      text: (raw_input: string, channel = "typed") =>
+              post("/parse/text", { raw_input, channel }),
+    },
+  };
+}

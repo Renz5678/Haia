@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HAIA Calendar | Momentum Ace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Hanken+Grotesk:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#351000",
+                        "surface-container-low": "#f4f4f2",
+                        "surface-muted": "#EDEDEA",
+                        "primary-fixed": "#e2dfff",
+                        "secondary-container": "#feae2c",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#e8e8e6",
+                        "border-hairline": "#E5E5E2",
+                        "outline-variant": "#c7c4d8",
+                        "surface-variant": "#e2e3e1",
+                        "secondary-fixed-dim": "#ffb955",
+                        "on-secondary": "#ffffff",
+                        "outline": "#777587",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface": "#1a1c1b",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#dad7ff",
+                        "error": "#ba1a1a",
+                        "inverse-surface": "#2f3130",
+                        "surface-container-highest": "#e2e3e1",
+                        "surface-dim": "#dadad8",
+                        "surface-bright": "#f9f9f7",
+                        "primary-container": "#4f46e5",
+                        "on-tertiary-container": "#ffd2be",
+                        "background": "#f9f9f7",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "tertiary": "#7e3000",
+                        "inverse-primary": "#c3c0ff",
+                        "on-secondary-container": "#6b4500",
+                        "on-secondary-fixed": "#291800",
+                        "inverse-on-surface": "#f1f1ef",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "xp-gold": "#F5A623",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "tertiary-container": "#a44100",
+                        "surface-tint": "#4d44e3",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "surface": "#f9f9f7",
+                        "indigo-deep": "#4F46E5",
+                        "on-secondary-fixed-variant": "#633f00",
+                        "secondary-fixed": "#ffddb4",
+                        "on-primary-fixed": "#0f0069",
+                        "secondary": "#835500",
+                        "on-surface-variant": "#464555",
+                        "on-background": "#1a1c1b",
+                        "tertiary-fixed": "#ffdbcc",
+                        "surface-container": "#eeeeec",
+                        "primary": "#3525cd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "max-width-content": "1100px",
+                        "gutter": "24px",
+                        "sidebar-expanded": "240px",
+                        "margin-desktop": "48px",
+                        "margin-mobile": "16px",
+                        "sidebar-width": "64px"
+                    },
+                    "fontFamily": {
+                        "label-xp": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "display-hero": ["Hanken Grotesk"],
+                        "label-caps": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-xp": ["14px", {"lineHeight": "1.0", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "headline-lg": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "display-hero": ["72px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                        "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-md": ["15px", {"lineHeight": "1.5", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #FAFAF8;
+            color: #1a1c1b;
+            background-image: radial-gradient(#E5E5E2 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .pop-art-shadow {
+            box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 1);
+        }
+
+        .ink-border {
+            border: 2px solid black;
+        }
+
+        .halftone-pattern {
+            background-image: radial-gradient(rgba(0,0,0,0.1) 15%, transparent 16%);
+            background-size: 8px 8px;
+        }
+
+        .active-day-ink {
+            background-color: #4F46E5;
+            color: white;
+            box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+        }
+
+        .comic-text {
+            font-family: 'Hanken Grotesk', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+        }
+
+        /* Custom Scrollbar for Agenda */
+        .agenda-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .agenda-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .agenda-scroll::-webkit-scrollbar-thumb {
+            background: #000;
+            border-radius: 0;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-hidden">
+<!-- Sidebar Navigation Shell -->
+<aside class="w-sidebar-width fixed left-0 top-0 h-screen flex flex-col py-unit-4 border-r-2 border-black bg-surface z-50 transition-all duration-300 group hover:w-sidebar-expanded">
+<div class="flex flex-col h-full overflow-hidden">
+<!-- Brand Section -->
+<div class="px-unit-4 mb-unit-8 flex items-center gap-3 h-12">
+<img alt="HAIA Bolt" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqz6p-dXO2TZxfMYyqLWBm-24XleuBYDlZxuXHdyyYIl82JM81FfPTYh2Sg0AYp8ODoPqFv07IgrKHvIVT0yRwM-EXNk_80lTGnQ3I9SbhV-lSrQHSSHEXh7tlMncAawHUuFHa4Y3jV2H_f4zTdkhfi-5JUzGb_TAuix30-J8Vm3tUehgucxrdAQM1HddA7xvP-oA4uUfWuIj07Yw5UbcWJmDOsCDqAS-tYGq8ESVGEs83rc0CV1H1FaBdR1Qw3k46JpsM-rsvOwM"/>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity font-headline-md font-extrabold comic-text">HAIA</span>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 px-unit-2 space-y-unit-2">
+<a class="flex items-center gap-4 p-unit-3 rounded-none ink-border hover:bg-surface-container-low transition-colors group/nav" href="#">
+<span class="material-symbols-outlined text-on-surface-variant">dashboard</span>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity comic-text font-bold">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 p-unit-3 rounded-none ink-border hover:bg-surface-container-low transition-colors group/nav" href="#">
+<span class="material-symbols-outlined text-on-surface-variant">chat_bubble</span>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity comic-text font-bold">Chat</span>
+</a>
+<a class="flex items-center gap-4 p-unit-3 rounded-none ink-border hover:bg-surface-container-low transition-colors group/nav" href="#">
+<span class="material-symbols-outlined text-on-surface-variant">workspace_premium</span>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity comic-text font-bold">Quests</span>
+</a>
+<a class="flex items-center gap-4 p-unit-3 rounded-none ink-border bg-primary-container text-on-primary-container shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity comic-text font-bold">Calendar</span>
+</a>
+</nav>
+<!-- Profile / Footer -->
+<div class="mt-auto px-unit-2 space-y-unit-2 border-t border-black pt-4">
+<div class="flex items-center gap-4 p-unit-2">
+<div class="w-8 h-8 rounded-full ink-border bg-xp-gold flex items-center justify-center font-bold">P</div>
+<div class="opacity-0 group-hover:opacity-100 transition-opacity">
+<p class="text-xs font-bold leading-none">PARKER</p>
+<p class="text-[10px] text-outline">LVL 24 ACE</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-sidebar-width h-screen flex flex-col">
+<!-- Top App Bar -->
+<header class="h-16 flex justify-between items-center px-margin-desktop bg-surface/80 backdrop-blur-md border-b-2 border-black z-40">
+<div class="flex items-center gap-6">
+<img alt="HAIA Wordmark" class="h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhKa-xvd4Fh3lzswWzbTZz04Hii2FSX1s-p9jGnj-v3RLWG49J-SOUORppW_9ZRt1zzfXK3xEwCSoC5KwFdAs6yyU4AYeVPpbzQ8X_7WpkLX4JO0st8FJeTgKTKJmdZk2g6leFCNLOl32Xm-sUG31agBTQdIovvkBNsVrY41-xnqrmtCzn4cLLvLZ872pwPkUj8PlqeNQ0IlwOPWUaWDpVrF9EwQFqtNqW6Qf2y7Sh992dVIcWSE-UVN3gyUGf7aI3enk0DeSEYBw"/>
+<div class="hidden md:flex gap-8">
+<a class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors" href="#">Focus</a>
+<a class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors" href="#">Quests</a>
+<a class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors" href="#">Archive</a>
+</div>
+</div>
+<div class="flex items-center gap-unit-6">
+<div class="flex items-center gap-2 bg-secondary-container text-on-secondary-fixed ink-border px-3 py-1 comic-text font-bold shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+<span class="material-symbols-outlined text-base">bolt</span>
+                    STREAK: 12
+                </div>
+<button class="bg-primary-container text-white ink-border px-6 py-2 comic-text font-bold pop-art-shadow active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
+                    CAPTURE
+                </button>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined cursor-pointer hover:scale-110 transition-transform">notifications</span>
+</div>
+</div>
+</header>
+<!-- Calendar View Area -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Left Side: Calendar Grid -->
+<section class="flex-1 p-gutter overflow-y-auto halftone-pattern">
+<div class="max-w-max-width-content mx-auto">
+<!-- Calendar Header -->
+<div class="flex justify-between items-center mb-8">
+<div class="flex items-center gap-4">
+<h1 class="font-headline-lg text-headline-lg comic-text">MARCH 2024</h1>
+<div class="flex gap-1">
+<button class="ink-border p-1 bg-white hover:bg-surface-container-low"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="ink-border p-1 bg-white hover:bg-surface-container-low"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-indigo-deep ink-border"></span><span class="text-xs font-bold comic-text">SCHOOL</span></div>
+<div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-xp-gold ink-border"></span><span class="text-xs font-bold comic-text">HABITS</span></div>
+<div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-tertiary-container ink-border"></span><span class="text-xs font-bold comic-text">PERSONAL</span></div>
+</div>
+</div>
+<!-- Grid -->
+<div class="grid grid-cols-7 ink-border bg-black gap-[2px]">
+<!-- Days Header -->
+<div class="bg-surface-muted p-2 text-center comic-text font-bold text-xs">SUN</div>
+<div class="bg-surface-muted p-2 text-center comic-text font-bold text-xs">MON</div>
+<div class="bg-surface-muted p-2 text-center comic-text font-bold text-xs">TUE</div>
+<div class="bg-surface-muted p-2 text-center comic-text font-bold text-xs">WED</div>
+<div class="bg-surface-muted p-2 text-center comic-text font-bold text-xs">THU</div>
+<div class="bg-surface-muted p-2 text-center comic-text font-bold text-xs">FRI</div>
+<div class="bg-surface-muted p-2 text-center comic-text font-bold text-xs">SAT</div>
+<!-- Grid Cells -->
+<!-- Row 1 (Empty prev month placeholder) -->
+<div class="bg-surface-container-low h-32 p-3 opacity-50"></div>
+<div class="bg-surface-container-low h-32 p-3 opacity-50"></div>
+<div class="bg-surface-container-low h-32 p-3 opacity-50"></div>
+<div class="bg-surface-container-low h-32 p-3 opacity-50"></div>
+<div class="bg-surface-container-low h-32 p-3 opacity-50"></div>
+<!-- Real Days -->
+<div class="bg-white h-32 p-3 group hover:bg-indigo-50 transition-colors relative cursor-pointer">
+<span class="font-headline-md font-bold comic-text">1</span>
+<div class="flex flex-wrap gap-1 mt-2">
+<div class="w-3 h-3 rounded-full bg-indigo-deep ink-border"></div>
+<div class="w-3 h-3 rounded-full bg-xp-gold ink-border"></div>
+</div>
+</div>
+<div class="bg-white h-32 p-3 group hover:bg-indigo-50 transition-colors relative cursor-pointer">
+<span class="font-headline-md font-bold comic-text">2</span>
+</div>
+<!-- Row 2 -->
+<div class="bg-white h-32 p-3 group hover:bg-indigo-50 transition-colors relative cursor-pointer">
+<span class="font-headline-md font-bold comic-text">3</span>
+</div>
+<div class="bg-white h-32 p-3 group hover:bg-indigo-50 transition-colors relative cursor-pointer">
+<span class="font-headline-md font-bold comic-text">4</span>
+<div class="flex flex-wrap gap-1 mt-2">
+<div class="w-3 h-3 rounded-full bg-tertiary-container ink-border"></div>
+</div>
+</div>
+<div class="bg-white h-32 p-3 group hover:bg-indigo-50 transition-colors relative cursor-pointer active-day-ink">
+<span class="font-headline-md font-bold comic-text">5</span>
+<div class="flex flex-wrap gap-1 mt-2">
+<div class="w-3 h-3 rounded-full bg-white ink-border"></div>
+<div class="w-3 h-3 rounded-full bg-xp-gold ink-border"></div>
+</div>
+<div class="absolute inset-0 ink-border pointer-events-none"></div>
+</div>
+<div class="bg-white h-32 p-3 group hover:bg-indigo-50 transition-colors relative cursor-pointer">
+<span class="font-headline-md font-bold comic-text">6</span>
+</div>
+<div class="bg-white h-32 p-3 group hover:bg-indigo-50 transition-colors relative cursor-pointer">
+<span class="font-headline-md font-bold comic-text">7</span>
+</div>
+<div class="bg-white h-32 p-3 group hover:bg-indigo-50 transition-colors relative cursor-pointer">
+<span class="font-headline-md font-bold comic-text">8</span>
+<div class="flex flex-wrap gap-1 mt-2">
+<div class="w-3 h-3 rounded-full bg-indigo-deep ink-border"></div>
+</div>
+</div>
+<div class="bg-white h-32 p-3 group hover:bg-indigo-50 transition-colors relative cursor-pointer">
+<span class="font-headline-md font-bold comic-text">9</span>
+</div>
+<!-- Row 3 (Abbreviated for brevity) -->
+<script>
+                            // Generate remaining cells
+                            const grid = document.querySelector('.grid.gap-\\[2px\\]');
+                            for(let i=10; i<=31; i++) {
+                                const cell = document.createElement('div');
+                                cell.className = "bg-white h-32 p-3 group hover:bg-indigo-50 transition-colors relative cursor-pointer";
+                                cell.innerHTML = `<span class="font-headline-md font-bold comic-text">${i}</span>`;
+                                if (i % 4 === 0) {
+                                    cell.innerHTML += `<div class="flex flex-wrap gap-1 mt-2"><div class="w-3 h-3 rounded-full bg-xp-gold ink-border"></div></div>`;
+                                }
+                                grid.appendChild(cell);
+                            }
+                        </script>
+</div>
+</div>
+</section>
+<!-- Right Side: Agenda Panel -->
+<aside class="w-80 border-l-2 border-black bg-surface-container-low flex flex-col p-6 agenda-scroll overflow-y-auto">
+<div class="mb-8">
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mb-1">Today's Focus</p>
+<h2 class="font-headline-md font-extrabold comic-text">MARCH 5</h2>
+</div>
+<div class="space-y-6">
+<!-- School Category -->
+<div>
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-indigo-deep">school</span>
+<h3 class="font-bold comic-text text-sm">SCHOOL QUESTS</h3>
+</div>
+<div class="space-y-3">
+<div class="bg-white ink-border p-3 pop-art-shadow hover:-translate-y-1 transition-transform cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-bold comic-text leading-tight">Advanced Algorithms Midterm</h4>
+<span class="bg-xp-gold text-[10px] font-bold px-2 py-0.5 ink-border">+500 XP</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="text-xs font-bold opacity-60">10:00 AM - 12:00 PM</span>
+</div>
+</div>
+<div class="bg-white ink-border p-3 pop-art-shadow hover:-translate-y-1 transition-transform cursor-pointer group">
+<h4 class="font-bold comic-text leading-tight">Physics Lab Write-up</h4>
+<div class="mt-2 h-1 bg-surface-container-high overflow-hidden">
+<div class="h-full bg-indigo-deep w-3/4"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Habits Category -->
+<div>
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-xp-gold">fitness_center</span>
+<h3 class="font-bold comic-text text-sm">DAILY RECURRING</h3>
+</div>
+<div class="space-y-3">
+<label class="flex items-center gap-3 bg-white ink-border p-3 cursor-pointer select-none">
+<input class="w-5 h-5 ink-border text-indigo-deep focus:ring-0 focus:ring-offset-0" type="checkbox"/>
+<span class="font-bold comic-text text-sm">Hydration Goal (2L)</span>
+<span class="ml-auto text-xs font-bold text-xp-gold">+50 XP</span>
+</label>
+<label class="flex items-center gap-3 bg-white ink-border p-3 cursor-pointer select-none">
+<input checked="" class="w-5 h-5 ink-border text-indigo-deep focus:ring-0 focus:ring-offset-0" type="checkbox"/>
+<span class="font-bold comic-text text-sm line-through opacity-50">Morning Meditation</span>
+<span class="ml-auto text-xs font-bold text-xp-gold">+50 XP</span>
+</label>
+</div>
+</div>
+<!-- Notes/AI Interaction -->
+<div class="bg-black text-white p-4 ink-border shadow-[4px_4px_0px_0px_#feae2c]">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-xp-gold" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<p class="text-[10px] font-bold tracking-widest uppercase">PARKER SAYS:</p>
+</div>
+<p class="font-body-md text-sm italic">"High energy detected for your 10 AM slot. Keep the momentum, Ace!"</p>
+</div>
+</div>
+<div class="mt-auto pt-8">
+<button class="w-full border-2 border-black border-dashed p-4 font-bold comic-text text-sm hover:bg-white transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add_circle</span>
+                        NEW QUEST
+                    </button>
+</div>
+</aside>
+</div>
+</main>
+<!-- FAB for Quick Capture -->
+<button class="fixed bottom-margin-desktop right-margin-desktop w-16 h-16 bg-xp-gold ink-border rounded-none pop-art-shadow flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined text-3xl font-black">bolt</span>
+</button>
+<script>
+        // Micro-interactions for calendar cells
+        document.querySelectorAll('.grid > div').forEach(cell => {
+            cell.addEventListener('mousedown', () => {
+                cell.classList.add('translate-x-0.5', 'translate-y-0.5');
+            });
+            cell.addEventListener('mouseup', () => {
+                cell.classList.remove('translate-x-0.5', 'translate-y-0.5');
+            });
+        });
+    </script>
+</body></html>

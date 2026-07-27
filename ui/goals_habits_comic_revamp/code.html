@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Parker | Goals &amp; Habits</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Hanken+Grotesk:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed": "#351000",
+                    "surface-container-low": "#f4f4f2",
+                    "surface-muted": "#EDEDEA",
+                    "primary-fixed": "#e2dfff",
+                    "secondary-container": "#feae2c",
+                    "on-primary": "#ffffff",
+                    "surface-container-high": "#e8e8e6",
+                    "border-hairline": "#E5E5E2",
+                    "outline-variant": "#c7c4d8",
+                    "surface-variant": "#e2e3e1",
+                    "secondary-fixed-dim": "#ffb955",
+                    "on-secondary": "#ffffff",
+                    "outline": "#777587",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface": "#1a1c1b",
+                    "on-error-container": "#93000a",
+                    "on-primary-container": "#dad7ff",
+                    "error": "#ba1a1a",
+                    "inverse-surface": "#2f3130",
+                    "surface-container-highest": "#e2e3e1",
+                    "surface-dim": "#dadad8",
+                    "surface-bright": "#f9f9f7",
+                    "primary-container": "#4f46e5",
+                    "on-tertiary-container": "#ffd2be",
+                    "background": "#f9f9f7",
+                    "tertiary-fixed-dim": "#ffb695",
+                    "tertiary": "#7e3000",
+                    "inverse-primary": "#c3c0ff",
+                    "on-secondary-container": "#6b4500",
+                    "on-secondary-fixed": "#291800",
+                    "inverse-on-surface": "#f1f1ef",
+                    "on-primary-fixed-variant": "#3323cc",
+                    "xp-gold": "#F5A623",
+                    "primary-fixed-dim": "#c3c0ff",
+                    "on-tertiary-fixed-variant": "#7b2f00",
+                    "tertiary-container": "#a44100",
+                    "surface-tint": "#4d44e3",
+                    "error-container": "#ffdad6",
+                    "on-error": "#ffffff",
+                    "surface": "#f9f9f7",
+                    "indigo-deep": "#4F46E5",
+                    "on-secondary-fixed-variant": "#633f00",
+                    "secondary-fixed": "#ffddb4",
+                    "on-primary-fixed": "#0f0069",
+                    "secondary": "#835500",
+                    "on-surface-variant": "#464555",
+                    "on-background": "#1a1c1b",
+                    "tertiary-fixed": "#ffdbcc",
+                    "surface-container": "#eeeeec",
+                    "primary": "#3525cd"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "max-width-content": "1100px",
+                    "gutter": "24px",
+                    "sidebar-expanded": "240px",
+                    "margin-desktop": "48px",
+                    "margin-mobile": "16px",
+                    "sidebar-width": "64px"
+            },
+            "fontFamily": {
+                    "label-xp": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "body-lg": ["Inter"],
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "display-hero": ["Hanken Grotesk"],
+                    "label-caps": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "label-xp": ["14px", {"lineHeight": "1.0", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "headline-lg": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "display-hero": ["72px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                    "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-md": ["15px", {"lineHeight": "1.5", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f9f9f7; color: #1a1c1b; }
+        .pop-card {
+            border: 3px solid #1a1c1b;
+            box-shadow: 6px 6px 0px 0px #1a1c1b;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .pop-card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px 0px #1a1c1b;
+        }
+        .pop-card:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px 0px #1a1c1b;
+        }
+        .halftone {
+            background-image: radial-gradient(#1a1c1b 1px, transparent 1px);
+            background-size: 4px 4px;
+            opacity: 0.15;
+        }
+        .habit-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #1a1c1b;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .habit-dot.active {
+            background-color: #F5A623;
+            box-shadow: 2px 2px 0px 0px #1a1c1b;
+            transform: scale(1.1);
+        }
+        .ink-header {
+            -webkit-text-stroke: 1px #1a1c1b;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .sidebar-expanded:hover {
+            width: 240px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex overflow-x-hidden">
+<!-- SideNavBar -->
+<aside class="w-sidebar-width hover:w-sidebar-expanded transition-all duration-300 h-screen sticky left-0 top-0 border-r border-border-hairline bg-surface flex flex-col py-unit-4 overflow-hidden z-50 group">
+<div class="px-4 mb-8 flex flex-col items-center group-hover:items-start transition-all">
+<div class="w-10 h-10 mb-2 overflow-hidden rounded-lg border-2 border-on-surface">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhKa-xvd4Fh3lzswWzbTZz04Hii2FSX1s-p9jGnj-v3RLWG49J-SOUORppW_9ZRt1zzfXK3xEwCSoC5KwFdAs6yyU4AYeVPpbzQ8X_7WpkLX4JO0st8FJeTgKTKJmdZk2g6leFCNLOl32Xm-sUG31agBTQdIovvkBNsVrY41-xnqrmtCzn4cLLvLZ872pwPkUj8PlqeNQ0IlwOPWUaWDpVrF9EwQFqtNqW6Qf2y7Sh992dVIcWSE-UVN3gyUGf7aI3enk0DeSEYBw"/>
+</div>
+<div class="hidden group-hover:block opacity-0 group-hover:opacity-100 transition-opacity">
+<h2 class="font-headline-md text-headline-md font-bold text-primary">Parker</h2>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Level 24 Productivity Ace</p>
+</div>
+</div>
+<nav class="flex-1 px-3 space-y-2">
+<!-- Active: Goals & Habits -->
+<a class="flex items-center gap-4 p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-lowest transition-colors" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-lowest transition-colors" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-body-md text-body-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Chat</span>
+</a>
+<a class="flex items-center gap-4 p-2 rounded-lg text-primary bg-surface-container-low border-l-4 border-primary font-bold" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="workspace_premium" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+<span class="font-body-md text-body-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Goals &amp; Habits</span>
+</a>
+<a class="flex items-center gap-4 p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-lowest transition-colors" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="calendar_month">calendar_month</span>
+<span class="font-body-md text-body-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Calendar</span>
+</a>
+<a class="flex items-center gap-4 p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-lowest transition-colors" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="person">person</span>
+<span class="font-body-md text-body-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Profile</span>
+</a>
+</nav>
+<div class="px-3 pt-4 border-t border-border-hairline space-y-2">
+<button class="w-full flex items-center justify-center group-hover:justify-start gap-4 p-2 rounded-lg bg-indigo-deep text-white font-bold pop-card mb-4 overflow-hidden relative">
+<span class="material-symbols-outlined shrink-0" data-icon="add">add</span>
+<span class="whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity text-sm">Quick Capture</span>
+</button>
+<a class="flex items-center gap-4 p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Settings</span>
+</a>
+<a class="flex items-center gap-4 p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="help">help</span>
+<span class="font-body-md text-body-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Help</span>
+</a>
+</div>
+</aside>
+<div class="flex-1 flex flex-col relative min-w-0">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-sidebar-width w-full z-40 bg-surface/80 backdrop-blur-md border-b border-border-hairline h-16 transition-all duration-300">
+<div class="flex justify-between items-center h-full px-margin-desktop w-full max-w-max-width-content mx-auto">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<img class="h-8 w-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqz6p-dXO2TZxfMYyqLWBm-24XleuBYDlZxuXHdyyYIl82JM81FfPTYh2Sg0AYp8ODoPqFv07IgrKHvIVT0yRwM-EXNk_80lTGnQ3I9SbhV-lSrQHSSHEXh7tlMncAawHUuFHa4Y3jV2H_f4zTdkhfi-5JUzGb_TAuix30-J8Vm3tUehgucxrdAQM1HddA7xvP-oA4uUfWuIj07Yw5UbcWJmDOsCDqAS-tYGq8ESVGEs83rc0CV1H1FaBdR1Qw3k46JpsM-rsvOwM"/>
+<h1 class="font-headline-md text-headline-md font-extrabold text-on-surface tracking-tight">PARKER</h1>
+</div>
+<nav class="hidden md:flex gap-6">
+<a class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors" href="#">Focus</a>
+<a class="font-label-caps text-label-caps uppercase tracking-widest text-primary border-b-2 border-primary pb-1" href="#">Quests</a>
+<a class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors" href="#">Archive</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex bg-secondary-container/20 px-3 py-1 rounded-full border-2 border-secondary-container items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="bolt" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="text-secondary font-bold text-sm">Streak: 12</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary p-2" data-icon="notifications">notifications</button>
+<div class="w-8 h-8 rounded-full border-2 border-on-surface overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist 3D character portrait of a professional student, short dark hair, wearing a stylish navy blue tech-wear jacket, soft rim lighting, set against a solid off-white studio background. The style is high-end digital art with crisp textures and vibrant colors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAewmRWMeERswfKSLDd1sJLgDv5h7agwSMhJLhuWJz94wwziCn0OZLIUznblV8LKc3ir2CpD5fkd4MROLvKgUOgz3zA4vZvtxCPUEevj-KauST0IaZ-1elGpUN7PIT4HvUkGMWNJJcL_PfPo7u2LcWzNYYbhc6q6VV4qcFv0EFiTnktYQIAouSmphGQiokyiqqVbdKquJNEPBarYexbsKZb_-RGoRx2t2E7o0GJcUPVhvU5sVfZbl0TrrxKrxhxqzbnZJampiyFwVY"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="mt-20 px-margin-desktop pb-12 w-full max-w-max-width-content mx-auto">
+<div class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h2 class="font-display-hero text-display-hero ink-header mb-2">QUOTAS &amp; HABITS</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Your momentum for Week 42. Stay sharp.</p>
+</div>
+<div class="flex gap-2">
+<button class="pop-card bg-xp-gold px-6 py-2 font-bold uppercase tracking-wider flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+                        Sync Habits
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Content -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Main Goals Column -->
+<div class="md:col-span-8 space-y-6">
+<h3 class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="track_changes">track_changes</span> Active Sprints
+                    </h3>
+<!-- Goal Card 1 -->
+<div class="pop-card bg-white p-6 relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="font-headline-md text-headline-md mb-1">Advanced Data Structures</h4>
+<p class="text-on-surface-variant text-sm italic">Finish Module 4: Trees &amp; Graphs</p>
+</div>
+<div class="bg-xp-gold px-3 py-1 rounded-full border-2 border-on-surface font-label-xp text-label-xp flex items-center gap-1">
+                                +150 XP
+                            </div>
+</div>
+<div class="relative h-6 bg-surface-container-high border-2 border-on-surface rounded-full overflow-hidden">
+<div class="absolute inset-0 halftone"></div>
+<div class="h-full bg-indigo-deep w-[65%] border-r-2 border-on-surface relative">
+<div class="absolute inset-0 halftone opacity-30"></div>
+</div>
+</div>
+<div class="flex justify-between mt-2 text-xs font-bold text-on-surface uppercase tracking-wider">
+<span>65% Complete</span>
+<span>Due in 3 Days</span>
+</div>
+</div>
+<!-- Goal Card 2 -->
+<div class="pop-card bg-white p-6 relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="font-headline-md text-headline-md mb-1">Portfolio Overhaul</h4>
+<p class="text-on-surface-variant text-sm italic">Render Case Study: Neumorphic Dash</p>
+</div>
+<div class="bg-xp-gold px-3 py-1 rounded-full border-2 border-on-surface font-label-xp text-label-xp flex items-center gap-1">
+                                +300 XP
+                            </div>
+</div>
+<div class="relative h-6 bg-surface-container-high border-2 border-on-surface rounded-full overflow-hidden">
+<div class="absolute inset-0 halftone"></div>
+<div class="h-full bg-indigo-deep w-[25%] border-r-2 border-on-surface relative">
+<div class="absolute inset-0 halftone opacity-30"></div>
+</div>
+</div>
+<div class="flex justify-between mt-2 text-xs font-bold text-on-surface uppercase tracking-wider">
+<span>25% Complete</span>
+<span>Project Deadline: Oct 15</span>
+</div>
+</div>
+<!-- Goal Card 3 -->
+<div class="pop-card bg-white p-6 border-dashed opacity-80 border-2 border-on-surface-variant flex flex-col items-center justify-center py-12 group cursor-pointer">
+<span class="material-symbols-outlined text-4xl text-on-surface-variant mb-2 group-hover:scale-110 transition-transform" data-icon="add_circle">add_circle</span>
+<p class="font-label-caps text-label-caps uppercase tracking-widest">Launch New Sprint</p>
+</div>
+</div>
+<!-- Habit Sidebar Column -->
+<div class="md:col-span-4 space-y-6">
+<h3 class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="rebase_edit">rebase_edit</span> Habit Streaks
+                    </h3>
+<!-- Habit Tracker List -->
+<div class="space-y-4">
+<!-- Habit 1 -->
+<div class="pop-card bg-white p-4">
+<div class="flex items-center justify-between mb-4">
+<span class="font-bold text-on-surface">6am Wake Up</span>
+<span class="text-xp-gold font-bold">12 🔥</span>
+</div>
+<div class="flex justify-between px-1">
+<div class="habit-dot active" title="Monday"></div>
+<div class="habit-dot active" title="Tuesday"></div>
+<div class="habit-dot active" title="Wednesday"></div>
+<div class="habit-dot active" title="Thursday"></div>
+<div class="habit-dot active" title="Friday"></div>
+<div class="habit-dot bg-surface-container-low" title="Saturday"></div>
+<div class="habit-dot bg-surface-container-low" title="Sunday"></div>
+</div>
+</div>
+<!-- Habit 2 -->
+<div class="pop-card bg-white p-4">
+<div class="flex items-center justify-between mb-4">
+<span class="font-bold text-on-surface">Deep Work (2h)</span>
+<span class="text-xp-gold font-bold">5 🔥</span>
+</div>
+<div class="flex justify-between px-1">
+<div class="habit-dot active" title="Monday"></div>
+<div class="habit-dot active" title="Tuesday"></div>
+<div class="habit-dot active" title="Wednesday"></div>
+<div class="habit-dot active" title="Thursday"></div>
+<div class="habit-dot active" title="Friday"></div>
+<div class="habit-dot bg-surface-container-low" title="Saturday"></div>
+<div class="habit-dot bg-surface-container-low" title="Sunday"></div>
+</div>
+</div>
+<!-- Habit 3 -->
+<div class="pop-card bg-white p-4">
+<div class="flex items-center justify-between mb-4">
+<span class="font-bold text-on-surface">Post-Work Run</span>
+<span class="text-xp-gold font-bold">0 🔥</span>
+</div>
+<div class="flex justify-between px-1">
+<div class="habit-dot bg-surface-container-low" title="Monday"></div>
+<div class="habit-dot active" title="Tuesday"></div>
+<div class="habit-dot bg-surface-container-low" title="Wednesday"></div>
+<div class="habit-dot active" title="Thursday"></div>
+<div class="habit-dot bg-surface-container-low" title="Friday"></div>
+<div class="habit-dot bg-surface-container-low" title="Saturday"></div>
+<div class="habit-dot bg-surface-container-low" title="Sunday"></div>
+</div>
+</div>
+<!-- Quick Action Card -->
+<div class="pop-card bg-on-surface text-white p-6 relative overflow-hidden">
+<div class="absolute -right-4 -bottom-4 halftone opacity-40 rotate-12 w-24 h-24"></div>
+<h4 class="font-headline-md text-headline-md mb-2 relative z-10 italic">Parker AI Coaching</h4>
+<p class="text-sm opacity-80 mb-4 relative z-10">"You're 15% more productive when you finish 'Deep Work' before noon. Want to reschedule?"</p>
+<button class="w-full bg-white text-on-surface py-2 font-bold rounded relative z-10 hover:bg-xp-gold transition-colors">Open Chat</button>
+</div>
+<!-- Mini Stats Sticker -->
+<div class="pop-card bg-[#FF6B6B] p-4 rotate-2">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-white text-3xl" data-icon="military_tech" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+<div>
+<p class="text-[10px] uppercase font-bold text-white/80">Weekly Rank</p>
+<p class="text-xl font-extrabold text-white">TOP 5%</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Call to Action for Mobile (Hidden on Desktop) -->
+<div class="md:hidden mt-8 sticky bottom-4">
+<button class="w-full pop-card bg-indigo-deep text-white py-4 font-bold flex items-center justify-center gap-3">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+                    COMPLETE DAILY CHECK-IN
+                </button>
+</div>
+</main>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        // Toggle habit dots for demo purposes
+        document.querySelectorAll('.habit-dot').forEach(dot => {
+            dot.addEventListener('click', function() {
+                this.classList.toggle('active');
+                this.classList.toggle('bg-surface-container-low');
+            });
+        });
+
+        // Add a subtle parallax to the "stickers" on scroll
+        window.addEventListener('scroll', () => {
+            const stickers = document.querySelectorAll('.rotate-2, .-rotate-2');
+            const scrolled = window.pageYOffset;
+            stickers.forEach((el, index) => {
+                const speed = 0.05 + (index * 0.02);
+                el.style.transform = `translateY(${scrolled * speed}px) rotate(${index % 2 === 0 ? 2 : -2}deg)`;
+            });
+        });
+    </script>
+</body></html>

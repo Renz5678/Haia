@@ -41,3 +41,31 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# Python Linters, Formatters & Test Coverage
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Secrets & API Credentials
+*.pem
+*.key
+credentials.json
+client_secret.json
+google-credentials.json
+
+# Next.js & Node.js Caches / Deployment
+web/.eslintcache
+web/.turbo/
+web/.vercel/
+
+# Database Files
+*.sqlite3
+*.db
+
+# JS/E2E Testing Artifacts
+web/coverage/
+web/playwright-report/
+web/test-results/

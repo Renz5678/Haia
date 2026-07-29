@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Depends, Request
+from datetime import datetime, timedelta, timezone
+import secrets
 from core.dependencies import get_current_user
 from core.config import get_settings
 
@@ -48,3 +50,22 @@ async def email_inbound(request: Request):
     """
     # TODO(phase-8): validate signature, extract body + attachments, pass to parsing pipeline
     return {"ok": True}
+
+
+@router.post("/telegram/link-code")
+def generate_telegram_link_code(user: dict = Depends(get_current_user)):
+    from core.supabase import get_supabase_service_client
+    client = get_supabase_service_client()
+    
+    code = secrets.token_hex(3).upper()
+    expires_at = (datetime.now(timezone.utc) + timedelta(minutes=15)).isoformat()
+    
+    payload = {
+        "user_id": user["id"],
+        "service": "telegram",
+        "is_active": False,
+        "external_id": None,
+        "metadata": {"link_code": code, "expires_at": expires_at}
+    }
+    client.schema("haia").table("integrations").upsert(payload).execute()
+    return {"link_code": code, "expires_in_minutes": 15}

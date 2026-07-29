@@ -1,49 +1,159 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    @apply bg-surface text-on-surface font-body-md overflow-x-hidden;
   }
 }
 
-html {
-  height: 100%;
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+@layer utilities {
+  .comic-border {
+    border: 2px solid #1a1c1b;
+  }
+  .comic-shadow {
+    box-shadow: 6px 6px 0px 0px #1a1c1b;
+  }
+  .comic-shadow-sm {
+    box-shadow: 4px 4px 0px 0px #1a1c1b;
+  }
+  .halftone-bg {
+    background-image: radial-gradient(#1a1c1b 1px, transparent 0);
+    background-size: 8px 8px;
+    opacity: 0.05;
+  }
+  .custom-checkbox:checked {
+    background-color: #4F46E5;
+    border-color: #1a1c1b;
+  }
+  .anton-text {
+    @apply font-anton uppercase;
+  }
+  
+  .paper-texture {
+    background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+  }
+  .bubble-bot {
+    position: relative;
+    border: 3px solid #1a1c1b;
+    box-shadow: 4px 4px 0px 0px #1a1c1b;
+  }
+  .tail-bot {
+    position: absolute;
+    bottom: 0;
+    left: -10px;
+    width: 20px;
+    height: 20px;
+    background: inherit;
+    border-left: 3px solid #1a1c1b;
+    border-bottom: 3px solid #1a1c1b;
+    transform: skewX(45deg);
+    z-index: -1;
+  }
+  .bubble-user {
+    position: relative;
+    border: 3px solid #1a1c1b;
+    box-shadow: -4px 4px 0px 0px #1a1c1b;
+  }
+  .tail-user {
+    position: absolute;
+    bottom: 0;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    background: inherit;
+    border-right: 3px solid #1a1c1b;
+    border-bottom: 3px solid #1a1c1b;
+    transform: skewX(-45deg);
+    z-index: -1;
+  }
+  .ink-border {
+    border: 3px solid #1a1c1b;
+  }
+  
+  .pop-art-shadow {
+    box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 1);
+  }
+  .ink-border-2 {
+    border: 2px solid black;
+  }
+  .halftone-pattern {
+    background-image: radial-gradient(rgba(0,0,0,0.1) 15%, transparent 16%);
+    background-size: 8px 8px;
+  }
+  .active-day-ink {
+    background-color: #4F46E5;
+    color: white;
+    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  }
+  .comic-text {
+    @apply font-headline-md uppercase tracking-tight;
+  }
+  .agenda-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+  .agenda-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  .agenda-scroll::-webkit-scrollbar-thumb {
+    background: #000;
+    border-radius: 0;
+  }
+  
+  .pop-card {
+    border: 3px solid #1a1c1b;
+    box-shadow: 6px 6px 0px 0px #1a1c1b;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  .pop-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0px 0px #1a1c1b;
+  }
+  .pop-card:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px 0px #1a1c1b;
+  }
+  .halftone {
+    background-image: radial-gradient(#1a1c1b 1px, transparent 1px);
+    background-size: 4px 4px;
+    opacity: 0.15;
+  }
+  .habit-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #1a1c1b;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .habit-dot.active {
+    background-color: #F5A623;
+    box-shadow: 2px 2px 0px 0px #1a1c1b;
+    transform: scale(1.1);
+  }
+  .ink-header {
+    -webkit-text-stroke: 1px #1a1c1b;
+  }
+  
+  .halftone-bg {
+    background-image: radial-gradient(circle, #000 1px, transparent 1px);
+    background-size: 4px 4px;
+    opacity: 0.05;
+  }
+  .cel-shade-amber {
+    filter: drop-shadow(0 0 8px rgba(254, 174, 44, 0.4));
+  }
+  .comic-panel-clip {
+    clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);
+  }
+  
+  .ink-line {
+    border-bottom: 1px solid #1a1c1b;
+  }
+  .pop-shadow {
+    box-shadow: 4px 4px 0px 0px #1a1c1b;
+  }
+  .pop-shadow-active {
+    box-shadow: 2px 2px 0px 0px #1a1c1b;
+    transform: translate(2px, 2px);
   }
 }

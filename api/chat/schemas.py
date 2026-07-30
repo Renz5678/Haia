@@ -14,9 +14,9 @@ class ChatMessageResponse(BaseModel):
     role: str
     content: str
     channel: str
-    intent: Optional[str]
-    linked_item_type: Optional[str]
-    linked_item_id: Optional[UUID4]
-    created_at: datetime
+    intent: Optional[str] = None
+    linked_item_type: Optional[str] = None
+    linked_item_id: Optional[UUID4] = None
+    created_at: Optional[datetime] = None
 
     model_config = {"from_attributes": True}

@@ -2,18 +2,28 @@
 
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LayoutDashboard, GraduationCap, Package, Users, Settings } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { LayoutDashboard, CheckSquare, RefreshCw, Target, Calendar, MessageSquare, Settings, LogOut } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  };
 
   const links = [
-    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Academy", href: "/academy", icon: GraduationCap },
-    { name: "Inventory", href: "/inventory", icon: Package },
-    { name: "Guilds", href: "/guilds", icon: Users },
-    { name: "Settings", href: "/settings", icon: Settings },
+    { name: "Home", href: "/dashboard", icon: LayoutDashboard },
+    { name: "Quests", href: "/quests", icon: CheckSquare },
+    { name: "Habits", href: "/habits", icon: RefreshCw },
+    { name: "Goals", href: "/goals", icon: Target },
+    { name: "Schedule", href: "/schedule", icon: Calendar },
+    { name: "Haia", href: "/chat", icon: MessageSquare },
   ];
 
   return (
@@ -56,7 +66,25 @@ export default function Sidebar() {
         })}
       </nav>
       
-      <div className="mt-auto pt-4 border-t-2 border-on-surface/10">
+      <div className="mt-auto pt-4 border-t-2 border-on-surface/10 space-y-2">
+        <Link
+          href="/settings"
+          className={`flex items-center gap-4 px-4 py-2 transition-all rounded-lg ${
+            pathname === "/settings"
+              ? "bg-primary text-on-primary border-2 border-on-surface shadow-[4px_4px_0px_0px_rgba(20,27,43,1)] active:scale-[0.98]"
+              : "text-on-surface-variant hover:bg-surface-container-high border-2 border-transparent hover:border-transparent"
+          }`}
+        >
+          <Settings className="shrink-0" size={20} />
+          <span className="font-label-md font-bold">Settings</span>
+        </Link>
+        <button
+          onClick={handleSignOut}
+          className="w-full flex items-center gap-4 px-4 py-2 transition-all rounded-lg text-error hover:bg-error-container border-2 border-transparent hover:border-transparent text-left"
+        >
+          <LogOut className="shrink-0" size={20} />
+          <span className="font-label-md font-bold">Sign Out</span>
+        </button>
         <p className="px-4 py-2 text-[10px] uppercase font-bold text-on-surface-variant opacity-50">v2.4.0 Comics Edition</p>
       </div>
     </aside>

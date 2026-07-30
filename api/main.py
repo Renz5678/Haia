@@ -19,6 +19,7 @@ from parsing.router import router as parsing_router
 from integrations.router import router as integrations_router
 from subjects.router import router as subjects_router
 from users.router import router as users_router
+from auth.router import router as auth_router
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -65,6 +66,7 @@ app.include_router(parsing_router,      prefix=PREFIX)
 app.include_router(integrations_router, prefix=PREFIX)
 app.include_router(subjects_router,     prefix=PREFIX)
 app.include_router(users_router,        prefix=PREFIX)
+app.include_router(auth_router,         prefix=PREFIX)
 
 
 @app.get("/health")

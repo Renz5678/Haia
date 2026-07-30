@@ -69,22 +69,16 @@ async def handle_telegram_webhook(payload: dict):
 
     user_id = integration[0]["user_id"]
     
-    # Parse intent and save
-    req = ParseTextRequest(raw_input=text, channel="telegram")
-    res = parse_text(user_id, req)
-    
-    # Formulate reply based on what was saved
-    if res.intent == "task" and res.parsed_type == "task":
-        reply = f"✅ Task saved: {res.data.get('title')}"
-    elif res.intent == "habit" and res.parsed_type == "habit":
-        reply = f"🔁 Habit created: {res.data.get('name')}"
-    elif res.intent == "goal" and res.parsed_type == "goal":
-        reply = f"🎯 Goal set: {res.data.get('title')}"
-    elif res.intent == "conversational":
-        # For now, just echo. Unified AI Chat is Step 8
-        reply = "I hear you! Conversational AI is coming in the next update."
-    else:
-        reply = "I couldn't quite understand that. Could you rephrase?"
+    from chat.schemas import ChatMessageCreate
+    from chat.service import process_message
+
+    msg_data = ChatMessageCreate(content=text, channel="telegram")
+    try:
+        res = process_message(user_id, msg_data)
+        reply = res.get("content", "I couldn't quite understand that. Could you rephrase?")
+    except Exception as e:
+        logger.error(f"Error processing telegram message: {e}")
+        reply = "I'm having trouble processing that right now. Please try again later."
 
     await _send_telegram_message(chat_id, reply)
 

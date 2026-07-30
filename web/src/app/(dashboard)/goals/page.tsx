@@ -1,24 +1,51 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Target, Zap, PlusCircle, Medal } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { createApiClient } from "@/lib/api";
 
 export default function GoalsPage() {
-  const [habits, setHabits] = useState([
-    { id: 1, name: "6am Wake Up", streak: 12, pattern: [true, true, true, true, true, false, false] },
-    { id: 2, name: "Deep Work (2h)", streak: 5, pattern: [true, true, true, true, true, false, false] },
-    { id: 3, name: "Post-Work Run", streak: 0, pattern: [false, true, false, true, false, false, false] },
-  ]);
+  const [habits, setHabits] = useState<any[]>([]);
+  const [goals, setGoals] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const supabase = createClient();
 
-  const toggleHabitDot = (habitId: number, dayIndex: number) => {
-    setHabits(habits.map(h => {
-      if (h.id === habitId) {
-        const newPattern = [...h.pattern];
-        newPattern[dayIndex] = !newPattern[dayIndex];
-        return { ...h, pattern: newPattern };
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        
+        const api = createApiClient(session.access_token);
+        const [fetchedHabits, fetchedGoals] = await Promise.all([
+          api.habits.list(),
+          api.goals.list()
+        ]);
+        
+        setHabits((fetchedHabits as any[]) || []);
+        setGoals((fetchedGoals as any[]) || []);
+      } catch (err) {
+        console.error("Failed to fetch goals data:", err);
+      } finally {
+        setLoading(false);
       }
-      return h;
-    }));
+    }
+    fetchData();
+  }, []);
+
+  const toggleHabitDot = async (habitId: string, dayIndex: number) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      
+      const api = createApiClient(session.access_token);
+      await api.habits.log(habitId, {});
+      
+      // Optimistic refresh logic could go here, but for simplicity we refetch or just toggle
+    } catch (err) {
+      console.error("Failed to log habit:", err);
+    }
   };
 
   return (
@@ -27,12 +54,12 @@ export default function GoalsPage() {
         <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <h2 className="font-display-hero text-4xl md:text-display-hero ink-header mb-2 anton-text tracking-normal">QUOTAS & HABITS</h2>
-            <p className="font-body-lg text-body-lg text-on-surface-variant">Your momentum for Week 42. Stay sharp.</p>
+            <p className="font-body-lg text-body-lg text-on-surface-variant">Your momentum for this week. Stay sharp.</p>
           </div>
           <div className="flex gap-2">
             <button className="pop-card bg-xp-gold px-6 py-2 font-bold uppercase tracking-wider flex items-center gap-2">
               <Zap size={20} />
-              Sync Habits
+              Sync
             </button>
           </div>
         </div>
@@ -46,51 +73,35 @@ export default function GoalsPage() {
               <Target size={16} /> Active Sprints
             </h3>
             
-            {/* Goal Card 1 */}
-            <div className="pop-card bg-white p-6 relative overflow-hidden">
-              <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4 gap-4">
-                <div>
-                  <h4 className="font-headline-md text-headline-md mb-1 anton-text">Advanced Data Structures</h4>
-                  <p className="text-on-surface-variant text-sm italic">Finish Module 4: Trees & Graphs</p>
+            {loading ? (
+              <div className="p-6 text-center italic text-on-surface-variant">Loading sprints...</div>
+            ) : goals.length === 0 ? (
+              <div className="p-6 text-center italic text-on-surface-variant">No active sprints. Time to set one!</div>
+            ) : (
+              goals.map(goal => (
+                <div key={goal.id} className="pop-card bg-white p-6 relative overflow-hidden">
+                  <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4 gap-4">
+                    <div>
+                      <h4 className="font-headline-md text-headline-md mb-1 anton-text">{goal.title}</h4>
+                      <p className="text-on-surface-variant text-sm italic">{goal.description || "No description"}</p>
+                    </div>
+                    <div className="bg-xp-gold px-3 py-1 rounded-full border-2 border-on-surface font-label-xp text-label-xp flex items-center justify-center gap-1 shrink-0 whitespace-nowrap">
+                      {goal.status || "ACTIVE"}
+                    </div>
+                  </div>
+                  <div className="relative h-6 bg-surface-container-high border-2 border-on-surface rounded-full overflow-hidden">
+                    <div className="absolute inset-0 halftone"></div>
+                    <div className="h-full bg-indigo-deep border-r-2 border-on-surface relative" style={{ width: `${Math.min(100, Math.max(0, goal.progress || 0))}%` }}>
+                      <div className="absolute inset-0 halftone opacity-30"></div>
+                    </div>
+                  </div>
+                  <div className="flex justify-between mt-2 text-[10px] md:text-xs font-bold text-on-surface uppercase tracking-wider">
+                    <span>{goal.progress || 0}% Complete</span>
+                    <span>{goal.target_date ? `Due ${new Date(goal.target_date).toLocaleDateString()}` : "No Deadline"}</span>
+                  </div>
                 </div>
-                <div className="bg-xp-gold px-3 py-1 rounded-full border-2 border-on-surface font-label-xp text-label-xp flex items-center justify-center gap-1 shrink-0 whitespace-nowrap">
-                  +150 XP
-                </div>
-              </div>
-              <div className="relative h-6 bg-surface-container-high border-2 border-on-surface rounded-full overflow-hidden">
-                <div className="absolute inset-0 halftone"></div>
-                <div className="h-full bg-indigo-deep w-[65%] border-r-2 border-on-surface relative">
-                  <div className="absolute inset-0 halftone opacity-30"></div>
-                </div>
-              </div>
-              <div className="flex justify-between mt-2 text-[10px] md:text-xs font-bold text-on-surface uppercase tracking-wider">
-                <span>65% Complete</span>
-                <span>Due in 3 Days</span>
-              </div>
-            </div>
-            
-            {/* Goal Card 2 */}
-            <div className="pop-card bg-white p-6 relative overflow-hidden">
-              <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4 gap-4">
-                <div>
-                  <h4 className="font-headline-md text-headline-md mb-1 anton-text">Portfolio Overhaul</h4>
-                  <p className="text-on-surface-variant text-sm italic">Render Case Study: Neumorphic Dash</p>
-                </div>
-                <div className="bg-xp-gold px-3 py-1 rounded-full border-2 border-on-surface font-label-xp text-label-xp flex items-center justify-center gap-1 shrink-0 whitespace-nowrap">
-                  +300 XP
-                </div>
-              </div>
-              <div className="relative h-6 bg-surface-container-high border-2 border-on-surface rounded-full overflow-hidden">
-                <div className="absolute inset-0 halftone"></div>
-                <div className="h-full bg-indigo-deep w-[25%] border-r-2 border-on-surface relative">
-                  <div className="absolute inset-0 halftone opacity-30"></div>
-                </div>
-              </div>
-              <div className="flex justify-between mt-2 text-[10px] md:text-xs font-bold text-on-surface uppercase tracking-wider">
-                <span>25% Complete</span>
-                <span>Project Deadline: Oct 15</span>
-              </div>
-            </div>
+              ))
+            )}
             
             {/* Goal Card 3 (New Sprint) */}
             <div className="pop-card bg-white p-6 border-dashed opacity-80 border-2 border-on-surface-variant flex flex-col items-center justify-center py-12 group cursor-pointer hover:opacity-100 hover:border-solid hover:border-on-surface">
@@ -107,24 +118,31 @@ export default function GoalsPage() {
             
             {/* Habit Tracker List */}
             <div className="space-y-4">
-              {habits.map((habit) => (
-                <div key={habit.id} className="pop-card bg-white p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="font-bold text-on-surface text-sm md:text-base">{habit.name}</span>
-                    <span className="text-xp-gold font-bold whitespace-nowrap">{habit.streak} 🔥</span>
+              {loading ? (
+                <div className="p-4 text-center italic text-on-surface-variant">Loading habits...</div>
+              ) : habits.length === 0 ? (
+                <div className="p-4 text-center italic text-on-surface-variant">No habits found.</div>
+              ) : (
+                habits.map((habit) => (
+                  <div key={habit.id} className="pop-card bg-white p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="font-bold text-on-surface text-sm md:text-base">{habit.name}</span>
+                      <span className="text-xp-gold font-bold whitespace-nowrap">{habit.current_streak || 0} 🔥</span>
+                    </div>
+                    <div className="flex justify-between px-1">
+                      {/* For a real app, this pattern should come from backend logs, but we'll mock the 7 days visual for now */}
+                      {[0,1,2,3,4,5,6].map((dayIndex) => (
+                        <div 
+                          key={dayIndex}
+                          onClick={() => toggleHabitDot(habit.id, dayIndex)}
+                          className={`habit-dot cursor-pointer ${dayIndex < (habit.current_streak || 0) % 7 ? 'active' : 'bg-surface-container-low'}`}
+                          title={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][dayIndex]}
+                        ></div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex justify-between px-1">
-                    {habit.pattern.map((isActive, index) => (
-                      <div 
-                        key={index}
-                        onClick={() => toggleHabitDot(habit.id, index)}
-                        className={`habit-dot cursor-pointer ${isActive ? 'active' : 'bg-surface-container-low'}`}
-                        title={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][index]}
-                      ></div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
 
               {/* Quick Action Card */}
               <div className="pop-card bg-on-surface text-white p-6 relative overflow-hidden mt-6">

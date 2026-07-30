@@ -15,8 +15,8 @@ class UserResponse(BaseModel):
     timezone: str
     current_level: int
     total_xp: int
-    theme: str
-    created_at: datetime
-    updated_at: datetime
+    theme: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     model_config = {"from_attributes": True}

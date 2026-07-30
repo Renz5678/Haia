@@ -71,7 +71,7 @@ def process_message(user_id: str, data: ChatMessageCreate) -> dict:
     history = get_history(user_id, limit=5)
     
     # Just a simple text generation with context
-    model = _get_model("gemini-2.5-flash")
+    model = _get_model("gemini-flash-latest")
     prompt_template = _load_prompt("chat_reply")
     
     # We aren't fetching recent tasks/goals in the stub, just stats for brevity

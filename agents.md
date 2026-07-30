@@ -194,11 +194,11 @@ This section is the live record of what has been implemented. **Update it every 
 
 | # | Feature | Status | Date | Notes |
 |---|---|---|---|---|
-| 2.1 | Gemini client wrapper (`gemini_client.py`) | ⬜ | — | — |
-| 2.2 | Text → structured task parsing endpoint | ⬜ | — | Pydantic validation on Gemini output |
-| 2.3 | Telegram bot setup + webhook | ⬜ | — | — |
-| 2.4 | Telegram → parsing endpoint wiring | ⬜ | — | — |
-| 2.5 | Task saved to Supabase from bot input | ⬜ | — | — |
+| 2.1 | Gemini client wrapper (`gemini_client.py`) | ✅ | 2026-07-29 | Implemented text, vision, and embeddings in `gemini_client.py` |
+| 2.2 | Text → structured task parsing endpoint | ✅ | 2026-07-29 | Intent classification and schema validation implemented in `parsing/service.py` |
+| 2.3 | Telegram bot setup + webhook | 🔄 | 2026-07-29 | Webhook route exists, setup script exists |
+| 2.4 | Telegram → parsing endpoint wiring | 🔄 | 2026-07-29 | Basic logic implemented in `integrations/service.py` but needs end-to-end testing |
+| 2.5 | Task saved to Supabase from bot input | 🔄 | 2026-07-29 | Parsed object creation stubbed, full insert pending gamification integration |
 
 ---
 
@@ -206,15 +206,15 @@ This section is the live record of what has been implemented. **Update it every 
 
 | # | Feature | Status | Date | Notes |
 |---|---|---|---|---|
-| 3.1 | Auth flow (login / signup) on web | ⬜ | — | — |
-| 3.2 | Home tab — today's tasks, XP bar, streaks, quick-capture | ⬜ | — | — |
-| 3.3 | Quests tab — full task list, filters (School / Personal / All) | ⬜ | — | — |
-| 3.4 | Habits tab — recurring habits, streak counter, heatmap | ⬜ | — | — |
-| 3.5 | Goals tab — long-term targets, linked task roll-up | ⬜ | — | — |
-| 3.6 | Schedule tab — weekly timetable view, PNG export | ⬜ | — | — |
-| 3.7 | Haia chat tab — in-app AI chat thread | ⬜ | — | — |
-| 3.8 | Character Sheet — level, XP history, badges | ⬜ | — | — |
-| 3.9 | Settings & Integrations — Telegram link, Calendar, email address | ⬜ | — | — |
+| 3.1 | Auth flow (login / signup) on web | ⬜ | — | Pending implementation |
+| 3.2 | Home tab — today's tasks, XP bar, streaks, quick-capture | 🔄 | 2026-07-29 | Gamified UI scaffold built in `dashboard/page.tsx`, needs live data |
+| 3.3 | Quests tab — full task list, filters (School / Personal / All) | ⬜ | — | Needs to be built |
+| 3.4 | Habits tab — recurring habits, streak counter, heatmap | ⬜ | — | Needs to be built |
+| 3.5 | Goals tab — long-term targets, linked task roll-up | 🔄 | 2026-07-29 | UI stubbed in `goals` folder |
+| 3.6 | Schedule tab — weekly timetable view, PNG export | 🔄 | 2026-07-29 | UI stubbed in `calendar` folder |
+| 3.7 | Haia chat tab — in-app AI chat thread | 🔄 | 2026-07-29 | UI stubbed in `chat` folder |
+| 3.8 | Character Sheet — level, XP history, badges | 🔄 | 2026-07-29 | UI stubbed in `profile` folder |
+| 3.9 | Settings & Integrations — Telegram link, Calendar, email address | 🔄 | 2026-07-29 | UI stubbed in `settings` folder |
 
 ---
 
@@ -316,4 +316,4 @@ All variables below must be in `.env` (never committed). Keep `.env.example` upd
 
 ---
 
-*Last updated: 2026-07-27 — Phase 1 complete. All 7 foundation items done: DB schema applied to Supabase, RLS active, Auth trigger live, `.env.example` created, FastAPI scaffold up (`/api` with all domain stubs, Gemini client, versioned prompts), Next.js scaffold up (`/web` with App Router, TypeScript, Supabase SSR client, typed API client). Ready for Phase 2: Gemini text parsing endpoint.*
+*Last updated: 2026-07-29 — Phase 2 is heavily underway (parsing, Gemini client). Phase 3 UI scaffold is present but using mock data and missing Quests/Habits tabs. Phase 4, 5, 6, 7 have partial stubs. Moving forward with Phase A of new implementation plan to finalize Phase 3 and rewrite UI.*

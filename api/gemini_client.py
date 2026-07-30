@@ -35,7 +35,7 @@ def _load_prompt(name: str) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def _get_model(model_name: str = "gemini-3.5-flash") -> genai.GenerativeModel:
+def _get_model(model_name: str = "gemini-flash-latest") -> genai.GenerativeModel:
     settings = get_settings()
     genai.configure(api_key=settings.gemini_api_key)
     return genai.GenerativeModel(model_name)
@@ -121,7 +121,7 @@ async def parse_image_to_schema(
         "Respond with valid JSON only. No prose, no markdown fences."
     )
 
-    model = _get_model("gemini-3.5-flash")
+    model = _get_model("gemini-flash-latest")
     image_part = {"mime_type": mime_type, "data": image_bytes}
 
     try:

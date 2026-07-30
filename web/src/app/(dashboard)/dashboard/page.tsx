@@ -1,17 +1,51 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Check, AutoAwesome } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { createApiClient } from "@/lib/api";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function DashboardPage() {
-  const [tasks, setTasks] = useState([
-    { id: 1, title: "Finish Economics Chapter 4 Analysis", type: "SCHOOL", due: "DUE TODAY", xp: 150, checked: false },
-    { id: 2, title: "15m Meditation Habit", type: "PERSONAL", due: "DAILY GOAL", xp: 50, checked: false },
-    { id: 3, title: "Email Professor regarding Thesis", type: "SCHOOL", due: "URGENT", xp: 75, checked: false },
-  ]);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuthStore();
+  const supabase = createClient();
 
-  const toggleTask = (id: number) => {
-    setTasks(tasks.map(t => t.id === id ? { ...t, checked: !t.checked } : t));
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        
+        const api = createApiClient(session.access_token);
+        const [fetchedTasks, fetchedStats] = await Promise.all([
+          api.tasks.list({ task_status: "pending" }),
+          api.gamification.stats()
+        ]);
+        setTasks((fetchedTasks as any[]) || []);
+        setStats(fetchedStats);
+      } catch (err) {
+        console.error("Failed to fetch dashboard data:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  const toggleTask = async (id: number | string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      
+      const api = createApiClient(session.access_token);
+      await api.tasks.complete(id.toString());
+      setTasks(tasks.filter(t => t.id !== id));
+    } catch (err) {
+      console.error("Failed to complete task:", err);
+    }
   };
 
   return (
@@ -38,7 +72,7 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="text-on-surface-variant font-label-caps text-label-caps font-black italic">CURRENT STREAK</p>
-              <p className="font-headline-md text-headline-md text-on-surface anton-text">12 DAYS</p>
+              <p className="font-headline-md text-headline-md text-on-surface anton-text">{stats?.longest_streak || 0} DAYS</p>
             </div>
           </div>
 
@@ -49,7 +83,7 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="text-on-surface-variant font-label-caps text-label-caps font-black italic">TOTAL XP</p>
-              <p className="font-headline-md text-headline-md text-on-surface anton-text">14,250</p>
+              <p className="font-headline-md text-headline-md text-on-surface anton-text">{stats?.total_xp?.toLocaleString() || 0}</p>
             </div>
           </div>
 
@@ -60,7 +94,7 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="text-white/80 font-label-caps text-label-caps font-black italic">LEVEL PROGRESS</p>
-              <p className="font-headline-md text-headline-md anton-text">LEVEL 24 <span className="text-sm font-normal opacity-70 anton-text ml-2">ACE</span></p>
+              <p className="font-headline-md text-headline-md anton-text">LEVEL {stats?.current_level || 1} <span className="text-sm font-normal opacity-70 anton-text ml-2">ACE</span></p>
             </div>
           </div>
         </section>
@@ -84,36 +118,42 @@ export default function DashboardPage() {
                 <span className="text-on-surface font-black italic text-label-caps uppercase">{tasks.filter(t => !t.checked).length} REMAINING</span>
               </div>
 
-              {tasks.map(task => (
-                <div 
-                  key={task.id}
-                  className={`group bg-white p-6 rounded-lg comic-border flex items-center justify-between transition-all ${
-                    task.checked 
-                      ? 'opacity-60 translate-x-[4px] translate-y-[4px] shadow-none' 
-                      : 'comic-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
-                  }`}
-                >
-                  <div className="flex items-center gap-5">
-                    <input 
-                      type="checkbox" 
-                      checked={task.checked}
-                      onChange={() => toggleTask(task.id)}
-                      className="w-7 h-7 rounded comic-border text-primary focus:ring-primary transition-all custom-checkbox cursor-pointer shrink-0" 
-                    />
-                    <div>
-                      <h3 className={`font-body-lg text-body-lg font-black transition-colors ${task.checked ? 'text-on-surface-variant line-through' : 'text-on-surface group-hover:text-primary'}`}>
-                        {task.title}
-                      </h3>
-                      <p className="text-on-surface-variant font-black italic text-xs uppercase mt-1">
-                        {task.due} • <span className={task.type === 'SCHOOL' ? 'text-secondary' : 'text-primary-container'}>{task.type}</span>
-                      </p>
+              {loading ? (
+                <div className="py-8 text-center text-on-surface-variant italic font-bold">Loading missions...</div>
+              ) : tasks.length === 0 ? (
+                <div className="py-8 text-center text-on-surface-variant italic font-bold">No active missions right now. You're clear!</div>
+              ) : (
+                tasks.map(task => (
+                  <div 
+                    key={task.id}
+                    className={`group bg-white p-6 rounded-lg comic-border flex items-center justify-between transition-all ${
+                      task.checked 
+                        ? 'opacity-60 translate-x-[4px] translate-y-[4px] shadow-none' 
+                        : 'comic-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
+                    }`}
+                  >
+                    <div className="flex items-center gap-5">
+                      <input 
+                        type="checkbox" 
+                        checked={!!task.checked}
+                        onChange={() => toggleTask(task.id)}
+                        className="w-7 h-7 rounded comic-border text-primary focus:ring-primary transition-all custom-checkbox cursor-pointer shrink-0" 
+                      />
+                      <div>
+                        <h3 className={`font-body-lg text-body-lg font-black transition-colors ${task.checked ? 'text-on-surface-variant line-through' : 'text-on-surface group-hover:text-primary'}`}>
+                          {task.title}
+                        </h3>
+                        <p className="text-on-surface-variant font-black italic text-xs uppercase mt-1">
+                          {task.due_date ? new Date(task.due_date).toLocaleDateString() : "NO DUE DATE"} • <span className={task.task_type === 'school' ? 'text-secondary' : 'text-primary-container'}>{task.task_type || "TASK"}</span>
+                        </p>
+                      </div>
+                    </div>
+                    <div className="hidden sm:flex bg-secondary-fixed text-on-secondary-container px-4 py-1.5 comic-border rounded-full font-label-xp text-label-xp items-center gap-1 font-black italic shrink-0">
+                      <span>+{task.xp || 50}</span> <span className="text-[10px] opacity-70">XP</span>
                     </div>
                   </div>
-                  <div className="hidden sm:flex bg-secondary-fixed text-on-secondary-container px-4 py-1.5 comic-border rounded-full font-label-xp text-label-xp items-center gap-1 font-black italic shrink-0">
-                    <span>+{task.xp}</span> <span className="text-[10px] opacity-70">XP</span>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
 
               {/* Completed Task Example */}
               <div className="bg-surface-container-low p-6 rounded-lg comic-border flex items-center justify-between opacity-60">

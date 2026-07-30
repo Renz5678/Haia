@@ -2,9 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import { Timer, CheckCircle, Lock, Plus, Medal, Star, Rocket } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { createApiClient } from "@/lib/api";
 
 export default function ProfilePage() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const supabase = createClient();
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -16,6 +21,33 @@ export default function ProfilePage() {
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        
+        const api = createApiClient(session.access_token);
+        const fetchedStats = await api.gamification.stats();
+        setStats(fetchedStats);
+      } catch (err) {
+        console.error("Failed to fetch gamification stats:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  const total_xp = stats?.total_xp || 0;
+  const current_level = stats?.current_level || 1;
+  const tasks_completed = stats?.tasks_completed || 0;
+  
+  // Calculate level progress (mock max xp per level as level * 1000)
+  const xp_for_next_level = current_level * 1000;
+  const progress_pct = Math.min(100, (total_xp / xp_for_next_level) * 100);
+  const strokeDashoffset = 282.7 - (282.7 * progress_pct) / 100;
 
   return (
     <div className="flex-1 min-w-0 bg-background relative overflow-y-auto h-[calc(100vh-80px)]">
@@ -54,14 +86,14 @@ export default function ProfilePage() {
                 {/* Progress Ring SVG */}
                 <svg className="absolute inset-0 w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
                   <circle cx="50" cy="50" fill="none" r="45" stroke="rgba(255,255,255,0.1)" strokeWidth="8"></circle>
-                  <circle className="cel-shade-amber" cx="50" cy="50" fill="none" r="45" stroke="#feae2c" strokeDasharray="282.7" strokeDashoffset="70.6" strokeWidth="8"></circle>
+                  <circle className="cel-shade-amber" cx="50" cy="50" fill="none" r="45" stroke="#feae2c" strokeDasharray="282.7" strokeDashoffset={strokeDashoffset} strokeWidth="8"></circle>
                 </svg>
                 
                 {/* Level Display */}
                 <div className="text-center z-10">
                   <span className="block font-label-caps text-label-caps text-on-primary-container tracking-[0.2em] mb-1">CURRENT LEVEL</span>
-                  <span className="block font-display-hero text-6xl md:text-display-hero text-xp-gold leading-none anton-text">24</span>
-                  <span className="block font-label-xp text-label-xp mt-2 text-on-primary-container">7,450 / 10,000 XP</span>
+                  <span className="block font-display-hero text-6xl md:text-display-hero text-xp-gold leading-none anton-text">{loading ? "..." : current_level}</span>
+                  <span className="block font-label-xp text-label-xp mt-2 text-on-primary-container">{loading ? "..." : total_xp.toLocaleString()} / {xp_for_next_level.toLocaleString()} XP</span>
                 </div>
               </div>
             </div>
@@ -94,8 +126,8 @@ export default function ProfilePage() {
                   <CheckCircle size={64} />
                 </div>
                 <h3 className="font-label-caps text-label-caps text-on-surface-variant mb-4">TASKS CLEARED</h3>
-                <p className="font-display-hero text-4xl md:text-headline-lg text-secondary anton-text tracking-widest">892</p>
-                <p className="font-label-xp text-label-xp text-on-surface-variant mt-2">+12 this week</p>
+                <p className="font-display-hero text-4xl md:text-headline-lg text-secondary anton-text tracking-widest">{loading ? "..." : tasks_completed}</p>
+                <p className="font-label-xp text-label-xp text-on-surface-variant mt-2">Lifetime total</p>
               </div>
               
               {/* Skill Bento */}

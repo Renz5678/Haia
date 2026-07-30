@@ -1,51 +1,103 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Mic, ArrowUp, History, Calendar, LayoutGrid } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { createApiClient } from "@/lib/api";
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: "Parker",
-      text: "Welcome back! Ready to tackle the day? You have 3 tasks pending for your Computer Science project. ZAP!",
-      time: "08:15 AM",
-      hasAction: false,
-    },
-    {
-      id: 2,
-      sender: "Hero",
-      text: "Gym session tomorrow morning!",
-      time: "09:42 AM",
-      hasAction: false,
-    },
-    {
-      id: 3,
-      sender: "Parker",
-      text: "KAPOW! Logged as a Habit → FITNESS. Reminder set for 7:00 AM sharp.",
-      time: "09:42 AM",
-      hasAction: true,
-      actionDetails: {
-        title: "Gym Session",
-        subtitle: "Tomorrow, 07:00 AM",
-        xp: "+50",
+  const [messages, setMessages] = useState<any[]>([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    async function fetchHistory() {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      
+      const api = createApiClient(session.access_token);
+      try {
+        const history = await api.chat.history(50);
+        // Map backend chat_messages to UI format
+        const formatted = history.map((msg: any) => ({
+          id: msg.id,
+          sender: msg.role === 'assistant' ? 'Parker' : 'Hero',
+          text: msg.content,
+          time: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          hasAction: !!msg.linked_item_type,
+          actionDetails: msg.linked_item_type ? {
+            title: `Linked ${msg.linked_item_type}`,
+            subtitle: msg.intent || "Updated",
+            xp: "+50",
+          } : undefined
+        }));
+        setMessages(formatted);
+      } catch (err) {
+        console.error("Failed to fetch chat history:", err);
       }
     }
-  ]);
-  const [input, setInput] = useState("");
+    fetchHistory();
+  }, []);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const handleSend = async () => {
+    if (!input.trim() || loading) return;
     
-    setMessages([...messages, {
-      id: Date.now(),
+    const userMsg = {
+      id: Date.now().toString(),
       sender: "Hero",
       text: input,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       hasAction: false
-    }]);
+    };
     
+    setMessages(prev => [...prev, userMsg]);
     setInput("");
+    setLoading(true);
+
+    try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      
+      const api = createApiClient(session.access_token);
+      const res: any = await api.chat.send(userMsg.text, "web");
+      
+      const botMsg = {
+        id: res.id || Date.now().toString() + "bot",
+        sender: "Parker",
+        text: res.content,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        hasAction: !!res.linked_item_type,
+        actionDetails: res.linked_item_type ? {
+          title: `Linked ${res.linked_item_type}`,
+          subtitle: res.intent || "Updated",
+          xp: "+50",
+        } : undefined
+      };
+      
+      setMessages(prev => [...prev, botMsg]);
+    } catch (err) {
+      console.error("Failed to send message:", err);
+      setMessages(prev => [...prev, {
+        id: Date.now().toString() + "err",
+        sender: "Parker",
+        text: "Sorry boss, I'm having trouble connecting right now.",
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        hasAction: false
+      }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -104,6 +156,19 @@ export default function ChatPage() {
                   </span>
                 </div>
               ))}
+              {loading && (
+                <div className="flex flex-col gap-3 max-w-[85%] relative">
+                  <div className="bubble-bot p-5 rounded-2xl rounded-bl-none bg-surface">
+                    <div className="tail-bot"></div>
+                    <div className="space-y-4">
+                      <p className="font-body-md text-on-surface font-semibold italic animate-pulse">
+                        Thinking...
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
             </div>
             
           </div>

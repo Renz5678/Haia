@@ -69,3 +69,8 @@ web/.vercel/
 web/coverage/
 web/playwright-report/
 web/test-results/
+
+# AI Context Documents
+CONTEXT.md
+agents.md
+token.json

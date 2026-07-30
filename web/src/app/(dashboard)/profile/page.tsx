@@ -59,7 +59,7 @@ export default function ProfilePage() {
           {/* Atmospheric Background Overlay */}
           <div 
             className="absolute inset-0 halftone-bg pointer-events-none transition-all duration-100"
-            style={{ backgroundPosition: \`\${mousePos.x}px \${mousePos.y}px\` }}
+            style={{ backgroundPosition: `${mousePos.x}px ${mousePos.y}px` }}
           ></div>
           
           <div className="max-w-max-width-content mx-auto px-4 md:px-margin-desktop relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">

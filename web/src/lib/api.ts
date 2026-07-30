@@ -98,5 +98,11 @@ export function createApiClient(accessToken: string) {
       text: (raw_input: string, channel = "typed") =>
               post("/parse/text", { raw_input, channel }),
     },
+    
+    integrations: {
+      telegram: {
+        linkCode: () => post("/integrations/telegram/link-code", {}),
+      }
+    }
   };
 }

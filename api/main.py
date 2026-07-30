@@ -5,7 +5,9 @@ Entry point: uvicorn main:app --reload
 
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+import structlog
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from core.config import get_settings
@@ -21,7 +23,17 @@ from subjects.router import router as subjects_router
 from users.router import router as users_router
 from auth.router import router as auth_router
 
-logger = logging.getLogger(__name__)
+structlog.configure(
+    processors=[
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.JSONRenderer(),
+    ],
+    logger_factory=structlog.stdlib.LoggerFactory(),
+)
+
+logger = structlog.get_logger(__name__)
 settings = get_settings()
 
 
@@ -72,3 +84,14 @@ app.include_router(auth_router,         prefix=PREFIX)
 @app.get("/health")
 def health_check():
     return {"status": "ok", "env": settings.app_env}
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error("Unhandled exception", exc_info=exc, path=request.url.path)
+    if settings.sentry_dsn_api:
+        import sentry_sdk
+        sentry_sdk.capture_exception(exc)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An internal server error occurred."}
+    )

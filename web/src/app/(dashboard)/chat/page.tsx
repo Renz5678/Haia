@@ -29,7 +29,7 @@ export default function ChatPage() {
       try {
         const history = await api.chat.history(50);
         // Map backend chat_messages to UI format
-        const formatted = history.map((msg: any) => ({
+        const formatted = (history as any[]).map((msg: any) => ({
           id: msg.id,
           sender: msg.role === 'assistant' ? 'Parker' : 'Hero',
           text: msg.content,

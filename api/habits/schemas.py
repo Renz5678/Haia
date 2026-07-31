@@ -36,6 +36,7 @@ class HabitResponse(BaseModel):
     subject_id: Optional[UUID4]
     created_at: datetime
     updated_at: datetime
+    goal_ids: list[UUID4] = []
 
     model_config = {"from_attributes": True}
 

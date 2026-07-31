@@ -5,6 +5,7 @@ import { Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
 import { useAuthStore } from "@/store/useAuthStore";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 export default function DashboardPage() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -66,7 +67,7 @@ export default function DashboardPage() {
         {/* Stat Strip */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Streak */}
-          <div className="bg-white p-6 rounded-lg comic-border comic-shadow flex items-center gap-4 transition-all hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_#1a1c1b]">
+          <div className="bg-white p-6 rounded-lg comic-border comic-shadow flex items-center gap-4 transition-all hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_#1a1c1b] animate-fade-in-up opacity-0" style={{ animationDelay: '0ms' }}>
             <div className="w-14 h-14 rounded-full bg-secondary-fixed comic-border flex items-center justify-center">
               <span className="material-symbols-outlined text-secondary text-headline-md" style={{ fontVariationSettings: "'FILL' 1" }}>local_fire_department</span>
             </div>
@@ -77,7 +78,7 @@ export default function DashboardPage() {
           </div>
 
           {/* XP */}
-          <div className="bg-white p-6 rounded-lg comic-border comic-shadow flex items-center gap-4 transition-all hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_#1a1c1b]">
+          <div className="bg-white p-6 rounded-lg comic-border comic-shadow flex items-center gap-4 transition-all hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_#1a1c1b] animate-fade-in-up opacity-0" style={{ animationDelay: '100ms' }}>
             <div className="w-14 h-14 rounded-full bg-tertiary-fixed comic-border flex items-center justify-center">
               <span className="material-symbols-outlined text-tertiary text-headline-md" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
             </div>
@@ -88,7 +89,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Level */}
-          <div className="bg-primary-container p-6 rounded-lg comic-border comic-shadow text-white flex items-center gap-4 transition-all hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_#1a1c1b]">
+          <div className="bg-primary-container p-6 rounded-lg comic-border comic-shadow text-white flex items-center gap-4 transition-all hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_#1a1c1b] animate-fade-in-up opacity-0" style={{ animationDelay: '200ms' }}>
             <div className="w-14 h-14 rounded-full bg-white/20 comic-border border-white flex items-center justify-center">
               <span className="material-symbols-outlined text-white text-headline-md" style={{ fontVariationSettings: "'FILL' 1" }}>workspace_premium</span>
             </div>
@@ -119,18 +120,34 @@ export default function DashboardPage() {
               </div>
 
               {loading ? (
-                <div className="py-8 text-center text-on-surface-variant italic font-bold">Loading missions...</div>
+                <div className="space-y-6">
+                  <div className="bg-white p-6 rounded-lg comic-border h-[90px] flex items-center gap-5">
+                    <Skeleton className="w-7 h-7 rounded shrink-0" />
+                    <div className="flex-1">
+                      <Skeleton className="h-6 w-1/3 mb-2" />
+                      <Skeleton className="h-4 w-1/4" />
+                    </div>
+                  </div>
+                  <div className="bg-white p-6 rounded-lg comic-border h-[90px] flex items-center gap-5">
+                    <Skeleton className="w-7 h-7 rounded shrink-0" />
+                    <div className="flex-1">
+                      <Skeleton className="h-6 w-1/2 mb-2" />
+                      <Skeleton className="h-4 w-1/3" />
+                    </div>
+                  </div>
+                </div>
               ) : tasks.length === 0 ? (
-                <div className="py-8 text-center text-on-surface-variant italic font-bold">No active missions right now. You're clear!</div>
+                <div className="py-8 text-center text-on-surface-variant italic font-bold animate-fade-in-up">No active missions right now. You're clear!</div>
               ) : (
-                tasks.map(task => (
+                tasks.map((task, index) => (
                   <div 
                     key={task.id}
-                    className={`group bg-white p-6 rounded-lg comic-border flex items-center justify-between transition-all ${
+                    className={`group bg-white p-6 rounded-lg comic-border flex items-center justify-between transition-all animate-fade-in-up opacity-0 ${
                       task.checked 
                         ? 'opacity-60 translate-x-[4px] translate-y-[4px] shadow-none' 
                         : 'comic-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
                     }`}
+                    style={{ animationDelay: `${index * 50}ms` }}
                   >
                     <div className="flex items-center gap-5">
                       <input 
@@ -208,7 +225,7 @@ export default function DashboardPage() {
                     <span className="material-symbols-outlined text-primary">auto_awesome</span>
                   </div>
                   <div>
-                    <p className="font-body-md font-black text-on-surface mb-2 uppercase italic text-sm">PARKER'S RADAR</p>
+                    <p className="font-body-md font-black text-on-surface mb-2 uppercase italic text-sm">HAIA'S RADAR</p>
                     <p className="text-on-surface-variant font-medium text-sm leading-relaxed italic">"You're only 350 XP away from hitting your daily streak target! Complete that Economics analysis to level up."</p>
                   </div>
                 </div>

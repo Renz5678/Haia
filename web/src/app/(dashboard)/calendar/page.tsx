@@ -151,7 +151,7 @@ export default function CalendarPage() {
           <div className="bg-black text-white p-4 ink-border-2 shadow-[4px_4px_0px_0px_#feae2c]">
             <div className="flex items-center gap-2 mb-2">
               <span className="material-symbols-outlined text-xp-gold" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
-              <p className="text-[10px] font-bold tracking-widest uppercase">PARKER SAYS:</p>
+              <p className="text-[10px] font-bold tracking-widest uppercase">HAIA SAYS:</p>
             </div>
             <p className="font-body-md text-sm italic">"High energy detected for your 10 AM slot. Keep the momentum, Ace!"</p>
           </div>

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Target, Zap, PlusCircle, Medal } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
+import { GoalCardSkeleton, Skeleton } from "@/components/ui/Skeleton";
 
 export default function GoalsPage() {
   const [habits, setHabits] = useState<any[]>([]);
@@ -74,12 +75,16 @@ export default function GoalsPage() {
             </h3>
             
             {loading ? (
-              <div className="p-6 text-center italic text-on-surface-variant">Loading sprints...</div>
+              <div className="space-y-6">
+                <GoalCardSkeleton />
+                <GoalCardSkeleton />
+                <GoalCardSkeleton />
+              </div>
             ) : goals.length === 0 ? (
-              <div className="p-6 text-center italic text-on-surface-variant">No active sprints. Time to set one!</div>
+              <div className="p-6 text-center italic text-on-surface-variant animate-fade-in-up">No active sprints. Time to set one!</div>
             ) : (
-              goals.map(goal => (
-                <div key={goal.id} className="pop-card bg-white p-6 relative overflow-hidden">
+              goals.map((goal, index) => (
+                <div key={goal.id} className="pop-card bg-white p-6 relative overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: `${index * 50}ms` }}>
                   <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4 gap-4">
                     <div>
                       <h4 className="font-headline-md text-headline-md mb-1 anton-text">{goal.title}</h4>
@@ -119,12 +124,22 @@ export default function GoalsPage() {
             {/* Habit Tracker List */}
             <div className="space-y-4">
               {loading ? (
-                <div className="p-4 text-center italic text-on-surface-variant">Loading habits...</div>
+                <div className="space-y-4">
+                  <div className="pop-card bg-white p-4 h-[100px] flex items-center justify-center">
+                    <Skeleton className="w-full h-full" />
+                  </div>
+                  <div className="pop-card bg-white p-4 h-[100px] flex items-center justify-center">
+                    <Skeleton className="w-full h-full" />
+                  </div>
+                  <div className="pop-card bg-white p-4 h-[100px] flex items-center justify-center">
+                    <Skeleton className="w-full h-full" />
+                  </div>
+                </div>
               ) : habits.length === 0 ? (
-                <div className="p-4 text-center italic text-on-surface-variant">No habits found.</div>
+                <div className="p-4 text-center italic text-on-surface-variant animate-fade-in-up">No habits found.</div>
               ) : (
-                habits.map((habit) => (
-                  <div key={habit.id} className="pop-card bg-white p-4">
+                habits.map((habit, index) => (
+                  <div key={habit.id} className="pop-card bg-white p-4 animate-fade-in-up opacity-0" style={{ animationDelay: `${index * 50}ms` }}>
                     <div className="flex items-center justify-between mb-4">
                       <span className="font-bold text-on-surface text-sm md:text-base">{habit.name}</span>
                       <span className="text-xp-gold font-bold whitespace-nowrap">{habit.current_streak || 0} 🔥</span>
@@ -147,7 +162,7 @@ export default function GoalsPage() {
               {/* Quick Action Card */}
               <div className="pop-card bg-on-surface text-white p-6 relative overflow-hidden mt-6">
                 <div className="absolute -right-4 -bottom-4 halftone opacity-40 rotate-12 w-24 h-24"></div>
-                <h4 className="font-headline-md text-headline-md mb-2 relative z-10 italic anton-text">Parker AI Coaching</h4>
+                <h4 className="font-headline-md text-headline-md mb-2 relative z-10 italic anton-text">Haia AI Coaching</h4>
                 <p className="text-sm opacity-80 mb-4 relative z-10">"You're 15% more productive when you finish 'Deep Work' before noon. Want to reschedule?"</p>
                 <button className="w-full bg-white text-on-surface py-2 font-bold rounded relative z-10 hover:bg-xp-gold transition-colors">Open Chat</button>
               </div>

@@ -97,6 +97,25 @@ const config: Config = {
         "headline-lg": ["40px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
         "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
         "display-hero": ["84px", { lineHeight: "1.0", letterSpacing: "-0.02em", fontWeight: "400" }]
+      },
+      keyframes: {
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-out-down": {
+          "0%": { opacity: "1", transform: "translateY(0)" },
+          "100%": { opacity: "0", transform: "translateY(10px)" },
+        },
+        "comic-shimmer": {
+          "0%": { backgroundPosition: "200% 0" },
+          "100%": { backgroundPosition: "-200% 0" },
+        }
+      },
+      animation: {
+        "fade-in-up": "fade-in-up 0.4s ease-out forwards",
+        "fade-out-down": "fade-out-down 0.3s ease-in forwards",
+        "comic-shimmer": "comic-shimmer 2.5s infinite linear",
       }
     },
   },

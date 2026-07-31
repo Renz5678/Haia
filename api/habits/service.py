@@ -33,7 +33,22 @@ def list_habits(user_id: str, active_only: bool = True) -> list[dict]:
     query = client.schema("haia").table("habits").select("*").eq("user_id", user_id)
     if active_only:
         query = query.eq("is_active", True)
-    return query.order("created_at").execute().data
+    habits = query.order("created_at").execute().data
+
+    if not habits:
+        return []
+        
+    habit_ids = [h["id"] for h in habits]
+    hg_response = client.schema("haia").table("habit_goals").select("habit_id, goal_id").in_("habit_id", habit_ids).execute()
+    
+    goal_map = {}
+    for hg in hg_response.data:
+        goal_map.setdefault(hg["habit_id"], []).append(hg["goal_id"])
+        
+    for h in habits:
+        h["goal_ids"] = goal_map.get(h["id"], [])
+        
+    return habits
 
 
 def log_habit(user_id: str, habit_id: str, data: HabitLogCreate) -> dict:

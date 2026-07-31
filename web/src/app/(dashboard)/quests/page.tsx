@@ -1,32 +1,36 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Check, Filter, Search } from "lucide-react";
+import { Check, Filter, Search, Target } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
+import { TaskCardSkeleton } from "@/components/ui/Skeleton";
+import { CreateQuestModal } from "@/components/CreateQuestModal";
 
 export default function QuestsPage() {
   const [filter, setFilter] = useState("ALL");
   const [search, setSearch] = useState("");
   const [quests, setQuests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const supabase = createClient();
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
-        
-        const api = createApiClient(session.access_token);
-        const fetchedTasks = await api.tasks.list();
-        setQuests(fetchedTasks as any[]);
-      } catch (err) {
-        console.error("Failed to fetch quests:", err);
-      } finally {
-        setLoading(false);
-      }
+  async function fetchData() {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      
+      const api = createApiClient(session.access_token);
+      const fetchedTasks = await api.tasks.list();
+      setQuests(fetchedTasks as any[]);
+    } catch (err) {
+      console.error("Failed to fetch quests:", err);
+    } finally {
+      setLoading(false);
     }
+  }
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -90,22 +94,28 @@ export default function QuestsPage() {
       {/* Quest List */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {loading ? (
-          <div className="col-span-full py-12 text-center text-on-surface-variant font-body-lg italic">
-            Loading quests...
-          </div>
+          <>
+            <TaskCardSkeleton />
+            <TaskCardSkeleton />
+            <TaskCardSkeleton />
+            <TaskCardSkeleton />
+            <TaskCardSkeleton />
+            <TaskCardSkeleton />
+          </>
         ) : filteredQuests.length === 0 ? (
-          <div className="col-span-full py-12 text-center text-on-surface-variant font-body-lg italic">
+          <div className="col-span-full py-12 text-center text-on-surface-variant font-body-lg italic animate-fade-in-up">
             No quests found. You're all caught up!
           </div>
         ) : (
-          filteredQuests.map(quest => (
+          filteredQuests.map((quest, index) => (
             <div 
               key={quest.id}
-              className={`group bg-white p-6 rounded-lg comic-border flex flex-col justify-between transition-all ${
+              className={`group bg-white p-6 rounded-lg comic-border flex flex-col justify-between transition-all animate-fade-in-up opacity-0 ${
                 quest.checked 
                   ? 'opacity-60 translate-x-[4px] translate-y-[4px] shadow-none' 
                   : 'comic-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
               }`}
+              style={{ animationDelay: `${index * 50}ms` }}
             >
               <div className="flex items-start gap-4 mb-4">
                 <input 
@@ -125,6 +135,11 @@ export default function QuestsPage() {
                     <span className="text-on-surface-variant font-black italic text-xs uppercase flex items-center gap-1">
                       {quest.due_date ? new Date(quest.due_date).toLocaleDateString() : "NO DUE DATE"}
                     </span>
+                    {quest.goal_ids && quest.goal_ids.length > 0 && (
+                      <span className="bg-surface-container-high text-on-surface-variant px-2 py-0.5 rounded font-black italic text-[10px] comic-border flex items-center gap-1">
+                        <Target size={10} /> {quest.goal_ids.length} GOAL{quest.goal_ids.length > 1 ? 'S' : ''}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -139,10 +154,19 @@ export default function QuestsPage() {
       </div>
 
       {/* Floating Action Button */}
-      <button className="fixed bottom-6 right-6 md:bottom-10 md:right-10 w-16 h-16 md:w-20 md:h-20 bg-primary-container text-white rounded-lg comic-border comic-shadow hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_#1a1c1b] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all flex items-center justify-center z-50 group">
+      <button 
+        onClick={() => setIsModalOpen(true)}
+        className="fixed bottom-6 right-6 md:bottom-10 md:right-10 w-16 h-16 md:w-20 md:h-20 bg-primary-container text-white rounded-lg comic-border comic-shadow hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_#1a1c1b] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all flex items-center justify-center z-50 group"
+      >
         <span className="material-symbols-outlined text-3xl font-black">add</span>
         <span className="absolute right-20 md:right-24 bg-on-surface text-white px-5 py-2 comic-border text-sm font-black italic opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none uppercase">NEW QUEST</span>
       </button>
+
+      <CreateQuestModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSuccess={fetchData} 
+      />
     </div>
   );
 }

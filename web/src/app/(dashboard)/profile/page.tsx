@@ -76,7 +76,7 @@ export default function ProfilePage() {
                 </div>
               </div>
               
-              <h1 className="font-display-hero text-5xl md:text-[56px] anton-text tracking-tighter uppercase mb-2">Parker</h1>
+              <h1 className="font-display-hero text-5xl md:text-[56px] anton-text tracking-tighter uppercase mb-2">Haia</h1>
               <p className="font-body-lg text-body-lg text-on-primary-container max-w-md">Level 24 Productivity Ace • Senior Scholar at Imperial Academy</p>
             </div>
             

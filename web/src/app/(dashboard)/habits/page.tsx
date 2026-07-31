@@ -1,30 +1,34 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Flame, Plus, TrendingUp } from "lucide-react";
+import { Flame, Plus, TrendingUp, Target } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
+import { HabitCardSkeleton } from "@/components/ui/Skeleton";
+import { CreateHabitModal } from "@/components/CreateHabitModal";
 
 export default function HabitsPage() {
   const [habits, setHabits] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const supabase = createClient();
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
-        
-        const api = createApiClient(session.access_token);
-        const fetchedHabits = await api.habits.list(true); // active_only=true
-        setHabits(fetchedHabits as any[]);
-      } catch (err) {
-        console.error("Failed to fetch habits:", err);
-      } finally {
-        setLoading(false);
-      }
+  async function fetchData() {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      
+      const api = createApiClient(session.access_token);
+      const fetchedHabits = await api.habits.list(true); // active_only=true
+      setHabits(fetchedHabits as any[]);
+    } catch (err) {
+      console.error("Failed to fetch habits:", err);
+    } finally {
+      setLoading(false);
     }
+  }
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -34,8 +38,9 @@ export default function HabitsPage() {
       if (!session) return;
       
       const api = createApiClient(session.access_token);
+      const today = new Date().toISOString().split('T')[0];
       // Determine if completed today. In real gamification, this log determines streak.
-      await api.habits.log(id, {});
+      await api.habits.log(id, { logged_date: today });
       
       setHabits(habits.map(h => {
         if (h.id === id) {
@@ -66,18 +71,24 @@ export default function HabitsPage() {
       {/* Habits Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {loading ? (
-          <div className="col-span-full py-12 text-center text-on-surface-variant font-body-lg italic">
-            Loading routines...
-          </div>
+          <>
+            <HabitCardSkeleton />
+            <HabitCardSkeleton />
+            <HabitCardSkeleton />
+            <HabitCardSkeleton />
+            <HabitCardSkeleton />
+            <HabitCardSkeleton />
+          </>
         ) : habits.length === 0 ? (
-          <div className="col-span-full py-12 text-center text-on-surface-variant font-body-lg italic">
+          <div className="col-span-full py-12 text-center text-on-surface-variant font-body-lg italic animate-fade-in-up">
             No routines found. Time to build some!
           </div>
         ) : (
-          habits.map(habit => (
+          habits.map((habit, index) => (
             <div 
               key={habit.id}
-              className={`group bg-white p-6 rounded-lg comic-border flex flex-col justify-between transition-all comic-shadow-sm`}
+              className={`group bg-white p-6 rounded-lg comic-border flex flex-col justify-between transition-all comic-shadow-sm animate-fade-in-up opacity-0`}
+              style={{ animationDelay: `${index * 50}ms` }}
             >
               <div className="flex justify-between items-start mb-6">
                 <h3 className="font-body-lg text-xl font-black text-on-surface pr-4">
@@ -89,9 +100,16 @@ export default function HabitsPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 mb-6">
-                <TrendingUp size={16} className="text-on-surface-variant" />
-                <span className="text-sm font-bold text-on-surface-variant italic uppercase">Frequency: {habit.frequency || "Daily"}</span>
+              <div className="flex flex-wrap items-center gap-4 mb-6">
+                <div className="flex items-center gap-2">
+                  <TrendingUp size={16} className="text-on-surface-variant" />
+                  <span className="text-sm font-bold text-on-surface-variant italic uppercase">Frequency: {habit.frequency || "Daily"}</span>
+                </div>
+                {habit.goal_ids && habit.goal_ids.length > 0 && (
+                  <span className="bg-surface-container-high text-on-surface-variant px-2 py-0.5 rounded font-black italic text-[10px] comic-border flex items-center gap-1">
+                    <Target size={10} /> {habit.goal_ids.length} GOAL{habit.goal_ids.length > 1 ? 'S' : ''}
+                  </span>
+                )}
               </div>
 
               <button
@@ -110,10 +128,19 @@ export default function HabitsPage() {
       </div>
 
       {/* Floating Action Button */}
-      <button className="fixed bottom-6 right-6 md:bottom-10 md:right-10 w-16 h-16 md:w-20 md:h-20 bg-secondary text-on-secondary rounded-lg comic-border comic-shadow hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_#1a1c1b] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all flex items-center justify-center z-50 group">
+      <button 
+        onClick={() => setIsModalOpen(true)}
+        className="fixed bottom-6 right-6 md:bottom-10 md:right-10 w-16 h-16 md:w-20 md:h-20 bg-secondary text-on-secondary rounded-lg comic-border comic-shadow hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_#1a1c1b] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all flex items-center justify-center z-50 group"
+      >
         <span className="material-symbols-outlined text-3xl font-black">add</span>
         <span className="absolute right-20 md:right-24 bg-on-surface text-white px-5 py-2 comic-border text-sm font-black italic opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none uppercase">NEW HABIT</span>
       </button>
+
+      <CreateHabitModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSuccess={fetchData} 
+      />
     </div>
   );
 }

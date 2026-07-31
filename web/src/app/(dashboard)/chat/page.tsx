@@ -5,6 +5,12 @@ import { Mic, ArrowUp, History, Calendar, LayoutGrid } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
 
+function formatMessage(text: string) {
+  let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-primary drop-shadow-sm">$1</strong>');
+  formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  return { __html: formatted };
+}
+
 export default function ChatPage() {
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState("");
@@ -31,7 +37,7 @@ export default function ChatPage() {
         // Map backend chat_messages to UI format
         const formatted = (history as any[]).map((msg: any) => ({
           id: msg.id,
-          sender: msg.role === 'assistant' ? 'Parker' : 'Hero',
+          sender: msg.role === 'assistant' ? 'Haia' : 'Hero',
           text: msg.content,
           time: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           hasAction: !!msg.linked_item_type,
@@ -74,7 +80,7 @@ export default function ChatPage() {
       
       const botMsg = {
         id: res.id || Date.now().toString() + "bot",
-        sender: "Parker",
+        sender: "Haia",
         text: res.content,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         hasAction: !!res.linked_item_type,
@@ -90,7 +96,7 @@ export default function ChatPage() {
       console.error("Failed to send message:", err);
       setMessages(prev => [...prev, {
         id: Date.now().toString() + "err",
-        sender: "Parker",
+        sender: "Haia",
         text: "Sorry boss, I'm having trouble connecting right now.",
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         hasAction: false
@@ -120,13 +126,14 @@ export default function ChatPage() {
               {messages.map(msg => (
                 <div key={msg.id} className={`flex flex-col gap-3 max-w-[85%] relative ${msg.sender === "Hero" ? "self-end items-end" : ""}`}>
                   
-                  {msg.sender === "Parker" ? (
+                  {msg.sender === "Haia" ? (
                     <div className="bubble-bot p-5 rounded-2xl rounded-bl-none bg-surface">
                       <div className="tail-bot"></div>
                       <div className="space-y-4">
-                        <p className="font-body-md text-on-surface font-semibold italic">
-                          {msg.text}
-                        </p>
+                        <p 
+                          className="font-body-md text-on-surface font-semibold italic chat-markdown whitespace-pre-wrap"
+                          dangerouslySetInnerHTML={formatMessage(msg.text)}
+                        />
                         
                         {msg.hasAction && msg.actionDetails && (
                           <div className="flex items-center gap-4 p-4 bg-surface-container-low border-2 border-on-surface rounded-xl shadow-[2px_2px_0px_0px_rgba(26,28,27,1)]">
@@ -161,9 +168,11 @@ export default function ChatPage() {
                   <div className="bubble-bot p-5 rounded-2xl rounded-bl-none bg-surface">
                     <div className="tail-bot"></div>
                     <div className="space-y-4">
-                      <p className="font-body-md text-on-surface font-semibold italic animate-pulse">
-                        Thinking...
-                      </p>
+                      <div className="flex items-center gap-1.5 h-6 px-1">
+                        <div className="w-2.5 h-2.5 bg-on-surface rounded-full animate-[bounce_1s_infinite] drop-shadow-sm" style={{ animationDelay: '0ms' }}></div>
+                        <div className="w-2.5 h-2.5 bg-on-surface rounded-full animate-[bounce_1s_infinite] drop-shadow-sm" style={{ animationDelay: '150ms' }}></div>
+                        <div className="w-2.5 h-2.5 bg-on-surface rounded-full animate-[bounce_1s_infinite] drop-shadow-sm" style={{ animationDelay: '300ms' }}></div>
+                      </div>
                     </div>
                   </div>
                 </div>

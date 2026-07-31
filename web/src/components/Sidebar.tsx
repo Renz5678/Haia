@@ -10,11 +10,20 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
+  const [isExiting, setIsExiting] = React.useState(false);
+
   const handleSignOut = async () => {
+    setIsExiting(true);
+    document.body.classList.add('animate-fade-out-down');
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
+    setTimeout(() => {
+      router.push("/login");
+      router.refresh();
+      setTimeout(() => {
+        document.body.classList.remove('animate-fade-out-down');
+      }, 100);
+    }, 300);
   };
 
   const links = [
@@ -22,7 +31,7 @@ export default function Sidebar() {
     { name: "Quests", href: "/quests", icon: CheckSquare },
     { name: "Habits", href: "/habits", icon: RefreshCw },
     { name: "Goals", href: "/goals", icon: Target },
-    { name: "Schedule", href: "/schedule", icon: Calendar },
+    { name: "Schedule", href: "/calendar", icon: Calendar },
     { name: "Haia", href: "/chat", icon: MessageSquare },
   ];
 
@@ -33,7 +42,7 @@ export default function Sidebar() {
           <div className="w-10 h-10 bg-primary border-2 border-on-surface rounded-lg flex items-center justify-center shrink-0 shadow-[4px_4px_0px_0px_rgba(20,27,43,1)]">
             <img src="/images/logo.png" alt="Logo" className="w-7 h-7 object-contain" />
           </div>
-          <img src="/images/name.png" alt="PARKER" className="h-10 w-auto object-contain" />
+          <span className="font-display-hero text-3xl anton-text tracking-widest text-on-surface uppercase drop-shadow-[2px_2px_0px_#4F46E5] ml-2 leading-none">HAIA</span>
         </Link>
         <div className="mt-4 flex items-center gap-3 p-2 bg-surface-container rounded-xl border-2 border-on-surface">
           <div className="w-10 h-10 rounded-full border-2 border-on-surface overflow-hidden bg-white shrink-0">

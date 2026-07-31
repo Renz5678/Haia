@@ -42,7 +42,22 @@ def list_tasks(user_id: str, status: str | None = None, area: str | None = None)
     query = client.schema("haia").table("tasks").select("*").eq("user_id", user_id)
     if status:
         query = query.eq("status", status)
-    return query.order("due_date", desc=False).execute().data
+    tasks = query.order("due_date", desc=False).execute().data
+
+    if not tasks:
+        return []
+    
+    task_ids = [t["id"] for t in tasks]
+    tg_response = client.schema("haia").table("task_goals").select("task_id, goal_id").in_("task_id", task_ids).execute()
+    
+    goal_map = {}
+    for tg in tg_response.data:
+        goal_map.setdefault(tg["task_id"], []).append(tg["goal_id"])
+        
+    for t in tasks:
+        t["goal_ids"] = goal_map.get(t["id"], [])
+        
+    return tasks
 
 
 def get_task(user_id: str, task_id: str) -> dict | None:

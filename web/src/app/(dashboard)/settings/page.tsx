@@ -62,7 +62,7 @@ export default function SettingsPage() {
                 <input 
                   className="w-full bg-surface-bright border border-on-surface p-3 font-body-lg focus:ring-0 focus:border-indigo-deep outline-none" 
                   type="text" 
-                  defaultValue={user?.email ? "Parker Ace" : ""}
+                  defaultValue={user?.email ? "Haia Ace" : ""}
                 />
               </div>
               <div className="p-6 bg-white border border-on-surface pop-shadow rounded-xl">
@@ -86,7 +86,7 @@ export default function SettingsPage() {
               <div className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                   <h3 className="font-body-lg font-bold">Telegram Bot (HAIA)</h3>
-                  <p className="text-on-surface-variant text-body-md">Connect your account to interact with Parker from Telegram.</p>
+                  <p className="text-on-surface-variant text-body-md">Connect your account to interact with Haia from Telegram.</p>
                 </div>
                 <button 
                   onClick={handleConnectTelegram}

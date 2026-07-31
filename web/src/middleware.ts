@@ -32,9 +32,10 @@ export async function middleware(request: NextRequest) {
 
   // Protect dashboard routes
   const isAuthRoute = request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/signup");
+  const isCallbackRoute = request.nextUrl.pathname.startsWith("/auth/callback");
   
-  // If user is not signed in and the current path is not /login or /signup, redirect the user to /login
-  if (!user && !isAuthRoute && request.nextUrl.pathname !== "/") {
+  // If user is not signed in and the current path is not /login, /signup, or /auth/callback, redirect the user to /login
+  if (!user && !isAuthRoute && !isCallbackRoute && request.nextUrl.pathname !== "/") {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 

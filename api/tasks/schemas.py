@@ -43,6 +43,7 @@ class TaskResponse(BaseModel):
     calendar_event_id: Optional[str]
     created_at: datetime
     updated_at: datetime
+    goal_ids: list[UUID4] = []
 
     model_config = {"from_attributes": True}
 

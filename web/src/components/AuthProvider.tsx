@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/store/useAuthStore";
-import { createApiClient } from "@/lib/api";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { setUser, setLoading } = useAuthStore();
@@ -71,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             current_level: profile.current_level,
             total_xp: profile.total_xp,
           });
-        } catch (error) {
+        } catch {
           setUser({
             id: session.user.id,
             email: session.user.email || "",
@@ -88,6 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <>{children}</>;

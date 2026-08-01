@@ -34,8 +34,12 @@ export default function LoginPage() {
           window.location.href = "/dashboard";
         }, 300);
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to login");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to login");
+      }
     } finally {
       setLoading(false);
     }
@@ -59,7 +63,7 @@ export default function LoginPage() {
     <div className={`bg-white p-4 sm:p-6 md:p-8 rounded-xl comic-border comic-shadow flex flex-col items-center w-full transition-all duration-300 ${isExiting ? 'animate-fade-out-down' : 'animate-fade-in-up'}`}>
       <div className="flex justify-center mb-4">
         <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
-          <img src="/images/logoWObg.png" alt="Logo" className="w-full h-full object-contain drop-shadow-md" />
+          <Image src="/images/logoWObg.png" alt="Logo" className="w-full h-full object-contain drop-shadow-md" width={80} height={80} priority />
         </div>
       </div>
 
@@ -133,7 +137,7 @@ export default function LoginPage() {
       </form>
 
       <p className="mt-4 font-body-sm sm:font-body-md text-on-surface-variant">
-        Don't have an account? <Link href="/signup" className="text-primary font-bold hover:underline italic">Join the Guild</Link>
+        Don&apos;t have an account? <Link href="/signup" className="text-primary font-bold hover:underline italic">Join the Guild</Link>
       </p>
     </div>
   );

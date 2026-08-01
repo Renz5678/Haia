@@ -10,6 +10,7 @@ import { CreateQuestModal } from "@/components/CreateQuestModal";
 export default function QuestsPage() {
   const [filter, setFilter] = useState("ALL");
   const [search, setSearch] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [quests, setQuests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,6 +23,7 @@ export default function QuestsPage() {
       
       const api = createApiClient(session.access_token);
       const fetchedTasks = await api.tasks.list();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setQuests(fetchedTasks as any[]);
     } catch (err) {
       console.error("Failed to fetch quests:", err);
@@ -31,6 +33,7 @@ export default function QuestsPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, []);
 
@@ -104,7 +107,7 @@ export default function QuestsPage() {
           </>
         ) : filteredQuests.length === 0 ? (
           <div className="col-span-full py-12 text-center text-on-surface-variant font-body-lg italic animate-fade-in-up">
-            No quests found. You're all caught up!
+            No quests found. You&apos;re all caught up!
           </div>
         ) : (
           filteredQuests.map((quest, index) => (

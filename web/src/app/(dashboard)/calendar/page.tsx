@@ -94,7 +94,7 @@ export default function CalendarPage() {
       {/* Right Side: Agenda Panel */}
       <aside className="hidden xl:flex w-80 border-l-2 border-black bg-surface-container-low flex-col p-6 agenda-scroll overflow-y-auto shrink-0">
         <div className="mb-8">
-          <p className="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mb-1">Today's Focus</p>
+          <p className="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mb-1">Today&apos;s Focus</p>
           <h2 className="font-headline-md font-extrabold comic-text">MARCH {activeDate}</h2>
         </div>
 
@@ -153,7 +153,7 @@ export default function CalendarPage() {
               <span className="material-symbols-outlined text-xp-gold" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
               <p className="text-[10px] font-bold tracking-widest uppercase">HAIA SAYS:</p>
             </div>
-            <p className="font-body-md text-sm italic">"High energy detected for your 10 AM slot. Keep the momentum, Ace!"</p>
+            <p className="font-body-md text-sm italic">&quot;High energy detected for your 10 AM slot. Keep the momentum, Ace!&quot;</p>
           </div>
         </div>
 

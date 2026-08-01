@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useAuthStore } from "@/store/useAuthStore";
+import Image from "next/image";
 import { UserPlus } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client";
@@ -13,7 +13,6 @@ export default function SignupPage() {
   const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { setUser } = useAuthStore();
   const supabase = createClient();
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -42,8 +41,12 @@ export default function SignupPage() {
       // Successfully sent the verification email
       setError("Success! Check your email for the confirmation link to join the guild.");
       // We purposefully don't redirect yet because they need to click the link first.
-    } catch (err: any) {
-      setError(err.message || "Failed to sign up");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to sign up");
+      }
     } finally {
       setLoading(false);
     }
@@ -67,7 +70,7 @@ export default function SignupPage() {
     <div className="bg-white p-4 sm:p-6 md:p-8 rounded-xl comic-border comic-shadow flex flex-col items-center w-full">
       <div className="flex justify-center mb-4">
         <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
-          <img src="/images/logoWObg.png" alt="Logo" className="w-full h-full object-contain drop-shadow-md" />
+          <Image src="/images/logoWObg.png" alt="Logo" className="w-full h-full object-contain drop-shadow-md" width={80} height={80} priority />
         </div>
       </div>
 

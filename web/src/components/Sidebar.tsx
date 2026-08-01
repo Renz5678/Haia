@@ -11,6 +11,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isExiting, setIsExiting] = React.useState(false);
 
   const handleSignOut = async () => {

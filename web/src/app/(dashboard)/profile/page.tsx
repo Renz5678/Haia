@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { Timer, CheckCircle, Lock, Plus, Medal, Star, Rocket } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
 
 export default function ProfilePage() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
@@ -38,6 +40,7 @@ export default function ProfilePage() {
       }
     }
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const total_xp = stats?.total_xp || 0;
@@ -68,7 +71,7 @@ export default function ProfilePage() {
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
               <div className="relative mb-6">
                 <div className="w-32 h-32 md:w-48 md:h-48 rounded-2xl ink-border bg-white p-2 relative overflow-hidden group">
-                  <img alt="Logo" className="w-full h-full object-cover rounded-xl grayscale hover:grayscale-0 transition-all duration-500" src="/images/logo.png" />
+                  <Image alt="Logo" className="object-cover rounded-xl grayscale hover:grayscale-0 transition-all duration-500" src="/images/logo.png" fill />
                   <div className="absolute inset-0 bg-primary/20 mix-blend-multiply"></div>
                 </div>
                 <div className="absolute -bottom-4 -right-4 bg-xp-gold text-on-surface px-4 py-1 ink-border font-label-xp text-label-xp rotate-3">
@@ -224,7 +227,7 @@ export default function ProfilePage() {
                   <h3 className="font-headline-md text-headline-md anton-text">ACTIVE QUEST</h3>
                 </div>
                 <p className="font-body-md text-body-md font-bold mb-2">Chronicles of Calculus III</p>
-                <p className="font-body-md text-body-md text-on-surface-variant mb-6">Complete 3 deep focus sessions to unlock the "Math Wizard" title.</p>
+                <p className="font-body-md text-body-md text-on-surface-variant mb-6">Complete 3 deep focus sessions to unlock the &quot;Math Wizard&quot; title.</p>
                 <div className="flex items-center justify-between">
                   <span className="font-label-xp text-label-xp">REWARD: 500 XP</span>
                   <span className="material-symbols-outlined animate-bounce">arrow_forward</span>

@@ -12,6 +12,7 @@ function formatMessage(text: string) {
 }
 
 export default function ChatPage() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,6 +36,7 @@ export default function ChatPage() {
       try {
         const history = await api.chat.history(50);
         // Map backend chat_messages to UI format
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const formatted = (history as any[]).map((msg: any) => ({
           id: msg.id,
           sender: msg.role === 'assistant' ? 'Haia' : 'Hero',
@@ -76,6 +78,7 @@ export default function ChatPage() {
       if (!session) return;
       
       const api = createApiClient(session.access_token);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res: any = await api.chat.send(userMsg.text, "web");
       
       const botMsg = {

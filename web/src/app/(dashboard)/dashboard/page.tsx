@@ -8,10 +8,11 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 export default function DashboardPage() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [tasks, setTasks] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuthStore();
   const supabase = createClient();
 
   useEffect(() => {
@@ -25,6 +26,7 @@ export default function DashboardPage() {
           api.tasks.list({ task_status: "pending" }),
           api.gamification.stats()
         ]);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         setTasks((fetchedTasks as any[]) || []);
         setStats(fetchedStats);
       } catch (err) {
@@ -34,6 +36,7 @@ export default function DashboardPage() {
       }
     }
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleTask = async (id: number | string) => {
@@ -137,7 +140,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
               ) : tasks.length === 0 ? (
-                <div className="py-8 text-center text-on-surface-variant italic font-bold animate-fade-in-up">No active missions right now. You're clear!</div>
+                <div className="py-8 text-center text-on-surface-variant italic font-bold animate-fade-in-up">No active missions right now. You&apos;re clear!</div>
               ) : (
                 tasks.map((task, index) => (
                   <div 
@@ -192,7 +195,7 @@ export default function DashboardPage() {
             {/* Right Column: Goals Progress */}
             <div className="col-span-12 lg:col-span-5 space-y-8">
               <div className="bg-white p-6 md:p-8 rounded-lg comic-border comic-shadow">
-                <h2 className="font-headline-md text-headline-md anton-text mb-8 border-b-2 border-on-surface inline-block">TODAY'S PROGRESS</h2>
+                <h2 className="font-headline-md text-headline-md anton-text mb-8 border-b-2 border-on-surface inline-block">TODAY&apos;S PROGRESS</h2>
                 <div className="space-y-10">
                   {/* Goal 1 */}
                   <div className="space-y-3">
@@ -225,8 +228,8 @@ export default function DashboardPage() {
                     <span className="material-symbols-outlined text-primary">auto_awesome</span>
                   </div>
                   <div>
-                    <p className="font-body-md font-black text-on-surface mb-2 uppercase italic text-sm">HAIA'S RADAR</p>
-                    <p className="text-on-surface-variant font-medium text-sm leading-relaxed italic">"You're only 350 XP away from hitting your daily streak target! Complete that Economics analysis to level up."</p>
+                    <p className="font-body-md font-black text-on-surface mb-2 uppercase italic text-sm">HAIA&apos;S RADAR</p>
+                    <p className="text-on-surface-variant font-medium text-sm leading-relaxed italic">&quot;You&apos;re only 350 XP away from hitting your daily streak target! Complete that Economics analysis to level up.&quot;</p>
                   </div>
                 </div>
               </div>

@@ -23,6 +23,7 @@ export default function SettingsPage() {
       if (!session) throw new Error("No session");
       
       const api = createApiClient(session.access_token);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res: any = await api.integrations.telegram.linkCode();
       setLinkCode(res.link_code);
     } catch (err) {

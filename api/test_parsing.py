@@ -1,8 +1,9 @@
-from unittest.mock import patch, MagicMock
-from parsing.schemas import ParseTextRequest, IntentClassification, ParsedHabit, ParsedGoal
-from tasks.schemas import ParsedTask
+from unittest.mock import patch
+
+from parsing.schemas import IntentClassification, ParseTextRequest
 from parsing.service import parse_text
-from datetime import datetime
+from tasks.schemas import ParsedTask
+
 
 def test_parse_text_task_routing():
     # Setup the request

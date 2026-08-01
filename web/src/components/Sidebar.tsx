@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, CheckSquare, RefreshCw, Target, Calendar, MessageSquare, Settings, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -40,7 +41,7 @@ export default function Sidebar() {
       <div className="flex flex-col gap-2 px-2">
         <Link href="/dashboard" className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary border-2 border-on-surface rounded-lg flex items-center justify-center shrink-0 shadow-[4px_4px_0px_0px_rgba(20,27,43,1)]">
-            <img src="/images/logo.png" alt="Logo" className="w-7 h-7 object-contain" />
+            <Image src="/images/logo.png" alt="Logo" className="w-7 h-7 object-contain" width={28} height={28} />
           </div>
           <span className="font-display-hero text-3xl anton-text tracking-widest text-on-surface uppercase drop-shadow-[2px_2px_0px_#4F46E5] ml-2 leading-none">HAIA</span>
         </Link>

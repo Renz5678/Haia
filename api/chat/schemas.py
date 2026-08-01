@@ -1,6 +1,6 @@
-from pydantic import BaseModel, UUID4
 from datetime import datetime
-from typing import Optional
+
+from pydantic import UUID4, BaseModel
 
 
 class ChatMessageCreate(BaseModel):
@@ -14,9 +14,9 @@ class ChatMessageResponse(BaseModel):
     role: str
     content: str
     channel: str
-    intent: Optional[str] = None
-    linked_item_type: Optional[str] = None
-    linked_item_id: Optional[UUID4] = None
-    created_at: Optional[datetime] = None
+    intent: str | None = None
+    linked_item_type: str | None = None
+    linked_item_id: UUID4 | None = None
+    created_at: datetime | None = None
 
     model_config = {"from_attributes": True}

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+
 from core.dependencies import get_current_user
 from parsing import service
 from parsing.schemas import ParseTextRequest, ParseTextResponse

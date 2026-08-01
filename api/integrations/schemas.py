@@ -1,14 +1,14 @@
-from pydantic import BaseModel, UUID4
 from datetime import datetime
-from typing import Optional
+
+from pydantic import UUID4, BaseModel
 
 
 class IntegrationResponse(BaseModel):
     id: UUID4
     user_id: UUID4
     service: str
-    external_id: Optional[str]
-    email_address: Optional[str]
+    external_id: str | None
+    email_address: str | None
     is_active: bool
     created_at: datetime
     updated_at: datetime

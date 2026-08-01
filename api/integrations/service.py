@@ -1,9 +1,9 @@
 import logging
+
 import httpx
-from core.supabase import get_supabase_service_client
+
 from core.config import get_settings
-from parsing.schemas import ParseTextRequest
-from parsing.service import parse_text
+from core.supabase import get_supabase_service_client
 
 logger = logging.getLogger(__name__)
 

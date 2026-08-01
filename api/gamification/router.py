@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
+
 from core.dependencies import get_current_user
 from gamification import service
-from gamification.schemas import XPEventResponse, StreakResponse, UserStatsResponse
+from gamification.schemas import StreakResponse, UserStatsResponse, XPEventResponse
 
 router = APIRouter(prefix="/gamification", tags=["gamification"])
 

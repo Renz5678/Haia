@@ -1,8 +1,10 @@
-from fastapi import APIRouter, HTTPException
-from core.supabase import get_supabase_service_client
-from auth.schemas import SignupRequest
-from integrations.gmail import send_verification_email
 import logging
+
+from fastapi import APIRouter, HTTPException
+
+from auth.schemas import SignupRequest
+from core.supabase import get_supabase_service_client
+from integrations.gmail import send_verification_email
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 logger = logging.getLogger(__name__)

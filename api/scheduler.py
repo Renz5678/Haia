@@ -1,5 +1,7 @@
 import logging
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
 from core.supabase import get_supabase_service_client
 
 logger = logging.getLogger(__name__)

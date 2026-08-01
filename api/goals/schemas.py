@@ -1,37 +1,37 @@
-from pydantic import BaseModel, UUID4
-from datetime import datetime, date
-from typing import Optional
+from datetime import date, datetime
+
+from pydantic import UUID4, BaseModel
 
 
 class GoalCreate(BaseModel):
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     goal_type: str = "custom"
-    target_value: Optional[float] = None
-    target_date: Optional[date] = None
-    subject_id: Optional[UUID4] = None
+    target_value: float | None = None
+    target_date: date | None = None
+    subject_id: UUID4 | None = None
 
 
 class GoalUpdate(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    status: Optional[str] = None
-    target_value: Optional[float] = None
-    current_value: Optional[float] = None
-    target_date: Optional[date] = None
+    title: str | None = None
+    description: str | None = None
+    status: str | None = None
+    target_value: float | None = None
+    current_value: float | None = None
+    target_date: date | None = None
 
 
 class GoalResponse(BaseModel):
     id: UUID4
     user_id: UUID4
     title: str
-    description: Optional[str]
+    description: str | None
     goal_type: str
-    target_value: Optional[float]
-    current_value: Optional[float]
-    target_date: Optional[date]
+    target_value: float | None
+    current_value: float | None
+    target_date: date | None
     status: str
-    subject_id: Optional[UUID4]
+    subject_id: UUID4 | None
     created_at: datetime
     updated_at: datetime
 

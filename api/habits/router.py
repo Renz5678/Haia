@@ -1,7 +1,13 @@
 from fastapi import APIRouter, Depends, status
+
 from core.dependencies import get_current_user
 from habits import service
-from habits.schemas import HabitCreate, HabitUpdate, HabitResponse, HabitLogCreate, HabitLogResponse
+from habits.schemas import (
+    HabitCreate,
+    HabitLogCreate,
+    HabitLogResponse,
+    HabitResponse,
+)
 
 router = APIRouter(prefix="/habits", tags=["habits"])
 

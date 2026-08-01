@@ -1,6 +1,5 @@
-from datetime import date
 from core.supabase import get_supabase_service_client
-from habits.schemas import HabitCreate, HabitUpdate, HabitLogCreate
+from habits.schemas import HabitCreate, HabitLogCreate
 
 
 def create_habit(user_id: str, data: HabitCreate) -> dict:

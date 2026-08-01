@@ -1,7 +1,9 @@
 import os
 import sys
+
 import httpx
 from dotenv import load_dotenv
+
 
 def main():
     load_dotenv()

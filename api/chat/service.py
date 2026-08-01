@@ -3,8 +3,8 @@ Unified AI chatbot service.
 Handles intent routing and conversational replies for both Telegram and web.
 All messages are stored per-user (not per-channel) in chat_messages.
 """
-from core.supabase import get_supabase_service_client
 from chat.schemas import ChatMessageCreate
+from core.supabase import get_supabase_service_client
 
 
 def get_history(user_id: str, limit: int = 20) -> list[dict]:
@@ -38,13 +38,12 @@ def save_message(user_id: str, role: str, content: str, channel: str,
 
 
 def process_message(user_id: str, data: ChatMessageCreate) -> dict:
-    from parsing.service import parse_text
-    from parsing.schemas import ParseTextRequest
-    from gamification.service import get_user_stats
-    import google.generativeai as genai
-    from core.config import get_settings
-    from gemini_client import _get_model, _load_prompt
     import json
+
+    from gamification.service import get_user_stats
+    from gemini_client import _get_model, _load_prompt
+    from parsing.schemas import ParseTextRequest
+    from parsing.service import parse_text
 
     # 1. Save the user's message
     save_message(user_id=user_id, role="user", content=data.content, channel=data.channel)

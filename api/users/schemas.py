@@ -1,22 +1,23 @@
-from pydantic import BaseModel, UUID4
 from datetime import datetime
-from typing import Optional
+
+from pydantic import UUID4, BaseModel
+
 
 class UserUpdate(BaseModel):
-    display_name: Optional[str] = None
-    timezone: Optional[str] = None
-    theme: Optional[str] = None
+    display_name: str | None = None
+    timezone: str | None = None
+    theme: str | None = None
 
 class UserResponse(BaseModel):
     id: UUID4
     email: str
-    display_name: Optional[str] = None
-    avatar_url: Optional[str] = None
+    display_name: str | None = None
+    avatar_url: str | None = None
     timezone: str
     current_level: int
     total_xp: int
-    theme: Optional[str] = None
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    theme: str | None = None
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
 
     model_config = {"from_attributes": True}

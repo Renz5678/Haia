@@ -1,16 +1,17 @@
+from typing import Any
+
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from supabase import Client
-from core.supabase import get_supabase_anon_client, get_supabase_service_client
-from core.config import get_settings
-from typing import Optional, Any
+
+from core.supabase import get_supabase_anon_client
 
 bearer_scheme = HTTPBearer(auto_error=False)
 
 
 async def get_optional_user(
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
-) -> Optional[dict[str, Any]]:
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+) -> dict[str, Any] | None:
     """
     Returns the user dictionary if a valid token is provided, otherwise None.
     """
@@ -48,12 +49,12 @@ async def get_optional_user(
             
         return db_resp.data[0]
         
-    except Exception as e:
+    except Exception:
         return None
 
 
 async def get_current_user(
-    user: Optional[dict[str, Any]] = Depends(get_optional_user),
+    user: dict[str, Any] | None = Depends(get_optional_user),
 ) -> dict[str, Any]:
     """
     FastAPI dependency that validates the Supabase JWT from the Authorization header

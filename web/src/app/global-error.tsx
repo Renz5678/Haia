@@ -21,7 +21,7 @@ export default function GlobalError({
           <div className="bg-white p-12 rounded-2xl comic-border comic-shadow-lg max-w-2xl w-full">
             <h2 className="font-display-hero text-6xl anton-text mb-6 text-primary">FATAL ERROR!</h2>
             <p className="font-body-lg text-lg text-on-surface-variant mb-8 italic">
-              A catastrophic failure occurred. We're on it!
+              A catastrophic failure occurred. We&apos;re on it!
             </p>
             <div className="flex justify-center">
               <button

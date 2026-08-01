@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+
 from core.dependencies import get_current_user
 from tasks import service
-from tasks.schemas import TaskCreate, TaskUpdate, TaskResponse
+from tasks.schemas import TaskCreate, TaskResponse, TaskUpdate
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 

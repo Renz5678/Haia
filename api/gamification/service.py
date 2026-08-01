@@ -5,6 +5,7 @@ All writes use the service-role client — this module is called by other
 services (tasks, habits) after a completion event, never directly by the user.
 """
 from datetime import date
+
 from core.supabase import get_supabase_service_client
 
 
@@ -32,7 +33,7 @@ def award_xp_for_habit(user_id: str, habit_id: str, log_id: str, xp: int, logged
         "xp_amount": xp,
         "source_type": "habit",
         "source_id": log_id,
-        "reason": f"Habit check-in logged",
+        "reason": "Habit check-in logged",
     }).execute()
 
     # Update habit streak via DB helper function

@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import * as Sentry from "@sentry/nextjs";
+import Link from "next/link";
 
 export default function GlobalError({
   error,
@@ -21,7 +22,7 @@ export default function GlobalError({
       <div className="bg-white p-12 rounded-2xl comic-border comic-shadow-lg max-w-2xl w-full">
         <h2 className="font-display-hero text-6xl anton-text mb-6 text-primary">CRITICAL HIT!</h2>
         <p className="font-body-lg text-lg text-on-surface-variant mb-8 italic">
-          Something unexpected happened and broke your streak. Don't worry, our engineers have been notified.
+          Something unexpected happened and broke your streak. Don&apos;t worry, our engineers have been notified.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
@@ -30,12 +31,12 @@ export default function GlobalError({
           >
             Try Again
           </button>
-          <a
+          <Link
             href="/"
             className="bg-surface-container-high text-on-surface font-label-caps uppercase px-8 py-4 comic-border hover:-translate-y-1 transition-transform"
           >
             Return Home
-          </a>
+          </Link>
         </div>
       </div>
     </div>

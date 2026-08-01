@@ -26,8 +26,22 @@ export function CreateQuestModal({ isOpen, onClose, onSuccess }: CreateQuestModa
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const fetchGoals = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        const api = createApiClient(session.access_token);
+        const fetched = await api.goals.list("active");
+        setAvailableGoals(fetched as Goal[]);
+      } catch (err) {
+        console.error("Failed to fetch goals:", err);
+      }
+    };
+
     if (isOpen) {
       // Reset form
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTitle("");
       setTaskType("task");
       setPriority("medium");
@@ -36,19 +50,6 @@ export function CreateQuestModal({ isOpen, onClose, onSuccess }: CreateQuestModa
       fetchGoals();
     }
   }, [isOpen]);
-
-  const fetchGoals = async () => {
-    try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-      const api = createApiClient(session.access_token);
-      const fetched = await api.goals.list({ status: "active" });
-      setAvailableGoals(fetched as Goal[]);
-    } catch (err) {
-      console.error("Failed to fetch goals:", err);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

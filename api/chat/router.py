@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
-from core.dependencies import get_current_user
+
 from chat import service
 from chat.schemas import ChatMessageCreate, ChatMessageResponse
+from core.dependencies import get_current_user
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 

@@ -1,8 +1,10 @@
 import os
 import sys
 import time
+
 import httpx
 from dotenv import load_dotenv
+
 
 def main():
     load_dotenv()

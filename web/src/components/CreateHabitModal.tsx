@@ -24,26 +24,27 @@ export function CreateHabitModal({ isOpen, onClose, onSuccess }: CreateHabitModa
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const fetchGoals = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        const api = createApiClient(session.access_token);
+        const fetched = await api.goals.list("active");
+        setAvailableGoals(fetched as Goal[]);
+      } catch (err) {
+        console.error("Failed to fetch goals:", err);
+      }
+    };
+
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setName("");
       setFrequency("daily");
       setSelectedGoals([]);
       fetchGoals();
     }
   }, [isOpen]);
-
-  const fetchGoals = async () => {
-    try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-      const api = createApiClient(session.access_token);
-      const fetched = await api.goals.list({ status: "active" });
-      setAvailableGoals(fetched as Goal[]);
-    } catch (err) {
-      console.error("Failed to fetch goals:", err);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

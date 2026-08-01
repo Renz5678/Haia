@@ -1,6 +1,7 @@
 from core.supabase import get_supabase_service_client
 from subjects.schemas import SubjectCreate, SubjectUpdate
 
+
 def create_subject(user_id: str, data: SubjectCreate) -> dict:
     client = get_supabase_service_client()
     payload = {

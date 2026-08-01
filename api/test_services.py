@@ -1,15 +1,17 @@
-from unittest.mock import patch, MagicMock
-from tasks.service import create_task, complete_task
-from tasks.schemas import TaskCreate
-from habits.service import create_habit, log_habit
-from habits.schemas import HabitCreate, HabitLogCreate
-from goals.service import create_goal, get_goal_progress
-from goals.schemas import GoalCreate
-from subjects.service import create_subject
-from subjects.schemas import SubjectCreate
-from courses.service import create_course
+from datetime import time
+from unittest.mock import MagicMock, patch
+
 from courses.schemas import CourseCreate
-from datetime import time, date
+from courses.service import create_course
+from goals.schemas import GoalCreate
+from goals.service import create_goal, get_goal_progress
+from habits.schemas import HabitCreate
+from habits.service import create_habit
+from subjects.schemas import SubjectCreate
+from subjects.service import create_subject
+from tasks.schemas import TaskCreate
+from tasks.service import create_task
+
 
 def test_tasks_service():
     with patch("tasks.service.get_supabase_service_client") as mock_client:

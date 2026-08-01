@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, status
+
 from core.dependencies import get_current_user
 from goals import service
-from goals.schemas import GoalCreate, GoalUpdate, GoalResponse
+from goals.schemas import GoalCreate, GoalResponse, GoalUpdate
 
 router = APIRouter(prefix="/goals", tags=["goals"])
 

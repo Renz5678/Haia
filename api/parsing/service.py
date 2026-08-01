@@ -3,13 +3,20 @@ Central parsing pipeline.
 All input types (text, photo, voice, email, syllabus) pass through here.
 Phase 2 will implement the full text parsing; other types follow in Phase 4.
 """
-from parsing.schemas import ParseTextRequest, ParseTextResponse, IntentClassification, ParsedHabit, ParsedGoal
-from tasks.schemas import ParsedTask, TaskCreate
-from habits.schemas import HabitCreate
-from goals.schemas import GoalCreate
-from gemini_client import parse_text_to_schema
-from datetime import datetime, time
 import logging
+from datetime import datetime, time
+
+from gemini_client import parse_text_to_schema
+from goals.schemas import GoalCreate
+from habits.schemas import HabitCreate
+from parsing.schemas import (
+    IntentClassification,
+    ParsedGoal,
+    ParsedHabit,
+    ParseTextRequest,
+    ParseTextResponse,
+)
+from tasks.schemas import ParsedTask, TaskCreate
 
 logger = logging.getLogger(__name__)
 

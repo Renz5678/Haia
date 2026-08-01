@@ -12,9 +12,10 @@ Raw model output is never trusted directly.
 import json
 import logging
 from pathlib import Path
-from typing import Any, Type, TypeVar
+from typing import Any, TypeVar
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from pydantic import BaseModel, ValidationError
 
 from core.config import get_settings
@@ -35,10 +36,9 @@ def _load_prompt(name: str) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def _get_model(model_name: str = "gemini-flash-latest") -> genai.GenerativeModel:
+def _get_client() -> genai.Client:
     settings = get_settings()
-    genai.configure(api_key=settings.gemini_api_key)
-    return genai.GenerativeModel(model_name)
+    return genai.Client(api_key=settings.gemini_api_key)
 
 
 def _parse_json_response(raw: str) -> dict:
@@ -60,7 +60,7 @@ def _parse_json_response(raw: str) -> dict:
 def parse_text_to_schema(
     raw_input: str,
     prompt_name: str,
-    schema: Type[T],
+    schema: type[T],
     context: dict[str, Any] | None = None,
 ) -> T:
     """
@@ -81,9 +81,12 @@ def parse_text_to_schema(
         "Respond with valid JSON only. No prose, no markdown fences."
     )
 
-    model = _get_model()
+    client = _get_client()
     try:
-        response = model.generate_content(full_prompt)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=full_prompt,
+        )
         raw_json = response.text
     except Exception as e:
         logger.error("Gemini API call failed: %s", e)
@@ -106,7 +109,7 @@ async def parse_image_to_schema(
     image_bytes: bytes,
     mime_type: str,
     prompt_name: str,
-    schema: Type[T],
+    schema: type[T],
     context: dict[str, Any] | None = None,
 ) -> T:
     """
@@ -121,11 +124,15 @@ async def parse_image_to_schema(
         "Respond with valid JSON only. No prose, no markdown fences."
     )
 
-    model = _get_model("gemini-flash-latest")
-    image_part = {"mime_type": mime_type, "data": image_bytes}
-
+    client = _get_client()
     try:
-        response = model.generate_content([full_prompt, image_part])
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[
+                types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
+                full_prompt,
+            ]
+        )
         raw_json = response.text
     except Exception as e:
         logger.error("Gemini vision API call failed: %s", e)
@@ -135,12 +142,14 @@ async def parse_image_to_schema(
     return schema(**data)
 
 
-def get_embedding(text: str, model_name: str = "models/text-embedding-004") -> list[float]:
+def get_embedding(text: str, model_name: str = "text-embedding-004") -> list[float]:
     """
     Generate a text embedding for semantic goal matching.
     Returns a 768-dimensional float vector (matching the DB column).
     """
-    settings = get_settings()
-    genai.configure(api_key=settings.gemini_api_key)
-    result = genai.embed_content(model=model_name, content=text)
-    return result["embedding"]
+    client = _get_client()
+    result = client.models.embed_content(
+        model=model_name,
+        contents=text
+    )
+    return result.embeddings[0].values

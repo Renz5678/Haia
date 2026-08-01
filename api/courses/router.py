@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, UploadFile, File, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+
 from core.dependencies import get_current_user
 from courses import service
-from courses.schemas import CourseResponse, CourseCreate, CourseUpdate, ParsedSchedule
-from fastapi import HTTPException
+from courses.schemas import CourseCreate, CourseResponse, CourseUpdate, ParsedSchedule
 
 router = APIRouter(prefix="/courses", tags=["courses"])
 

@@ -1,32 +1,32 @@
-from pydantic import BaseModel, UUID4
 from datetime import datetime
-from typing import Optional
+
+from pydantic import UUID4, BaseModel
 
 
 class SubjectCreate(BaseModel):
     name: str
-    color: Optional[str] = None
-    icon: Optional[str] = None
+    color: str | None = None
+    icon: str | None = None
     area: str = "personal"
-    semester_id: Optional[UUID4] = None
+    semester_id: UUID4 | None = None
 
 
 class SubjectUpdate(BaseModel):
-    name: Optional[str] = None
-    color: Optional[str] = None
-    icon: Optional[str] = None
-    area: Optional[str] = None
-    semester_id: Optional[UUID4] = None
+    name: str | None = None
+    color: str | None = None
+    icon: str | None = None
+    area: str | None = None
+    semester_id: UUID4 | None = None
 
 
 class SubjectResponse(BaseModel):
     id: UUID4
     user_id: UUID4
     name: str
-    color: Optional[str]
-    icon: Optional[str]
+    color: str | None
+    icon: str | None
     area: str
-    semester_id: Optional[UUID4]
+    semester_id: UUID4 | None
     created_at: datetime
     updated_at: datetime
 

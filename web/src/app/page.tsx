@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Zap } from "lucide-react";
 
 export default function LandingPage() {
@@ -52,7 +53,7 @@ export default function LandingPage() {
       {/* Header Wordmark */}
       <header className="relative z-20 px-4 md:px-margin-desktop py-2 md:py-4 flex justify-center items-center">
         <div className="w-24 md:w-32">
-          <img src="/images/name.png" alt="HAIA Wordmark" className="w-full h-auto" />
+          <Image src="/images/name.png" alt="HAIA Wordmark" className="w-full h-auto" width={128} height={40} priority />
         </div>
       </header>
 
@@ -65,7 +66,7 @@ export default function LandingPage() {
             onMouseLeave={() => setIsLogoHovered(false)}
           >
             <div className="w-32 h-32 md:w-48 md:h-48 flex items-center justify-center">
-              <img src="/images/logoWObg.png" alt="HAIA Logo" className="w-full h-full object-contain drop-shadow-xl" />
+              <Image src="/images/logoWObg.png" alt="HAIA Logo" className="w-full h-full object-contain drop-shadow-xl" width={192} height={192} priority />
             </div>
           </div>
         </div>

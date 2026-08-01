@@ -12,7 +12,7 @@ google-auth-oauthlib>=1.2.0
 google-api-python-client>=2.126.0
 
 # Gemini
-google-generativeai>=0.5.0
+google-genai>=0.1.0
 
 # Telegram
 python-telegram-bot>=21.2
@@ -21,7 +21,7 @@ python-telegram-bot>=21.2
 mailgun2>=1.0.0
 
 # HTTP client
-httpx>=0.27.0
+httpx>=0.28.0
 
 # Background jobs (if not using pg_cron)
 apscheduler>=3.10.4
@@ -43,6 +43,6 @@ sentry-sdk[fastapi]>=2.3.0
 # Testing
 pytest>=8.2.0
 pytest-asyncio>=0.23.0
-httpx>=0.27.0                # async test client for FastAPI
+httpx>=0.28.0                # async test client for FastAPI
 structlog>=24.0.0
 apscheduler>=3.10.0

@@ -3,7 +3,6 @@ Task business logic.
 All DB access uses the service-role Supabase client (bypasses RLS).
 Authentication is enforced at the router layer via get_current_user.
 """
-from uuid import UUID
 from core.supabase import get_supabase_service_client
 from tasks.schemas import TaskCreate, TaskUpdate
 
@@ -89,6 +88,7 @@ def update_task(user_id: str, task_id: str, data: TaskUpdate) -> dict:
 def complete_task(user_id: str, task_id: str) -> dict:
     """Mark a task complete and trigger XP award via gamification service."""
     from datetime import datetime, timezone
+
     from gamification.service import award_xp_for_task
 
     client = get_supabase_service_client()

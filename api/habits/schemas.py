@@ -1,39 +1,39 @@
-from pydantic import BaseModel, UUID4
-from datetime import datetime, date, time
-from typing import Optional
+from datetime import date, datetime, time
+
+from pydantic import UUID4, BaseModel
 
 
 class HabitCreate(BaseModel):
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     frequency: str = "daily"
-    custom_days: Optional[list[int]] = None
-    target_time: Optional[time] = None
-    subject_id: Optional[UUID4] = None
+    custom_days: list[int] | None = None
+    target_time: time | None = None
+    subject_id: UUID4 | None = None
     xp_value: int = 5
     goal_ids: list[UUID4] = []
 
 
 class HabitUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    frequency: Optional[str] = None
-    custom_days: Optional[list[int]] = None
-    target_time: Optional[time] = None
-    is_active: Optional[bool] = None
+    name: str | None = None
+    description: str | None = None
+    frequency: str | None = None
+    custom_days: list[int] | None = None
+    target_time: time | None = None
+    is_active: bool | None = None
 
 
 class HabitResponse(BaseModel):
     id: UUID4
     user_id: UUID4
     name: str
-    description: Optional[str]
+    description: str | None
     frequency: str
-    custom_days: Optional[list[int]]
-    target_time: Optional[time]
+    custom_days: list[int] | None
+    target_time: time | None
     xp_value: int
     is_active: bool
-    subject_id: Optional[UUID4]
+    subject_id: UUID4 | None
     created_at: datetime
     updated_at: datetime
     goal_ids: list[UUID4] = []
@@ -43,7 +43,7 @@ class HabitResponse(BaseModel):
 
 class HabitLogCreate(BaseModel):
     logged_date: date
-    note: Optional[str] = None
+    note: str | None = None
 
 
 class HabitLogResponse(BaseModel):
@@ -52,7 +52,7 @@ class HabitLogResponse(BaseModel):
     user_id: UUID4
     logged_date: date
     logged_at: datetime
-    note: Optional[str]
+    note: str | None
     xp_awarded: int
 
     model_config = {"from_attributes": True}

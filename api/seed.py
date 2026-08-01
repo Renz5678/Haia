@@ -1,14 +1,14 @@
 import os
 import sys
 import uuid
-import asyncio
-from datetime import datetime, timedelta, date
-from random import randint, choice
+from datetime import date, datetime, timedelta
+from random import choice, randint
 
 # Add api path to sys.path so we can import core
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from core.supabase import get_supabase_service_client
+
 
 def run_seed():
     client = get_supabase_service_client()

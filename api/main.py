@@ -3,25 +3,25 @@ Haia — FastAPI Backend
 Entry point: uvicorn main:app --reload
 """
 
-import logging
 from contextlib import asynccontextmanager
+
 import structlog
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
+from auth.router import router as auth_router
+from chat.router import router as chat_router
 from core.config import get_settings
-from tasks.router import router as tasks_router
-from habits.router import router as habits_router
-from goals.router import router as goals_router
 from courses.router import router as courses_router
 from gamification.router import router as gamification_router
-from chat.router import router as chat_router
-from parsing.router import router as parsing_router
+from goals.router import router as goals_router
+from habits.router import router as habits_router
 from integrations.router import router as integrations_router
+from parsing.router import router as parsing_router
 from subjects.router import router as subjects_router
+from tasks.router import router as tasks_router
 from users.router import router as users_router
-from auth.router import router as auth_router
 
 structlog.configure(
     processors=[

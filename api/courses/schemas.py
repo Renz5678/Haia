@@ -1,52 +1,53 @@
-from pydantic import BaseModel, UUID4
 from datetime import datetime, time
-from typing import Optional
+
+from pydantic import UUID4, BaseModel
+
 
 class CourseCreate(BaseModel):
     code: str
-    section: Optional[str] = None
-    name: Optional[str] = None
-    instructor: Optional[str] = None
-    room: Optional[str] = None
+    section: str | None = None
+    name: str | None = None
+    instructor: str | None = None
+    room: str | None = None
     modality: str
     days: list[str]
     start_time: time
     end_time: time
-    units: Optional[float] = None
-    semester_id: Optional[UUID4] = None
-    subject_id: Optional[UUID4] = None
+    units: float | None = None
+    semester_id: UUID4 | None = None
+    subject_id: UUID4 | None = None
 
 
 class CourseUpdate(BaseModel):
-    code: Optional[str] = None
-    section: Optional[str] = None
-    name: Optional[str] = None
-    instructor: Optional[str] = None
-    room: Optional[str] = None
-    modality: Optional[str] = None
-    days: Optional[list[str]] = None
-    start_time: Optional[time] = None
-    end_time: Optional[time] = None
-    units: Optional[float] = None
-    semester_id: Optional[UUID4] = None
-    subject_id: Optional[UUID4] = None
+    code: str | None = None
+    section: str | None = None
+    name: str | None = None
+    instructor: str | None = None
+    room: str | None = None
+    modality: str | None = None
+    days: list[str] | None = None
+    start_time: time | None = None
+    end_time: time | None = None
+    units: float | None = None
+    semester_id: UUID4 | None = None
+    subject_id: UUID4 | None = None
 class CourseResponse(BaseModel):
     id: UUID4
     user_id: UUID4
-    semester_id: Optional[UUID4]
-    subject_id: Optional[UUID4]
+    semester_id: UUID4 | None
+    subject_id: UUID4 | None
     code: str
-    section: Optional[str]
-    name: Optional[str]
-    instructor: Optional[str]
-    room: Optional[str]
+    section: str | None
+    name: str | None
+    instructor: str | None
+    room: str | None
     modality: str
     days: list[str]
     start_time: time
     end_time: time
-    units: Optional[float]
-    calendar_event_id: Optional[str]
-    meet_link: Optional[str]
+    units: float | None
+    calendar_event_id: str | None
+    meet_link: str | None
     created_at: datetime
     updated_at: datetime
 
@@ -56,15 +57,15 @@ class CourseResponse(BaseModel):
 # Schema Gemini must produce when parsing a COR / schedule photo
 class ParsedCourse(BaseModel):
     code: str
-    section: Optional[str] = None
-    name: Optional[str] = None
-    instructor: Optional[str] = None
-    room: Optional[str] = None
+    section: str | None = None
+    name: str | None = None
+    instructor: str | None = None
+    room: str | None = None
     modality: str  # in_person | online | hybrid
     days: list[str]  # e.g. ["Mon", "Wed", "Fri"]
     start_time: str  # HH:MM 24h
     end_time: str    # HH:MM 24h
-    units: Optional[float] = None
+    units: float | None = None
 
 
 class ParsedSchedule(BaseModel):

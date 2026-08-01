@@ -20,7 +20,20 @@ def award_xp_for_task(user_id: str, task: dict) -> dict:
         "source_id": task["id"],
         "reason": f"Completed quest: {task['title']}",
     }
-    return client.schema("haia").table("xp_events").insert(event).execute().data[0]
+    event_record = client.schema("haia").table("xp_events").insert(event).execute().data[0]
+    
+    # Python fallback to update user total_xp and level if trigger is missing
+    user = client.schema("haia").table("users").select("total_xp").eq("id", user_id).single().execute().data
+    new_xp = (user.get("total_xp") or 0) + xp
+    
+    # Calculate level (triangular formula inverse approx or just simple while loop)
+    level = 1
+    while int(level * (level + 1) / 2 * 50) <= new_xp:
+        level += 1
+        
+    client.schema("haia").table("users").update({"total_xp": new_xp, "current_level": level}).eq("id", user_id).execute()
+    
+    return event_record
 
 
 def award_xp_for_habit(user_id: str, habit_id: str, log_id: str, xp: int, logged_date: date) -> None:
@@ -36,13 +49,43 @@ def award_xp_for_habit(user_id: str, habit_id: str, log_id: str, xp: int, logged
         "reason": "Habit check-in logged",
     }).execute()
 
-    # Update habit streak via DB helper function
-    client.rpc("haia.upsert_streak", {
-        "p_user_id": user_id,
-        "p_habit_id": habit_id,
-        "p_type": "habit",
-        "p_date": logged_date.isoformat(),
-    }).execute()
+    # Update habit streak via python logic to avoid missing RPC
+    from datetime import timedelta
+    
+    streaks = client.schema("haia").table("streaks").select("*").eq("user_id", user_id).eq("habit_id", habit_id).execute().data
+    
+    if not streaks:
+        client.schema("haia").table("streaks").insert({
+            "user_id": user_id,
+            "habit_id": habit_id,
+            "streak_type": "habit",
+            "current_streak": 1,
+            "longest_streak": 1,
+            "last_activity_date": logged_date.isoformat()
+        }).execute()
+    else:
+        streak = streaks[0]
+        last_date = date.fromisoformat(streak["last_activity_date"])
+        
+        # If logged today, no change to streak length
+        if last_date == logged_date:
+            return
+            
+        # If logged yesterday, increment streak
+        if last_date == logged_date - timedelta(days=1):
+            new_current = streak["current_streak"] + 1
+            new_longest = max(streak["longest_streak"], new_current)
+            client.schema("haia").table("streaks").update({
+                "current_streak": new_current,
+                "longest_streak": new_longest,
+                "last_activity_date": logged_date.isoformat()
+            }).eq("id", streak["id"]).execute()
+        else:
+            # Streak broken
+            client.schema("haia").table("streaks").update({
+                "current_streak": 1,
+                "last_activity_date": logged_date.isoformat()
+            }).eq("id", streak["id"]).execute()
 
 
 def get_user_stats(user_id: str) -> dict:

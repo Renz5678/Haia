@@ -127,6 +127,9 @@ export function createApiClient(accessToken: string) {
     integrations: {
       telegram: {
         linkCode: () => post("/integrations/telegram/link-code", {}),
+      },
+      google: {
+        connect: () => get("/integrations/google/connect"),
       }
     }
   };

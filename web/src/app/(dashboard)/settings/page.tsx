@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { User, Bell, Star, Palette, MessageCircle } from "lucide-react";
+import { User, Bell, Star, Palette, MessageCircle, Calendar } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { createClient } from "@/lib/supabase/client";
 
@@ -31,6 +31,23 @@ export default function SettingsPage() {
       alert("Failed to generate linking code. Make sure you are logged in.");
     } finally {
       setIsLinking(false);
+    }
+  };
+
+  const handleConnectGoogle = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("No session");
+      
+      const api = createApiClient(session.access_token);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res: any = await api.integrations.google.connect();
+      if (res.auth_url) {
+        window.open(res.auth_url, "Connect Google", "width=600,height=600");
+      }
+    } catch (err) {
+      console.error("Failed to connect Google", err);
+      alert("Failed to initiate Google connection.");
     }
   };
 
@@ -105,6 +122,22 @@ export default function SettingsPage() {
                   <p className="text-sm text-on-surface-variant mt-2 italic">Expires in 15 minutes</p>
                 </div>
               )}
+            </div>
+
+            <div className="bg-white border border-on-surface pop-shadow rounded-xl mt-6">
+              <div className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h3 className="font-body-lg font-bold">Google Calendar & Mail</h3>
+                  <p className="text-on-surface-variant text-body-md">Connect your Google account to sync events and enable email parsing.</p>
+                </div>
+                <button 
+                  onClick={handleConnectGoogle}
+                  className="bg-primary text-white px-6 py-3 rounded-lg font-bold border-2 border-on-surface shadow-[4px_4px_0px_0px_#1a1c1b] active:translate-x-1 active:translate-y-1 active:shadow-[0px_0px_0px_0px_#1a1c1b] transition-all flex items-center justify-center gap-2 whitespace-nowrap"
+                >
+                  <Calendar size={20} />
+                  Connect Google
+                </button>
+              </div>
             </div>
           </section>
 

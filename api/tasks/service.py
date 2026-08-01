@@ -33,6 +33,9 @@ def create_task(user_id: str, data: TaskCreate) -> dict:
     if data.goal_ids:
         links = [{"task_id": task["id"], "goal_id": str(gid)} for gid in data.goal_ids]
         client.schema("haia").table("task_goals").insert(links).execute()
+        
+    from integrations.gcal import sync_task_to_gcal
+    sync_task_to_gcal(user_id, task)
 
     return task
 
@@ -83,7 +86,12 @@ def update_task(user_id: str, task_id: str, data: TaskUpdate) -> dict:
         .eq("user_id", user_id)
         .execute()
     )
-    return result.data[0]
+    task = result.data[0]
+    
+    from integrations.gcal import sync_task_to_gcal
+    sync_task_to_gcal(user_id, task)
+    
+    return task
 
 
 def complete_task(user_id: str, task_id: str) -> dict:
@@ -103,9 +111,19 @@ def complete_task(user_id: str, task_id: str) -> dict:
     )
     task = result.data[0]
     award_xp_for_task(user_id=user_id, task=task)
+    
+    from integrations.gcal import sync_task_to_gcal
+    sync_task_to_gcal(user_id, task)
+    
     return task
 
 
 def delete_task(user_id: str, task_id: str) -> None:
+    task = get_task(user_id, task_id)
+    
     client = get_supabase_service_client()
     client.schema("haia").table("tasks").delete().eq("id", task_id).eq("user_id", user_id).execute()
+    
+    if task and task.get("calendar_event_id"):
+        from integrations.gcal import delete_task_from_gcal
+        delete_task_from_gcal(user_id, task["calendar_event_id"])

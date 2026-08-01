@@ -6,14 +6,13 @@ Entry point: uvicorn main:app --reload
 from contextlib import asynccontextmanager
 
 import structlog
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-
 from auth.router import router as auth_router
 from chat.router import router as chat_router
 from core.config import get_settings
 from courses.router import router as courses_router
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from gamification.router import router as gamification_router
 from goals.router import router as goals_router
 from habits.router import router as habits_router

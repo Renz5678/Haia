@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends
-
 from core.dependencies import get_current_user
+from fastapi import APIRouter, Depends
 from users import service
 from users.schemas import UserResponse, UserUpdate
 

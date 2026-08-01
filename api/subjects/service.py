@@ -1,4 +1,5 @@
 from core.supabase import get_supabase_service_client
+
 from subjects.schemas import SubjectCreate, SubjectUpdate
 
 

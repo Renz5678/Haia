@@ -1,6 +1,6 @@
+from core.dependencies import get_current_user
 from fastapi import APIRouter, Depends, status
 
-from core.dependencies import get_current_user
 from subjects import service
 from subjects.schemas import SubjectCreate, SubjectResponse, SubjectUpdate
 

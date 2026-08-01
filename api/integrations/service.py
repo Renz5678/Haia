@@ -1,7 +1,6 @@
 import logging
 
 import httpx
-
 from core.config import get_settings
 from core.supabase import get_supabase_service_client
 

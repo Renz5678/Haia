@@ -1,0 +1,2 @@
+Transcribe the provided audio accurately. Do not add conversational filler or extraneous comments.
+Your output should represent the literal speech in the audio.

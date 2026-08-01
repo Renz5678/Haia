@@ -1,6 +1,6 @@
+from core.dependencies import get_current_user
 from fastapi import APIRouter, Depends
 
-from core.dependencies import get_current_user
 from gamification import service
 from gamification.schemas import StreakResponse, UserStatsResponse, XPEventResponse
 

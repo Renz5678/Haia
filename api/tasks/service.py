@@ -4,6 +4,7 @@ All DB access uses the service-role Supabase client (bypasses RLS).
 Authentication is enforced at the router layer via get_current_user.
 """
 from core.supabase import get_supabase_service_client
+
 from tasks.schemas import TaskCreate, TaskUpdate
 
 

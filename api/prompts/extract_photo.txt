@@ -1,0 +1,3 @@
+Analyze the provided image and extract all relevant text, especially if it looks like a task, goal, habit, to-do list, or schedule.
+If it's handwritten, transcribe it accurately.
+If there are no explicit tasks, briefly describe the scene and what actionable items might be derived from it.

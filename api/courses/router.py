@@ -1,6 +1,6 @@
+from core.dependencies import get_current_user
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 
-from core.dependencies import get_current_user
 from courses import service
 from courses.schemas import CourseCreate, CourseResponse, CourseUpdate, ParsedSchedule
 

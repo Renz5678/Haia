@@ -1,4 +1,5 @@
 from core.supabase import get_supabase_service_client
+
 from courses.schemas import ParsedSchedule
 
 

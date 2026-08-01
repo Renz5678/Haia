@@ -6,17 +6,21 @@ Phase 2 will implement the full text parsing; other types follow in Phase 4.
 import logging
 from datetime import datetime, time
 
-from gemini_client import parse_text_to_schema
+from fastapi import UploadFile
+from gemini_client import parse_file_to_schema, parse_text_to_schema
 from goals.schemas import GoalCreate
 from habits.schemas import HabitCreate
+from tasks.schemas import ParsedTask, TaskCreate
+
 from parsing.schemas import (
+    ExtractedText,
     IntentClassification,
+    ParsedBulkTasks,
     ParsedGoal,
     ParsedHabit,
     ParseTextRequest,
     ParseTextResponse,
 )
-from tasks.schemas import ParsedTask, TaskCreate
 
 logger = logging.getLogger(__name__)
 
@@ -87,3 +91,51 @@ def parse_text(user_id: str, request: ParseTextRequest) -> ParseTextResponse:
 
     return ParseTextResponse(intent="unknown", parsed_type="unknown", confidence="low", data={"raw": request.raw_input})
 
+async def parse_photo(user_id: str, file: UploadFile) -> ParseTextResponse:
+    file_bytes = await file.read()
+    extracted = await parse_file_to_schema(
+        file_bytes=file_bytes,
+        mime_type=file.content_type,
+        prompt_name="extract_photo",
+        schema=ExtractedText
+    )
+    # Re-route to the standard text pipeline
+    request = ParseTextRequest(raw_input=extracted.text, channel="photo")
+    return parse_text(user_id, request)
+
+
+async def parse_voice(user_id: str, file: UploadFile) -> ParseTextResponse:
+    file_bytes = await file.read()
+    extracted = await parse_file_to_schema(
+        file_bytes=file_bytes,
+        mime_type=file.content_type,
+        prompt_name="extract_audio",
+        schema=ExtractedText
+    )
+    request = ParseTextRequest(raw_input=extracted.text, channel="voice")
+    return parse_text(user_id, request)
+
+
+async def parse_syllabus(user_id: str, file: UploadFile) -> ParsedBulkTasks:
+    file_bytes = await file.read()
+    parsed_bulk = await parse_file_to_schema(
+        file_bytes=file_bytes,
+        mime_type=file.content_type,
+        prompt_name="parse_syllabus",
+        schema=ParsedBulkTasks
+    )
+    # Save the parsed tasks in bulk
+    from tasks.service import create_task
+    for parsed in parsed_bulk.tasks:
+        due_date = datetime.fromisoformat(parsed.due_date.replace("Z", "+00:00")) if parsed.due_date else None
+        task_data = TaskCreate(
+            title=parsed.title,
+            description=parsed.description,
+            task_type=parsed.task_type,
+            priority=parsed.priority,
+            due_date=due_date,
+            source="syllabus"
+        )
+        create_task(user_id, task_data)
+        
+    return parsed_bulk

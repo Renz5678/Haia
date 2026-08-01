@@ -1,6 +1,6 @@
+from core.dependencies import get_current_user
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from core.dependencies import get_current_user
 from tasks import service
 from tasks.schemas import TaskCreate, TaskResponse, TaskUpdate
 

@@ -1,5 +1,5 @@
-
 from pydantic import BaseModel
+from tasks.schemas import ParsedTask
 
 
 class ParseTextRequest(BaseModel):
@@ -33,3 +33,9 @@ class ParseTextResponse(BaseModel):
     confidence: str         # high | medium | low
     data: dict              # The parsed structured item
     saved_id: str | None = None  # ID of the saved row, if auto-saved
+
+class ExtractedText(BaseModel):
+    text: str
+
+class ParsedBulkTasks(BaseModel):
+    tasks: list[ParsedTask]

@@ -14,11 +14,10 @@ import logging
 from pathlib import Path
 from typing import Any, TypeVar
 
+from core.config import get_settings
 from google import genai
 from google.genai import types
 from pydantic import BaseModel, ValidationError
-
-from core.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -105,16 +104,16 @@ def parse_text_to_schema(
         raise
 
 
-async def parse_image_to_schema(
-    image_bytes: bytes,
+async def parse_file_to_schema(
+    file_bytes: bytes,
     mime_type: str,
     prompt_name: str,
     schema: type[T],
     context: dict[str, Any] | None = None,
 ) -> T:
     """
-    Image (bytes) → structured schema parser.
-    Used for: photo-to-task, COR/schedule photo parsing.
+    File (bytes) → structured schema parser.
+    Supports images, audio, video, and PDFs natively via Gemini 2.5 Flash.
     """
     prompt_template = _load_prompt(prompt_name)
     ctx_str = json.dumps(context or {}, default=str)
@@ -129,7 +128,7 @@ async def parse_image_to_schema(
         response = client.models.generate_content(
             model="gemini-2.5-flash",
             contents=[
-                types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
+                types.Part.from_bytes(data=file_bytes, mime_type=mime_type),
                 full_prompt,
             ]
         )
@@ -140,6 +139,9 @@ async def parse_image_to_schema(
 
     data = _parse_json_response(raw_json)
     return schema(**data)
+
+# Alias for backward compatibility with courses router
+parse_image_to_schema = parse_file_to_schema
 
 
 def get_embedding(text: str, model_name: str = "text-embedding-004") -> list[float]:

@@ -3,8 +3,9 @@ Unified AI chatbot service.
 Handles intent routing and conversational replies for both Telegram and web.
 All messages are stored per-user (not per-channel) in chat_messages.
 """
-from chat.schemas import ChatMessageCreate
 from core.supabase import get_supabase_service_client
+
+from chat.schemas import ChatMessageCreate
 
 
 def get_history(user_id: str, limit: int = 20) -> list[dict]:

@@ -1,10 +1,9 @@
 import secrets
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, Request
-
 from core.config import get_settings
 from core.dependencies import get_current_user
+from fastapi import APIRouter, Depends, Request
 
 router = APIRouter(prefix="/integrations", tags=["integrations"])
 

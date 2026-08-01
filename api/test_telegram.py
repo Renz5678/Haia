@@ -2,7 +2,6 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from integrations.router import generate_telegram_link_code
 from integrations.service import handle_telegram_webhook
 

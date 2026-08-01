@@ -2,9 +2,9 @@ from typing import Any
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from supabase import Client
 
 from core.supabase import get_supabase_anon_client
+from supabase import Client
 
 bearer_scheme = HTTPBearer(auto_error=False)
 

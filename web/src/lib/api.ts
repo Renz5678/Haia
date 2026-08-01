@@ -45,6 +45,26 @@ export function createApiClient(accessToken: string) {
   const patch = <T>(path: string, body: unknown) => request<T>(accessToken, "PATCH",  path, body);
   const del  = <T>(path: string) => request<T>(accessToken, "DELETE", path);
 
+  const uploadFile = async <T>(path: string, file: File, fieldName = "file", extraData?: Record<string, string>) => {
+    const formData = new FormData();
+    formData.append(fieldName, file);
+    if (extraData) {
+      for (const [key, value] of Object.entries(extraData)) {
+        formData.append(key, value);
+      }
+    }
+    const res = await fetch(`${API_BASE}/api/v1${path}`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${accessToken}` },
+      body: formData,
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`API error ${res.status}: ${err}`);
+    }
+    return res.json() as Promise<T>;
+  };
+
   return {
     tasks: {
       list:     (params?: { task_status?: string; area?: string }) =>
@@ -75,6 +95,8 @@ export function createApiClient(accessToken: string) {
     courses: {
       list: (semester_id?: string) =>
               get(`/courses${semester_id ? `?semester_id=${semester_id}` : ""}`),
+      parseSchedule: (file: File, semester_id?: string) =>
+              uploadFile("/courses/parse-schedule", file, "file", semester_id ? { semester_id } : undefined),
     },
 
     gamification: {
@@ -97,6 +119,9 @@ export function createApiClient(accessToken: string) {
     parse: {
       text: (raw_input: string, channel = "typed") =>
               post("/parse/text", { raw_input, channel }),
+      photo: (file: File) => uploadFile("/parse/photo", file),
+      voice: (file: File) => uploadFile("/parse/voice", file),
+      syllabus: (file: File) => uploadFile("/parse/syllabus", file),
     },
     
     integrations: {

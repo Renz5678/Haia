@@ -3,9 +3,9 @@
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Zap, Bell, Settings as SettingsIcon, Menu, Sparkles, Send } from "lucide-react";
+import { Zap, Bell, Settings as SettingsIcon, Menu, Sparkles, Send, MessageCircle } from "lucide-react";
 
-export default function TopHeader() {
+export default function TopHeader({ onOpenChat }: { onOpenChat?: () => void }) {
   const pathname = usePathname();
   const [query, setQuery] = useState("");
 
@@ -68,7 +68,13 @@ export default function TopHeader() {
         </div>
         
         <div className="flex gap-2 md:gap-3">
-          <button className="w-10 h-10 md:w-12 md:h-12 rounded-full comic-border bg-white hover:bg-surface-container transition-colors flex items-center justify-center comic-shadow-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
+          <button 
+            onClick={onOpenChat}
+            className="w-10 h-10 md:w-12 md:h-12 rounded-full comic-border bg-white hover:bg-surface-container transition-colors flex items-center justify-center comic-shadow-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+          >
+            <MessageCircle size={20} className="text-primary" />
+          </button>
+          <button className="hidden sm:flex w-10 h-10 md:w-12 md:h-12 rounded-full comic-border bg-white hover:bg-surface-container transition-colors items-center justify-center comic-shadow-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
             <Bell size={20} />
           </button>
           <Link href="/settings" className="w-10 h-10 md:w-12 md:h-12 rounded-full comic-border bg-white hover:bg-surface-container transition-colors flex items-center justify-center comic-shadow-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">

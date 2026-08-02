@@ -106,7 +106,9 @@ export default function HabitsPage() {
               <div className="flex flex-wrap items-center gap-4 mb-6">
                 <div className="flex items-center gap-2">
                   <TrendingUp size={16} className="text-on-surface-variant" />
-                  <span className="text-sm font-bold text-on-surface-variant italic uppercase">Frequency: {habit.frequency || "Daily"}</span>
+                  <span className="text-sm font-bold text-on-surface-variant italic uppercase">
+                    Frequency: {habit.frequency === "flexible" ? `Flexible (${habit.target_count || 1}x / week)` : habit.frequency || "Daily"}
+                  </span>
                 </div>
                 {habit.goal_ids && habit.goal_ids.length > 0 && (
                   <span className="bg-surface-container-high text-on-surface-variant px-2 py-0.5 rounded font-black italic text-[10px] comic-border flex items-center gap-1">

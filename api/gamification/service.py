@@ -41,6 +41,9 @@ def award_xp_for_habit(user_id: str, habit_id: str, log_id: str, xp: int, logged
     # Update habit streak via python logic to avoid missing RPC
     from datetime import timedelta
     
+    # Get habit details for flexible streaks
+    habit = client.schema("haia").table("habits").select("frequency, target_count").eq("id", habit_id).single().execute().data
+    
     streaks = client.schema("haia").table("streaks").select("*").eq("user_id", user_id).eq("habit_id", habit_id).execute().data
     
     if not streaks:
@@ -48,21 +51,58 @@ def award_xp_for_habit(user_id: str, habit_id: str, log_id: str, xp: int, logged
             "user_id": user_id,
             "habit_id": habit_id,
             "streak_type": "habit",
-            "current_streak": 1,
-            "longest_streak": 1,
+            "current_streak": 0 if habit.get("frequency") == "flexible" else 1,
+            "longest_streak": 0 if habit.get("frequency") == "flexible" else 1,
             "last_activity_date": logged_date.isoformat()
         }).execute()
-    else:
-        streak = streaks[0]
-        
-        if streak.get("last_activity_date"):
-            last_date = date.fromisoformat(streak["last_activity_date"])
-        else:
-            last_date = None
-        
-        # If logged today, no change to streak length
-        if last_date == logged_date:
+        # For flexible habits, we just created the row. We will handle increment below.
+        if habit.get("frequency") != "flexible":
             return
+        
+        streaks = client.schema("haia").table("streaks").select("*").eq("user_id", user_id).eq("habit_id", habit_id).execute().data
+
+    streak = streaks[0]
+        
+    if streak.get("last_activity_date"):
+        last_date = date.fromisoformat(streak["last_activity_date"])
+    else:
+        last_date = None
+        
+    if habit.get("frequency") == "flexible":
+        # Weekly flexible streak logic
+        target = habit.get("target_count") or 1
+        
+        # Get all logs for this week (Monday to Sunday)
+        start_of_week = logged_date - timedelta(days=logged_date.weekday())
+        end_of_week = start_of_week + timedelta(days=6)
+        
+        week_logs_count = client.schema("haia").table("habit_logs").select("id", count="exact")\
+            .eq("habit_id", habit_id)\
+            .gte("logged_date", start_of_week.isoformat())\
+            .lte("logged_date", end_of_week.isoformat())\
+            .execute().count or 0
+            
+        # If we just hit the target exactly, we increment the streak
+        if week_logs_count == target:
+            # Check if they hit it last week
+            if last_date and last_date >= start_of_week - timedelta(days=7):
+                # Consecutive week
+                new_current = streak["current_streak"] + 1
+            else:
+                # Started a new weekly streak
+                new_current = 1
+                
+            new_longest = max(streak["longest_streak"], new_current)
+            client.schema("haia").table("streaks").update({
+                "current_streak": new_current,
+                "longest_streak": new_longest,
+                "last_activity_date": start_of_week.isoformat()
+            }).eq("id", streak["id"]).execute()
+        return
+        
+    # --- Regular daily streak logic ---
+    if last_date == logged_date:
+        return
             
         # If logged yesterday, increment streak
         if last_date and last_date == logged_date - timedelta(days=1):

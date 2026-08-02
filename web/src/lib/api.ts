@@ -9,6 +9,22 @@
  *   const tasks = await api.tasks.list();
  */
 
+export interface Habit {
+  id: string;
+  user_id: string;
+  name: string;
+  description?: string;
+  frequency: "daily" | "weekdays" | "weekends" | "custom" | "flexible";
+  custom_days?: number[];
+  target_count?: number;
+  target_time?: string;
+  xp_value: number;
+  is_active: boolean;
+  subject_id?: string;
+  created_at: string;
+  goal_ids?: string[];
+}
+
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
 function makeHeaders(token: string): HeadersInit {

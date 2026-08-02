@@ -8,6 +8,7 @@ class HabitCreate(BaseModel):
     description: str | None = None
     frequency: str = "daily"
     custom_days: list[int] | None = None
+    target_count: int | None = None
     target_time: time | None = None
     subject_id: UUID4 | None = None
     xp_value: int = 5
@@ -19,6 +20,7 @@ class HabitUpdate(BaseModel):
     description: str | None = None
     frequency: str | None = None
     custom_days: list[int] | None = None
+    target_count: int | None = None
     target_time: time | None = None
     is_active: bool | None = None
 
@@ -30,6 +32,7 @@ class HabitResponse(BaseModel):
     description: str | None
     frequency: str
     custom_days: list[int] | None
+    target_count: int | None
     target_time: time | None
     xp_value: int
     is_active: bool

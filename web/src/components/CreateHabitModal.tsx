@@ -19,6 +19,7 @@ interface CreateHabitModalProps {
 export function CreateHabitModal({ isOpen, onClose, onSuccess }: CreateHabitModalProps) {
   const [name, setName] = useState("");
   const [frequency, setFrequency] = useState("daily");
+  const [targetCount, setTargetCount] = useState(1);
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [availableGoals, setAvailableGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(false);
@@ -41,6 +42,7 @@ export function CreateHabitModal({ isOpen, onClose, onSuccess }: CreateHabitModa
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setName("");
       setFrequency("daily");
+      setTargetCount(1);
       setSelectedGoals([]);
       fetchGoals();
     }
@@ -60,6 +62,7 @@ export function CreateHabitModal({ isOpen, onClose, onSuccess }: CreateHabitModa
       await api.habits.create({
         name,
         frequency,
+        target_count: frequency === "flexible" ? targetCount : undefined,
         goal_ids: selectedGoals,
       });
 
@@ -123,9 +126,26 @@ export function CreateHabitModal({ isOpen, onClose, onSuccess }: CreateHabitModa
               className="w-full p-3 bg-white comic-border rounded-lg focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all font-bold appearance-none cursor-pointer"
             >
               <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
+              <option value="weekdays">Weekdays</option>
+              <option value="weekends">Weekends</option>
+              <option value="flexible">Flexible</option>
             </select>
           </div>
+
+          {frequency === "flexible" && (
+            <div>
+              <label className="block font-black italic text-label-caps uppercase text-on-surface mb-2">Times per week</label>
+              <input 
+                type="number" 
+                min="1"
+                max="7"
+                required
+                value={targetCount}
+                onChange={(e) => setTargetCount(parseInt(e.target.value) || 1)}
+                className="w-full p-3 bg-white comic-border rounded-lg focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all font-body-lg font-bold"
+              />
+            </div>
+          )}
 
           {/* Attach to Goals */}
           {availableGoals.length > 0 && (

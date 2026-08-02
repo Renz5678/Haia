@@ -155,7 +155,7 @@ export default function SchedulePage() {
     timeLines.push(
       <div 
         key={i} 
-        className={`absolute w-full flex items-center border-t ${isHour ? "border-black" : "border-black/20"}`}
+        className="absolute w-full flex items-center border-t border-black"
         style={{ top: `${i * (PIXELS_PER_HOUR / 2)}px`, height: "0px", left: 0 }}
       >
         <span className="absolute -left-[65px] -translate-y-1/2 text-xs font-bold w-[60px] text-right">
@@ -196,7 +196,7 @@ export default function SchedulePage() {
 
         <div className="w-full max-w-6xl bg-white comic-border comic-shadow rounded-lg p-8 pb-12 overflow-x-auto">
           <div ref={scheduleRef} className="bg-white p-4 min-w-[800px]">
-            <div className="pl-[70px] grid grid-cols-7 gap-2 mb-4">
+            <div className="pl-[70px] grid grid-cols-7 gap-0 mb-4">
               {DAYS.map(day => (
                 <div key={day} className="text-center font-black comic-text uppercase text-sm">
                   {day}
@@ -209,7 +209,7 @@ export default function SchedulePage() {
               {timeLines}
 
               {/* Day Columns */}
-              <div className="absolute inset-0 grid grid-cols-7 gap-2">
+              <div className="absolute inset-0 grid grid-cols-7 gap-0">
                 {DAYS.map((day) => {
                   const dayCourses = courses.filter(c => {
                      // Check if course.days includes this day. It could be an array or string.
@@ -220,7 +220,7 @@ export default function SchedulePage() {
                   });
 
                   return (
-                    <div key={day} className="relative h-full border-r-2 border-black/10 last:border-r-0">
+                    <div key={day} className="relative h-full border-r border-black last:border-r-0">
                       {dayCourses.map(course => {
                         const start = parseTimeToDecimal(course.start_time);
                         const end = parseTimeToDecimal(course.end_time);
@@ -237,14 +237,14 @@ export default function SchedulePage() {
                         return (
                           <div
                             key={course.id + day}
-                            className="absolute left-1 right-1 rounded-md border-2 border-black overflow-hidden flex flex-col items-center justify-center p-1 text-center comic-shadow-sm hover:z-10 hover:-translate-y-1 transition-transform"
+                            className="absolute left-1 right-1 rounded-md border-2 border-black overflow-hidden flex flex-col items-center justify-start p-2 pt-3 text-center hover:z-10 transition-transform"
                             style={{ 
                               top: `${top}px`, 
                               height: `${height}px`,
                               backgroundColor: bgColor 
                             }}
                           >
-                            <div className="font-bold text-[11px] leading-tight mb-1 uppercase line-clamp-3">
+                            <div className="font-bold text-[11px] leading-tight mb-1">
                               {course.name || course.code}
                             </div>
                             <div className="text-[10px] font-medium opacity-80 uppercase">

@@ -85,6 +85,10 @@ def parse_text_to_schema(
         response = client.models.generate_content(
             model="gemini-3.5-flash",
             contents=full_prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=schema,
+            )
         )
         raw_json = response.text
     except Exception as e:
@@ -130,7 +134,11 @@ async def parse_file_to_schema(
             contents=[
                 types.Part.from_bytes(data=file_bytes, mime_type=mime_type),
                 full_prompt,
-            ]
+            ],
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=schema,
+            )
         )
         raw_json = response.text
     except Exception as e:

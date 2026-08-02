@@ -44,7 +44,7 @@ async def parse_schedule_photo(
     from gemini_client import parse_image_to_schema
     image_bytes = await file.read()
     parsed_schedule = await parse_image_to_schema(
-        image_bytes=image_bytes,
+        file_bytes=image_bytes,
         mime_type=file.content_type,
         prompt_name="parse_schedule",
         schema=ParsedSchedule,

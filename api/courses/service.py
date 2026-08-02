@@ -18,6 +18,8 @@ def save_parsed_schedule(user_id: str, parsed: ParsedSchedule, semester_id: str 
     for course in parsed.courses:
         payload = {
             **course.model_dump(),
+            "start_time": course.start_time.isoformat(),
+            "end_time": course.end_time.isoformat(),
             "user_id": user_id,
             "semester_id": semester_id,
         }

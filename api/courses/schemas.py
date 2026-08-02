@@ -64,8 +64,8 @@ class ParsedCourse(BaseModel):
     room: str | None = None
     modality: Literal["in_person", "online", "hybrid"]
     days: list[str]  # e.g. ["Mon", "Wed", "Fri"]
-    start_time: str  # HH:MM 24h
-    end_time: str    # HH:MM 24h
+    start_time: time
+    end_time: time
     units: float | None = None
 
 

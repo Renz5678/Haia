@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import html2canvas from "html2canvas";
+import { toPng } from 'html-to-image';
 import { Camera, Download, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
@@ -9,7 +9,7 @@ import { createApiClient } from "@/lib/api";
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const START_HOUR = 8; // 8 AM
 const END_HOUR = 21; // 9 PM
-const PIXELS_PER_HOUR = 100;
+const PIXELS_PER_HOUR = 60;
 const TOTAL_HOURS = END_HOUR - START_HOUR;
 
 const COLORS = [
@@ -99,10 +99,9 @@ export default function SchedulePage() {
   const exportSchedule = async () => {
     if (!scheduleRef.current) return;
     try {
-      const canvas = await html2canvas(scheduleRef.current, { scale: 2 });
-      const image = canvas.toDataURL("image/png");
+      const dataUrl = await toPng(scheduleRef.current, { pixelRatio: 2, backgroundColor: '#ffffff' });
       const a = document.createElement("a");
-      a.href = image;
+      a.href = dataUrl;
       a.download = "haia_schedule.png";
       a.click();
     } catch (err) {
@@ -138,7 +137,7 @@ export default function SchedulePage() {
       <div 
         key={i} 
         className={`absolute w-full flex items-center border-t ${isHour ? "border-black" : "border-black/20"}`}
-        style={{ top: `${i * 50}px`, height: "0px", left: 0 }}
+        style={{ top: `${i * (PIXELS_PER_HOUR / 2)}px`, height: "0px", left: 0 }}
       >
         <span className="absolute -left-[65px] -translate-y-1/2 text-xs font-bold w-[60px] text-right">
           {timeLabel}

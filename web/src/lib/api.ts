@@ -95,6 +95,7 @@ export function createApiClient(accessToken: string) {
     courses: {
       list: (semester_id?: string) =>
               get(`/courses${semester_id ? `?semester_id=${semester_id}` : ""}`),
+      update: (id: string, body: unknown) => patch(`/courses/${id}`, body),
       parseSchedule: (file: File, semester_id?: string) =>
               uploadFile("/courses/parse-schedule", file, "file", semester_id ? { semester_id } : undefined),
     },

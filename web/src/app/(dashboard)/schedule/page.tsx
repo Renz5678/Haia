@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { toPng } from 'html-to-image';
-import { Camera, Download, Loader2 } from "lucide-react";
+import { Camera, Download, Loader2, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
 
@@ -32,7 +32,6 @@ function getCourseColor(code: string) {
 }
 
 function parseTimeToDecimal(timeStr: string) {
-  // timeStr is "HH:MM:SS"
   const [h, m] = timeStr.split(":").map(Number);
   return h + m / 60;
 }
@@ -42,23 +41,147 @@ function formatTime(timeStr: string) {
   return d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }).replace(" ", "");
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function CourseEditModal({ course, onClose, onSave, api }: { course: any, onClose: () => void, onSave: () => void, api: any }) {
+  const [formData, setFormData] = useState({
+    name: course.name || "",
+    code: course.code || "",
+    section: course.section || "",
+    instructor: course.instructor || "",
+    room: course.room || "",
+    modality: course.modality || "in_person"
+  });
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await api.courses.update(course.id, formData);
+      onSave();
+      onClose();
+    } catch (err) {
+      console.error("Failed to update course", err);
+      alert("Failed to update course");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="bg-white comic-border comic-shadow rounded-lg p-6 w-full max-w-md relative">
+        <button onClick={onClose} className="absolute top-4 right-4 hover:bg-surface-container rounded-full p-1 transition-colors">
+          <X size={20} />
+        </button>
+        <h2 className="font-headline-sm text-2xl font-black comic-text mb-4 uppercase">Edit Course</h2>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-bold uppercase mb-1">Course Title</label>
+            <input 
+              type="text" 
+              className="w-full border-2 border-black rounded p-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              value={formData.name}
+              onChange={e => setFormData({...formData, name: e.target.value})}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-bold uppercase mb-1">Course Code</label>
+              <input 
+                type="text" 
+                className="w-full border-2 border-black rounded p-2 focus:outline-none focus:ring-2 focus:ring-primary uppercase"
+                value={formData.code}
+                onChange={e => setFormData({...formData, code: e.target.value})}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold uppercase mb-1">Section</label>
+              <input 
+                type="text" 
+                className="w-full border-2 border-black rounded p-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                value={formData.section}
+                onChange={e => setFormData({...formData, section: e.target.value})}
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-bold uppercase mb-1">Instructor</label>
+            <input 
+              type="text" 
+              className="w-full border-2 border-black rounded p-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              value={formData.instructor}
+              onChange={e => setFormData({...formData, instructor: e.target.value})}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-bold uppercase mb-1">Room</label>
+              <input 
+                type="text" 
+                className="w-full border-2 border-black rounded p-2 focus:outline-none focus:ring-2 focus:ring-primary uppercase"
+                value={formData.room}
+                onChange={e => setFormData({...formData, room: e.target.value})}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold uppercase mb-1">Modality</label>
+              <select 
+                className="w-full border-2 border-black rounded p-2 focus:outline-none focus:ring-2 focus:ring-primary bg-white h-[42px]"
+                value={formData.modality}
+                onChange={e => setFormData({...formData, modality: e.target.value})}
+              >
+                <option value="in_person">In Person</option>
+                <option value="online">Online</option>
+                <option value="hybrid">Hybrid</option>
+              </select>
+            </div>
+          </div>
+          
+          <button 
+            type="submit" 
+            disabled={saving}
+            className="w-full mt-6 bg-primary text-white font-label-caps uppercase font-black italic px-4 py-3 rounded comic-border comic-shadow-sm hover:-translate-y-1 transition-transform flex items-center justify-center gap-2"
+          >
+            {saving ? <Loader2 className="animate-spin" size={18} /> : null}
+            {saving ? "SAVING..." : "SAVE CHANGES"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default function SchedulePage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [courses, setCourses] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [api, setApi] = useState<any>(null);
   
   const scheduleRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
+
+  const initApi = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      setApi(createApiClient(session.access_token));
+    }
+  };
 
   const fetchCourses = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
-      const api = createApiClient(session.access_token);
+      const currentApi = createApiClient(session.access_token);
       
-      const fetchedCourses = await api.courses.list();
+      const fetchedCourses = await currentApi.courses.list();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setCourses(fetchedCourses as any[]);
     } catch (err) {
@@ -71,6 +194,7 @@ export default function SchedulePage() {
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    initApi();
     fetchCourses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -83,9 +207,9 @@ export default function SchedulePage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
-      const api = createApiClient(session.access_token);
+      const currentApi = createApiClient(session.access_token);
       
-      await api.courses.parseSchedule(file);
+      await currentApi.courses.parseSchedule(file);
       await fetchCourses();
     } catch (err) {
       console.error(err);
@@ -143,7 +267,6 @@ export default function SchedulePage() {
     const timeValue = START_HOUR + i * 0.5;
     const hour = Math.floor(timeValue);
     const min = (timeValue % 1) * 60;
-    const isHour = min === 0;
     
     let timeLabel = "";
     if (hour <= 12) {
@@ -167,6 +290,16 @@ export default function SchedulePage() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-80px)] w-full overflow-hidden bg-[#FAFAF8] relative z-0">
+      
+      {selectedCourse && api && (
+        <CourseEditModal 
+          course={selectedCourse} 
+          api={api} 
+          onClose={() => setSelectedCourse(null)} 
+          onSave={fetchCourses} 
+        />
+      )}
+
       <div className="flex-1 overflow-y-auto p-4 md:p-gutter flex flex-col items-center">
         <div className="w-full max-w-6xl mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <h1 className="font-headline-lg text-3xl md:text-headline-lg comic-text">MY SCHEDULE</h1>
@@ -212,7 +345,6 @@ export default function SchedulePage() {
               <div className="absolute inset-0 grid grid-cols-7 gap-0">
                 {DAYS.map((day) => {
                   const dayCourses = courses.filter(c => {
-                     // Check if course.days includes this day. It could be an array or string.
                      if (Array.isArray(c.days)) {
                        return c.days.includes(day);
                      }
@@ -237,7 +369,8 @@ export default function SchedulePage() {
                         return (
                           <div
                             key={course.id + day}
-                            className="absolute left-1 right-1 rounded-md border-2 border-black overflow-hidden flex flex-col items-center justify-start p-2 pt-3 text-center hover:z-10 transition-transform"
+                            onClick={() => setSelectedCourse(course)}
+                            className="absolute left-1 right-1 rounded-md border-2 border-black overflow-hidden flex flex-col items-center justify-start p-2 pt-3 text-center hover:z-10 transition-transform cursor-pointer"
                             style={{ 
                               top: `${top}px`, 
                               height: `${height}px`,

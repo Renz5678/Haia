@@ -35,7 +35,7 @@ export default function Sidebar() {
     { name: "Quests", href: "/quests", icon: CheckSquare },
     { name: "Habits", href: "/habits", icon: RefreshCw },
     { name: "Goals", href: "/goals", icon: Target },
-    { name: "Schedule", href: "/calendar", icon: Calendar },
+    { name: "Schedule", href: "/schedule", icon: Calendar },
     { name: "Haia", href: "/chat", icon: MessageSquare },
   ];
 

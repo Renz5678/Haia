@@ -101,8 +101,8 @@ export default function SchedulePage() {
           <div className="flex gap-4">
             <label className="bg-white text-on-surface font-label-caps uppercase font-black italic px-4 py-2 rounded comic-border comic-shadow hover:-translate-y-1 transition-transform cursor-pointer flex items-center gap-2">
               {uploading ? <Loader2 className="animate-spin" size={16} /> : <Camera size={16} />}
-              {uploading ? "PARSING..." : "UPLOAD PHOTO"}
-              <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} disabled={uploading} />
+              {uploading ? "PARSING..." : "UPLOAD FILE"}
+              <input type="file" accept="image/*,application/pdf" className="hidden" onChange={handleFileUpload} disabled={uploading} />
             </label>
             
             <button 
@@ -129,7 +129,7 @@ export default function SchedulePage() {
 
             {courses.length === 0 ? (
               <div className="text-center p-12 opacity-50 font-bold comic-text">
-                No courses added yet. Upload a photo of your schedule or COR to begin!
+                No courses added yet. Upload a photo or PDF of your schedule or COR to begin!
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

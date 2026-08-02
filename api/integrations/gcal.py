@@ -102,3 +102,77 @@ def delete_task_from_gcal(user_id: str, gcal_event_id: str):
         service.events().delete(calendarId='primary', eventId=gcal_event_id).execute()
     except Exception as e:
         logger.error(f"Failed to delete task from GCal for user {user_id}: {e}")
+
+
+def sync_course_to_gcal(user_id: str, course: dict):
+    service = get_gcal_service(user_id)
+    if not service:
+        return
+        
+    client = get_supabase_service_client()
+    gcal_event_id = course.get("calendar_event_id")
+    created = None
+    
+    try:
+        # Convert days to RRULE format
+        day_map = {"Mon": "MO", "Tue": "TU", "Wed": "WE", "Thu": "TH", "Fri": "FR", "Sat": "SA", "Sun": "SU"}
+        days = course.get("days", [])
+        byday = ",".join([day_map.get(d, "MO") for d in days])
+        
+        # Start date: use today as the base
+        today = datetime.utcnow().date()
+        start_time_str = course.get("start_time")
+        end_time_str = course.get("end_time")
+        
+        start_dt = datetime.strptime(start_time_str, "%H:%M:%S").replace(year=today.year, month=today.month, day=today.day)
+        end_dt = datetime.strptime(end_time_str, "%H:%M:%S").replace(year=today.year, month=today.month, day=today.day)
+        
+        event = {
+            'summary': f"{course.get('code')} - {course.get('name') or 'Class'}",
+            'description': f"Instructor: {course.get('instructor') or 'TBD'}\\nRoom: {course.get('room') or 'TBD'}\\nModality: {course.get('modality')}\\n\\n[Managed by Haia]",
+            'start': {
+                'dateTime': start_dt.isoformat() + "Z",
+                'timeZone': 'UTC',
+            },
+            'end': {
+                'dateTime': end_dt.isoformat() + "Z",
+                'timeZone': 'UTC',
+            },
+            'recurrence': [
+                f'RRULE:FREQ=WEEKLY;BYDAY={byday}'
+            ] if byday else []
+        }
+        
+        # Add Meet link for online/hybrid
+        if course.get("modality") in ["online", "hybrid"]:
+            event['conferenceData'] = {
+                'createRequest': {
+                    'requestId': f"haia-course-{course['id']}",
+                    'conferenceSolutionKey': {'type': 'hangoutsMeet'}
+                }
+            }
+        
+        if gcal_event_id:
+            try:
+                created = service.events().update(calendarId='primary', eventId=gcal_event_id, body=event, conferenceDataVersion=1).execute()
+            except Exception as e:
+                logger.warning(f"Could not update event {gcal_event_id}, recreating: {e}")
+                created = service.events().insert(calendarId='primary', body=event, conferenceDataVersion=1).execute()
+                gcal_event_id = created.get('id')
+        else:
+            created = service.events().insert(calendarId='primary', body=event, conferenceDataVersion=1).execute()
+            gcal_event_id = created.get('id')
+            
+        update_payload = {"calendar_event_id": gcal_event_id}
+        
+        # Save meet link if generated
+        if created and 'conferenceData' in created and 'entryPoints' in created['conferenceData']:
+            for entry in created['conferenceData']['entryPoints']:
+                if entry['entryPointType'] == 'video':
+                    update_payload["meet_link"] = entry['uri']
+                    break
+                    
+        client.schema("haia").table("courses").update(update_payload).eq("id", course["id"]).execute()
+            
+    except Exception as e:
+        logger.error(f"Failed to sync course {course['id']} to GCal for user {user_id}: {e}")

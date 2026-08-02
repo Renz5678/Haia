@@ -24,7 +24,17 @@ def save_parsed_schedule(user_id: str, parsed: ParsedSchedule, semester_id: str 
         response = client.schema("haia").table("courses").insert(payload).execute()
         rows.append(response.data[0])
 
-    # TODO(phase-5): trigger Google Calendar recurring event creation per course
+    from integrations.gcal import sync_course_to_gcal
+    import asyncio
+    
+    # We can trigger it asynchronously or just block
+    for row in rows:
+        try:
+            sync_course_to_gcal(user_id, row)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).error(f"Failed to sync course {row['id']} to GCal: {e}")
+            
     return rows
 
 

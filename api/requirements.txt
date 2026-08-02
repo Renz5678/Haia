@@ -35,7 +35,7 @@ python-dotenv>=1.0.0
 pypdf>=4.2.0
 
 # Schedule PNG renderer (Playwright is installed separately — see README)
-# playwright>=1.44.0         # uncomment after: playwright install chromium
+playwright>=1.44.0         # uncomment after: playwright install chromium
 
 # Error monitoring (optional)
 sentry-sdk[fastapi]>=2.3.0

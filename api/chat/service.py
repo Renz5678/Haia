@@ -76,14 +76,32 @@ def process_message(user_id: str, data: ChatMessageCreate) -> dict:
     
     # We aren't fetching recent tasks/goals in the stub, just stats for brevity
     # but we could fetch them here.
+    # Better live snapshot grounding
     client = get_supabase_service_client()
-    recent_tasks = client.schema("haia").table("tasks").select("title, status").eq("user_id", user_id).limit(5).execute().data
-    recent_goals = client.schema("haia").table("goals").select("title, status").eq("user_id", user_id).limit(3).execute().data
+    
+    pending_tasks = (
+        client.schema("haia").table("tasks")
+        .select("title, due_date, priority")
+        .eq("user_id", user_id)
+        .eq("status", "pending")
+        .order("due_date")
+        .limit(5)
+        .execute().data
+    )
+    
+    recent_goals = (
+        client.schema("haia").table("goals")
+        .select("title, status")
+        .eq("user_id", user_id)
+        .eq("status", "in_progress")
+        .limit(3)
+        .execute().data
+    )
     
     history_str = json.dumps([{"role": msg["role"], "content": msg["content"]} for msg in history])
     
     prompt = prompt_template.replace("{user_stats}", json.dumps(stats.model_dump() if hasattr(stats, 'model_dump') else stats))
-    prompt = prompt.replace("{recent_tasks}", json.dumps(recent_tasks))
+    prompt = prompt.replace("{recent_tasks}", json.dumps(pending_tasks))
     prompt = prompt.replace("{recent_goals}", json.dumps(recent_goals))
     prompt = prompt.replace("{chat_history}", history_str)
     prompt += f"\n\nUser: {data.content}\nHaia:"

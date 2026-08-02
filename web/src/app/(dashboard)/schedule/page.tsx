@@ -73,7 +73,7 @@ function CourseEditModal({ course, onClose, onSave, api, customColors, onUpdateC
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-white comic-border comic-shadow rounded-lg p-6 w-full max-w-md relative">
         <button onClick={onClose} className="absolute top-4 right-4 hover:bg-surface-container rounded-full p-1 transition-colors">
           <X size={20} />
@@ -161,7 +161,7 @@ function CourseEditModal({ course, onClose, onSave, api, customColors, onUpdateC
           <button 
             type="submit" 
             disabled={saving}
-            className="w-full mt-6 bg-primary text-white font-label-caps uppercase font-black italic px-4 py-3 rounded comic-border comic-shadow-sm hover:-translate-y-1 transition-transform flex items-center justify-center gap-2"
+            className="w-full mt-6 bg-primary text-white font-label-caps uppercase font-black px-4 py-3 rounded comic-border comic-shadow-sm hover:-translate-y-1 transition-transform flex items-center justify-center gap-2"
           >
             {saving ? <Loader2 className="animate-spin" size={18} /> : null}
             {saving ? "SAVING..." : "SAVE CHANGES"}
@@ -325,7 +325,7 @@ export default function SchedulePage() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] w-full overflow-hidden bg-[#FAFAF8] relative z-0">
+    <div className="flex flex-col h-[calc(100vh-80px)] w-full overflow-hidden bg-[#FAFAF8]">
       
       {selectedCourse && api && (
         <CourseEditModal 
@@ -343,7 +343,7 @@ export default function SchedulePage() {
           <h1 className="font-headline-lg text-3xl md:text-headline-lg comic-text">MY SCHEDULE</h1>
           
           <div className="flex gap-4">
-            <label className="bg-white text-on-surface font-label-caps uppercase font-black italic px-4 py-2 rounded comic-border comic-shadow hover:-translate-y-1 transition-transform cursor-pointer flex items-center gap-2">
+            <label className="bg-white text-on-surface font-label-caps uppercase font-black px-4 py-2 rounded comic-border comic-shadow hover:-translate-y-1 transition-transform cursor-pointer flex items-center gap-2">
               {uploading ? <Loader2 className="animate-spin" size={16} /> : <Camera size={16} />}
               {uploading ? "PARSING..." : "UPLOAD FILE"}
               <input type="file" accept="image/*,application/pdf" className="hidden" onChange={handleFileUpload} disabled={uploading} />
@@ -351,7 +351,7 @@ export default function SchedulePage() {
             
             <button 
               onClick={exportSchedule}
-              className="bg-primary text-white font-label-caps uppercase font-black italic px-4 py-2 rounded comic-border comic-shadow hover:-translate-y-1 transition-transform flex items-center gap-2"
+              className="bg-primary text-white font-label-caps uppercase font-black px-4 py-2 rounded comic-border comic-shadow hover:-translate-y-1 transition-transform flex items-center gap-2"
             >
               <Download size={16} />
               EXPORT TO PNG

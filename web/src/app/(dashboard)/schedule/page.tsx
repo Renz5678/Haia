@@ -23,7 +23,8 @@ const COLORS = [
   "#99f6e4", // teal-200
 ];
 
-function getCourseColor(code: string) {
+function getCourseColor(code: string, customColors: Record<string, string>) {
+  if (customColors[code]) return customColors[code];
   let hash = 0;
   for (let i = 0; i < code.length; i++) {
     hash = code.charCodeAt(i) + ((hash << 5) - hash);
@@ -42,7 +43,7 @@ function formatTime(timeStr: string) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function CourseEditModal({ course, onClose, onSave, api }: { course: any, onClose: () => void, onSave: () => void, api: any }) {
+function CourseEditModal({ course, onClose, onSave, api, customColors, onUpdateColor }: { course: any, onClose: () => void, onSave: () => void, api: any, customColors: Record<string, string>, onUpdateColor: (code: string, color: string) => void }) {
   const [formData, setFormData] = useState({
     name: course.name || "",
     code: course.code || "",
@@ -51,6 +52,8 @@ function CourseEditModal({ course, onClose, onSave, api }: { course: any, onClos
     room: course.room || "",
     modality: course.modality || "in_person"
   });
+  
+  const [selectedColor, setSelectedColor] = useState(getCourseColor(course.code, customColors));
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,6 +61,7 @@ function CourseEditModal({ course, onClose, onSave, api }: { course: any, onClos
     setSaving(true);
     try {
       await api.courses.update(course.id, formData);
+      onUpdateColor(course.code, selectedColor);
       onSave();
       onClose();
     } catch (err) {
@@ -139,6 +143,21 @@ function CourseEditModal({ course, onClose, onSave, api }: { course: any, onClos
             </div>
           </div>
           
+          <div>
+            <label className="block text-sm font-bold uppercase mb-2">Block Color</label>
+            <div className="flex gap-2">
+              {COLORS.map(color => (
+                <button
+                  key={color}
+                  type="button"
+                  onClick={() => setSelectedColor(color)}
+                  className={`w-8 h-8 rounded-full border-2 ${selectedColor === color ? 'border-black scale-110' : 'border-black/20 hover:scale-105 hover:border-black'} transition-all`}
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </div>
+          </div>
+          
           <button 
             type="submit" 
             disabled={saving}
@@ -158,6 +177,7 @@ export default function SchedulePage() {
   const [courses, setCourses] = useState<any[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  const [customColors, setCustomColors] = useState<Record<string, string>>({});
   
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -193,11 +213,27 @@ export default function SchedulePage() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // Load custom colors from localStorage
+    const storedColors = localStorage.getItem('haia-course-colors');
+    if (storedColors) {
+      try {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setCustomColors(JSON.parse(storedColors));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
     initApi();
     fetchCourses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleUpdateColor = (code: string, color: string) => {
+    const nextColors = { ...customColors, [code]: color };
+    setCustomColors(nextColors);
+    localStorage.setItem('haia-course-colors', JSON.stringify(nextColors));
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -295,6 +331,8 @@ export default function SchedulePage() {
         <CourseEditModal 
           course={selectedCourse} 
           api={api} 
+          customColors={customColors}
+          onUpdateColor={handleUpdateColor}
           onClose={() => setSelectedCourse(null)} 
           onSave={fetchCourses} 
         />
@@ -364,7 +402,7 @@ export default function SchedulePage() {
                         const top = (visualStart - START_HOUR) * PIXELS_PER_HOUR;
                         const height = (visualEnd - visualStart) * PIXELS_PER_HOUR;
                         
-                        const bgColor = getCourseColor(course.code);
+                        const bgColor = getCourseColor(course.code, customColors);
 
                         return (
                           <div

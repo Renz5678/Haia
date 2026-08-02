@@ -119,7 +119,7 @@ export default function ChatPage() {
             
             {/* Day Separator */}
             <div className="flex justify-center">
-              <span className="bg-primary text-white px-4 py-1 border-2 border-on-surface shadow-[3px_3px_0px_0px_rgba(26,28,27,1)] font-label-caps uppercase italic tracking-widest text-xs">
+              <span className="bg-primary text-white px-4 py-1 border-2 border-on-surface shadow-[3px_3px_0px_0px_rgba(26,28,27,1)] font-label-caps uppercase tracking-widest text-xs">
                 Today
               </span>
             </div>
@@ -134,7 +134,7 @@ export default function ChatPage() {
                       <div className="tail-bot"></div>
                       <div className="space-y-4">
                         <p 
-                          className="font-body-md text-on-surface font-semibold italic chat-markdown whitespace-pre-wrap"
+                          className="font-body-md text-on-surface font-semibold chat-markdown whitespace-pre-wrap"
                           dangerouslySetInnerHTML={formatMessage(msg.text)}
                         />
                         
@@ -144,10 +144,10 @@ export default function ChatPage() {
                               <span className="material-symbols-outlined text-on-secondary-fixed text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>fitness_center</span>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-headline-md text-sm font-black uppercase italic text-on-surface truncate">{msg.actionDetails.title}</h4>
+                              <h4 className="font-headline-md text-sm font-black uppercase text-on-surface truncate">{msg.actionDetails.title}</h4>
                               <p className="text-[12px] font-bold text-on-surface-variant truncate">{msg.actionDetails.subtitle}</p>
                             </div>
-                            <div className="px-3 py-1 bg-xp-gold border-2 border-on-surface rounded text-[12px] font-black text-on-secondary-fixed italic shrink-0">
+                            <div className="px-3 py-1 bg-xp-gold border-2 border-on-surface rounded text-[12px] font-black text-on-secondary-fixed shrink-0">
                               {msg.actionDetails.xp} XP!
                             </div>
                           </div>
@@ -192,7 +192,7 @@ export default function ChatPage() {
             <div className="absolute -inset-1 bg-on-surface/10 blur-md group-focus-within:bg-primary/20 transition-all rounded-full"></div>
             <div className="relative bg-surface ink-border rounded-full p-2 pl-6 md:pl-8 flex items-center gap-2 md:gap-4 shadow-[6px_6px_0px_0px_rgba(26,28,27,1)] focus-within:translate-x-[2px] focus-within:translate-y-[2px] focus-within:shadow-none transition-all">
               <input 
-                className="flex-1 bg-transparent border-none focus:ring-0 outline-none text-on-surface placeholder:text-on-surface-variant/50 font-body-md py-2 md:py-3 font-bold italic w-full" 
+                className="flex-1 bg-transparent border-none focus:ring-0 outline-none text-on-surface placeholder:text-on-surface-variant/50 font-body-md py-2 md:py-3 font-bold w-full" 
                 placeholder="WHAT'S THE PLAN, BOSS?..." 
                 type="text"
                 value={input}
@@ -216,7 +216,7 @@ export default function ChatPage() {
       {/* Recently Logged Panel (Right) */}
       <aside className="hidden xl:flex w-[340px] border-l-2 border-on-surface flex-col bg-surface-container-low/50 backdrop-blur-sm relative before:absolute before:inset-0 before:bg-[url('https://www.transparenttextures.com/patterns/dust.png')] before:opacity-5 before:pointer-events-none z-10 shrink-0">
         <div className="p-8 h-full overflow-y-auto">
-          <h3 className="font-label-caps text-xs font-black uppercase tracking-widest text-on-surface-variant mb-8 flex items-center justify-between italic">
+          <h3 className="font-label-caps text-xs font-black uppercase tracking-widest text-on-surface-variant mb-8 flex items-center justify-between">
             Recently Logged
             <History size={16} />
           </h3>
@@ -225,10 +225,10 @@ export default function ChatPage() {
             {/* Logged Item 1 */}
             <div className="p-4 bg-white border-2 border-on-surface shadow-[4px_4px_0px_0px_rgba(26,28,27,1)] hover:-translate-y-1 transition-transform cursor-default relative overflow-hidden group">
               <div className="flex justify-between items-start mb-3">
-                <span className="px-2 py-0.5 border border-on-surface bg-secondary-fixed text-[10px] font-black text-on-secondary-fixed italic">HABIT</span>
+                <span className="px-2 py-0.5 border border-on-surface bg-secondary-fixed text-[10px] font-black text-on-secondary-fixed">HABIT</span>
                 <span className="text-[9px] font-black text-on-surface-variant/70">1M AGO</span>
               </div>
-              <h4 className="font-headline-md text-base font-black italic mb-1 uppercase tracking-tight">Gym Session</h4>
+              <h4 className="font-headline-md text-base font-black mb-1 uppercase tracking-tight">Gym Session</h4>
               <div className="flex items-center gap-2 text-[11px] font-bold text-on-surface-variant">
                 <Calendar size={14} />
                 TOMORROW, 7:00 AM
@@ -238,10 +238,10 @@ export default function ChatPage() {
             {/* Logged Item 2 */}
             <div className="p-4 bg-white border-2 border-on-surface shadow-[4px_4px_0px_0px_rgba(26,28,27,1)] hover:-translate-y-1 transition-transform cursor-default relative overflow-hidden">
               <div className="flex justify-between items-start mb-3">
-                <span className="px-2 py-0.5 border border-on-surface bg-tertiary-fixed text-[10px] font-black text-on-tertiary-fixed italic">QUEST</span>
+                <span className="px-2 py-0.5 border border-on-surface bg-tertiary-fixed text-[10px] font-black text-on-tertiary-fixed">QUEST</span>
                 <span className="text-[9px] font-black text-on-surface-variant/70">2H AGO</span>
               </div>
-              <h4 className="font-headline-md text-base font-black italic mb-1 uppercase tracking-tight">Finish UI Design</h4>
+              <h4 className="font-headline-md text-base font-black mb-1 uppercase tracking-tight">Finish UI Design</h4>
               <div className="flex items-center gap-2 text-[11px] font-bold text-on-surface-variant">
                 <LayoutGrid size={14} />
                 CS PROJECT
@@ -251,12 +251,12 @@ export default function ChatPage() {
             {/* Daily Progress Stat */}
             <div className="mt-12 p-6 bg-indigo-deep border-2 border-on-surface shadow-[6px_6px_0px_0px_rgba(26,28,27,1)] text-white relative overflow-hidden">
               <div className="relative z-10">
-                <span className="font-label-caps text-[10px] uppercase font-black tracking-widest italic opacity-90">Progress Meter</span>
-                <h4 className="font-display-hero text-3xl font-black italic mt-2 anton-text">1,240 XP</h4>
+                <span className="font-label-caps text-[10px] uppercase font-black tracking-widest opacity-90">Progress Meter</span>
+                <h4 className="font-display-hero text-3xl font-black mt-2 anton-text">1,240 XP</h4>
                 <div className="mt-6 w-full bg-white/20 h-4 border-2 border-on-surface overflow-hidden">
                   <div className="bg-xp-gold h-full w-[72%] border-r-2 border-on-surface"></div>
                 </div>
-                <p className="mt-3 text-[10px] font-black uppercase italic opacity-80 tracking-tighter">Level up in: 260 XP</p>
+                <p className="mt-3 text-[10px] font-black uppercase opacity-80 tracking-tighter">Level up in: 260 XP</p>
               </div>
             </div>
           </div>

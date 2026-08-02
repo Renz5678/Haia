@@ -137,19 +137,19 @@ export default function SchedulePage() {
                 {courses.map((course: any) => (
                   <div key={course.id} className="bg-surface-container-low comic-border p-4 rounded shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden group hover:-translate-y-1 transition-all">
                     <div className="absolute top-0 right-0 w-16 h-16 bg-primary/20 rotate-45 translate-x-8 -translate-y-8 group-hover:scale-150 transition-transform"></div>
-                    <h3 className="font-headline-sm text-xl font-black comic-text mb-1">{course.course_code}</h3>
+                    <h3 className="font-headline-sm text-xl font-black comic-text mb-1">{course.code}</h3>
                     <p className="font-bold text-sm mb-4 bg-white inline-block px-2 border-2 border-black -rotate-1">{course.section || "No Section"}</p>
                     
                     <div className="space-y-2 text-sm font-medium">
                       <div className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-[18px]">calendar_month</span>
-                        <span>{course.days}</span>
+                        <span>{Array.isArray(course.days) ? course.days.join(", ") : course.days}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-[18px]">schedule</span>
                         <span>
-                          {new Date(course.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
-                          {new Date(course.end_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                          {new Date(`2000-01-01T${course.start_time}`).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
+                          {new Date(`2000-01-01T${course.end_time}`).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">

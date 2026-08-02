@@ -54,14 +54,18 @@ def award_xp_for_habit(user_id: str, habit_id: str, log_id: str, xp: int, logged
         }).execute()
     else:
         streak = streaks[0]
-        last_date = date.fromisoformat(streak["last_activity_date"])
+        
+        if streak.get("last_activity_date"):
+            last_date = date.fromisoformat(streak["last_activity_date"])
+        else:
+            last_date = None
         
         # If logged today, no change to streak length
         if last_date == logged_date:
             return
             
         # If logged yesterday, increment streak
-        if last_date == logged_date - timedelta(days=1):
+        if last_date and last_date == logged_date - timedelta(days=1):
             new_current = streak["current_streak"] + 1
             new_longest = max(streak["longest_streak"], new_current)
             client.schema("haia").table("streaks").update({

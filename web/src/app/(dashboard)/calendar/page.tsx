@@ -4,7 +4,12 @@ import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, Clock, PlusCircle } from "lucide-react";
 
 export default function CalendarPage() {
-  const [activeDate, setActiveDate] = useState(5);
+  const [activeDate, setActiveDate] = useState(new Date().getDate());
+  
+  const currentDate = new Date();
+  const currentMonth = currentDate.toLocaleString('default', { month: 'long' }).toUpperCase();
+  const currentYear = currentDate.getFullYear();
+  const monthTitle = `${currentMonth} ${currentYear}`;
 
   const renderCells = () => {
     const cells = [];
@@ -56,7 +61,7 @@ export default function CalendarPage() {
           {/* Calendar Header */}
           <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
             <div className="flex items-center gap-4">
-              <h1 className="font-headline-lg text-3xl md:text-headline-lg comic-text">MARCH 2024</h1>
+              <h1 className="font-headline-lg text-3xl md:text-headline-lg comic-text">{monthTitle}</h1>
               <div className="flex gap-1">
                 <button className="ink-border-2 p-1 bg-white hover:bg-surface-container-low"><ChevronLeft size={20} /></button>
                 <button className="ink-border-2 p-1 bg-white hover:bg-surface-container-low"><ChevronRight size={20} /></button>
@@ -95,7 +100,7 @@ export default function CalendarPage() {
       <aside className="hidden xl:flex w-80 border-l-2 border-black bg-surface-container-low flex-col p-6 agenda-scroll overflow-y-auto shrink-0">
         <div className="mb-8">
           <p className="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mb-1">Today&apos;s Focus</p>
-          <h2 className="font-headline-md font-extrabold comic-text">MARCH {activeDate}</h2>
+          <h2 className="font-headline-md font-extrabold comic-text">{currentMonth} {activeDate}</h2>
         </div>
 
         <div className="space-y-6">
@@ -106,22 +111,8 @@ export default function CalendarPage() {
               <h3 className="font-bold comic-text text-sm">SCHOOL QUESTS</h3>
             </div>
             <div className="space-y-3">
-              <div className="bg-white ink-border-2 p-3 pop-art-shadow hover:-translate-y-1 transition-transform cursor-pointer group">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-bold comic-text leading-tight">Advanced Algorithms Midterm</h4>
-                  <span className="bg-xp-gold text-[10px] font-bold px-2 py-0.5 ink-border-2 whitespace-nowrap ml-2">+500 XP</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock size={14} className="text-on-surface-variant" />
-                  <span className="text-xs font-bold opacity-60">10:00 AM - 12:00 PM</span>
-                </div>
-              </div>
-              
-              <div className="bg-white ink-border-2 p-3 pop-art-shadow hover:-translate-y-1 transition-transform cursor-pointer group">
-                <h4 className="font-bold comic-text leading-tight">Physics Lab Write-up</h4>
-                <div className="mt-2 h-1 bg-surface-container-high overflow-hidden">
-                  <div className="h-full bg-indigo-deep w-3/4"></div>
-                </div>
+              <div className="text-center p-4 text-xs font-bold text-on-surface-variant opacity-60">
+                No school quests today.
               </div>
             </div>
           </div>
@@ -133,17 +124,9 @@ export default function CalendarPage() {
               <h3 className="font-bold comic-text text-sm">DAILY RECURRING</h3>
             </div>
             <div className="space-y-3">
-              <label className="flex items-center gap-3 bg-white ink-border-2 p-3 cursor-pointer select-none">
-                <input className="w-5 h-5 ink-border-2 text-indigo-deep focus:ring-0 focus:ring-offset-0" type="checkbox" />
-                <span className="font-bold comic-text text-sm">Hydration Goal (2L)</span>
-                <span className="ml-auto text-xs font-bold text-xp-gold">+50 XP</span>
-              </label>
-              
-              <label className="flex items-center gap-3 bg-white ink-border-2 p-3 cursor-pointer select-none">
-                <input defaultChecked className="w-5 h-5 ink-border-2 text-indigo-deep focus:ring-0 focus:ring-offset-0" type="checkbox" />
-                <span className="font-bold comic-text text-sm line-through opacity-50">Morning Meditation</span>
-                <span className="ml-auto text-xs font-bold text-xp-gold">+50 XP</span>
-              </label>
+              <div className="text-center p-4 text-xs font-bold text-on-surface-variant opacity-60">
+                No habits scheduled today.
+              </div>
             </div>
           </div>
 
@@ -153,7 +136,7 @@ export default function CalendarPage() {
               <span className="material-symbols-outlined text-xp-gold" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
               <p className="text-[10px] font-bold tracking-widest uppercase">HAIA SAYS:</p>
             </div>
-            <p className="font-body-md text-sm italic">&quot;High energy detected for your 10 AM slot. Keep the momentum, Ace!&quot;</p>
+            <p className="font-body-md text-sm italic">&quot;A clean slate! What quest shall we tackle today?&quot;</p>
           </div>
         </div>
 

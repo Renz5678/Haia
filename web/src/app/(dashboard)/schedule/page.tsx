@@ -99,7 +99,26 @@ export default function SchedulePage() {
   const exportSchedule = async () => {
     if (!scheduleRef.current) return;
     try {
+      // Temporarily remove cross-origin stylesheets to prevent html-to-image SecurityError
+      const links = document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]');
+      const removedLinks: { node: HTMLLinkElement, parent: ParentNode | null, nextSibling: ChildNode | null }[] = [];
+      
+      links.forEach(link => {
+        if (link.href.includes('fonts.googleapis.com')) {
+           removedLinks.push({ node: link, parent: link.parentNode, nextSibling: link.nextSibling });
+           link.parentNode?.removeChild(link);
+        }
+      });
+
       const dataUrl = await toPng(scheduleRef.current, { pixelRatio: 2, backgroundColor: '#ffffff' });
+      
+      // Restore the stylesheets immediately
+      removedLinks.forEach(({ node, parent, nextSibling }) => {
+         if (parent) {
+             parent.insertBefore(node, nextSibling);
+         }
+      });
+
       const a = document.createElement("a");
       a.href = dataUrl;
       a.download = "haia_schedule.png";

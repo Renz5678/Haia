@@ -1,4 +1,5 @@
 from datetime import datetime, time
+from typing import Literal
 
 from pydantic import UUID4, BaseModel
 
@@ -61,7 +62,7 @@ class ParsedCourse(BaseModel):
     name: str | None = None
     instructor: str | None = None
     room: str | None = None
-    modality: str  # in_person | online | hybrid
+    modality: Literal["in_person", "online", "hybrid"]
     days: list[str]  # e.g. ["Mon", "Wed", "Fri"]
     start_time: str  # HH:MM 24h
     end_time: str    # HH:MM 24h

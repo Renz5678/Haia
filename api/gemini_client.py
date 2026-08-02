@@ -83,7 +83,7 @@ def parse_text_to_schema(
     client = _get_client()
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.0-flash",
             contents=full_prompt,
         )
         raw_json = response.text
@@ -126,7 +126,7 @@ async def parse_file_to_schema(
     client = _get_client()
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.0-flash",
             contents=[
                 types.Part.from_bytes(data=file_bytes, mime_type=mime_type),
                 full_prompt,

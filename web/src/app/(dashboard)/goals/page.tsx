@@ -5,6 +5,7 @@ import { Target, Zap, PlusCircle, Medal } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
 import { GoalCardSkeleton, Skeleton } from "@/components/ui/Skeleton";
+import { CreateGoalModal } from "@/components/CreateGoalModal";
 
 export default function GoalsPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -12,10 +13,10 @@ export default function GoalsPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [goals, setGoals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const supabase = createClient();
 
-  useEffect(() => {
-    async function fetchData() {
+  const fetchData = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
@@ -35,7 +36,9 @@ export default function GoalsPage() {
       } finally {
         setLoading(false);
       }
-    }
+  };
+
+  useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -115,7 +118,10 @@ export default function GoalsPage() {
             )}
             
             {/* Goal Card 3 (New Sprint) */}
-            <div className="pop-card bg-white p-6 border-dashed opacity-80 border-2 border-on-surface-variant flex flex-col items-center justify-center py-12 group cursor-pointer hover:opacity-100 hover:border-solid hover:border-on-surface">
+            <div 
+              onClick={() => setIsModalOpen(true)}
+              className="pop-card bg-white p-6 border-dashed opacity-80 border-2 border-on-surface-variant flex flex-col items-center justify-center py-12 group cursor-pointer hover:opacity-100 hover:border-solid hover:border-on-surface"
+            >
               <PlusCircle className="text-on-surface-variant mb-2 group-hover:scale-110 group-hover:text-primary transition-all" size={40} />
               <p className="font-label-caps text-label-caps uppercase tracking-widest group-hover:text-primary">Launch New Sprint</p>
             </div>
@@ -189,12 +195,18 @@ export default function GoalsPage() {
 
         {/* Mobile Call to Action */}
         <div className="md:hidden mt-8 sticky bottom-4">
-          <button className="w-full pop-card bg-indigo-deep text-white py-4 font-bold flex items-center justify-center gap-3">
+          <button onClick={() => setIsModalOpen(true)} className="w-full pop-card bg-indigo-deep text-white py-4 font-bold flex items-center justify-center gap-3">
             <Zap size={20} />
-            COMPLETE DAILY CHECK-IN
+            NEW SPRINT
           </button>
         </div>
       </main>
+
+      <CreateGoalModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSuccess={fetchData} 
+      />
     </div>
   );
 }

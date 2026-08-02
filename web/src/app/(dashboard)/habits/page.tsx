@@ -115,6 +115,17 @@ export default function HabitsPage() {
                 )}
               </div>
 
+              {/* Visual Heatmap */}
+              <div className="flex justify-between px-1 mb-6">
+                {[0,1,2,3,4,5,6].map((dayIndex) => (
+                  <div 
+                    key={dayIndex}
+                    className={`habit-dot ${dayIndex < (habit.current_streak || 0) % 7 ? 'active' : 'bg-surface-container-low'}`}
+                    title={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][dayIndex]}
+                  ></div>
+                ))}
+              </div>
+
               <button
                 onClick={() => toggleHabit(habit.id)}
                 className={`w-full py-3 rounded-lg comic-border font-label-caps font-black italic uppercase transition-all ${

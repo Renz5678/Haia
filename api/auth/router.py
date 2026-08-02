@@ -3,7 +3,6 @@ import logging
 from auth.schemas import SignupRequest
 from core.supabase import get_supabase_service_client
 from fastapi import APIRouter, HTTPException
-from integrations.gmail import send_verification_email
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 logger = logging.getLogger(__name__)
@@ -34,10 +33,10 @@ async def signup(request: SignupRequest):
         
         action_link = link_res.properties.action_link
         
-        # Send via Gmail API
-        send_verification_email(request.email, request.display_name, action_link)
+        # Mailgun/Telegram spec replacement will go here. For now, log it.
+        logger.info(f"Generated verification link for {request.email}: {action_link}")
         
-        return {"status": "success", "message": "Verification email sent via Gmail API"}
+        return {"status": "success", "message": "Verification email link generated"}
         
     except Exception as e:
         logger.error(f"Signup error: {e}")

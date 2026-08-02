@@ -175,21 +175,7 @@ export default function DashboardPage() {
                 ))
               )}
 
-              {/* Completed Task Example */}
-              <div className="bg-surface-container-low p-6 rounded-lg comic-border flex items-center justify-between opacity-60">
-                <div className="flex items-center gap-5">
-                  <div className="w-7 h-7 rounded bg-on-surface flex items-center justify-center shrink-0">
-                    <Check className="text-white text-sm" size={16} />
-                  </div>
-                  <div>
-                    <h3 className="font-body-lg text-body-lg font-bold text-on-surface-variant line-through">Morning Workout (Lower Body)</h3>
-                    <p className="text-on-surface-variant font-black italic text-xs uppercase mt-1">COMPLETED AT 08:30 AM</p>
-                  </div>
-                </div>
-                <div className="hidden sm:flex bg-surface-container-highest text-on-surface-variant px-4 py-1.5 comic-border rounded-full font-label-xp text-label-xp font-black italic shrink-0">
-                  <span>DONE</span>
-                </div>
-              </div>
+
             </div>
 
             {/* Right Column: Goals Progress */}
@@ -201,10 +187,10 @@ export default function DashboardPage() {
                   <div className="space-y-3">
                     <div className="flex justify-between items-end">
                       <span className="font-label-caps text-label-caps text-on-surface uppercase font-black italic">DAILY XP GOAL</span>
-                      <span className="font-label-xp text-label-xp text-primary anton-text text-lg">850 / 1200</span>
+                      <span className="font-label-xp text-label-xp text-primary anton-text text-lg">0 / 1200</span>
                     </div>
                     <div className="w-full h-4 bg-surface-container comic-border rounded-full overflow-hidden">
-                      <div className="h-full bg-primary-container border-r-2 border-on-surface transition-all duration-1000" style={{ width: '70%' }}></div>
+                      <div className="h-full bg-primary-container border-r-2 border-on-surface transition-all duration-1000" style={{ width: '0%' }}></div>
                     </div>
                   </div>
                   
@@ -212,10 +198,10 @@ export default function DashboardPage() {
                   <div className="space-y-3">
                     <div className="flex justify-between items-end">
                       <span className="font-label-caps text-label-caps text-on-surface uppercase font-black italic">FOCUS HOURS</span>
-                      <span className="font-label-xp text-label-xp text-secondary anton-text text-lg">3.5 / 5.0 HRS</span>
+                      <span className="font-label-xp text-label-xp text-secondary anton-text text-lg">0.0 / 5.0 HRS</span>
                     </div>
                     <div className="w-full h-4 bg-surface-container comic-border rounded-full overflow-hidden">
-                      <div className="h-full bg-secondary-container border-r-2 border-on-surface transition-all duration-1000" style={{ width: '65%' }}></div>
+                      <div className="h-full bg-secondary-container border-r-2 border-on-surface transition-all duration-1000" style={{ width: '0%' }}></div>
                     </div>
                   </div>
                 </div>
@@ -229,7 +215,7 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <p className="font-body-md font-black text-on-surface mb-2 uppercase italic text-sm">HAIA&apos;S RADAR</p>
-                    <p className="text-on-surface-variant font-medium text-sm leading-relaxed italic">&quot;You&apos;re only 350 XP away from hitting your daily streak target! Complete that Economics analysis to level up.&quot;</p>
+                    <p className="text-on-surface-variant font-medium text-sm leading-relaxed italic">&quot;Log your first habit today to start a streak and earn bonus XP!&quot;</p>
                   </div>
                 </div>
               </div>

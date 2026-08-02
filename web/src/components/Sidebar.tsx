@@ -6,10 +6,12 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, CheckSquare, RefreshCw, Target, Calendar, MessageSquare, Settings, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const user = useAuthStore((state) => state.user);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isExiting, setIsExiting] = React.useState(false);
@@ -51,8 +53,8 @@ export default function Sidebar() {
             <div className="w-full h-full bg-primary-fixed-dim"></div>
           </div>
           <div className="min-w-0">
-            <p className="text-label-md font-bold truncate">Hero Level 24</p>
-            <p className="text-[10px] text-on-surface-variant uppercase tracking-wider truncate">Arch-Mage Apprentice</p>
+            <p className="text-label-md font-bold truncate">Hero Level {user?.current_level || 1}</p>
+            <p className="text-[10px] text-on-surface-variant uppercase tracking-wider truncate">Novice</p>
           </div>
         </div>
       </div>

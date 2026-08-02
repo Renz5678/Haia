@@ -64,7 +64,7 @@ export default function TopHeader({ onOpenChat }: { onOpenChat?: () => void }) {
       <div className="flex items-center gap-3 md:gap-6 shrink-0">
         <div className="hidden sm:flex items-center bg-surface-container-high comic-border rounded-full px-5 py-1.5 gap-2 comic-shadow-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none cursor-default">
           <Zap className="text-secondary" fill="currentColor" size={20} />
-          <span className="font-label-caps text-label-caps font-black italic">STREAK: 12</span>
+          <span className="font-label-caps text-label-caps font-black italic">STREAK: 0</span>
         </div>
         
         <div className="flex gap-2 md:gap-3">

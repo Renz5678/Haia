@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 from core.config import get_settings
 from core.dependencies import get_current_user
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.responses import HTMLResponse
 from google_auth_oauthlib.flow import Flow
 
@@ -33,7 +33,7 @@ def google_connect(user: dict = Depends(get_current_user)):
     
     flow = Flow.from_client_config(
         client_config,
-        scopes=["https://www.googleapis.com/auth/calendar", "https://www.googleapis.com/auth/gmail.send"]
+        scopes=["https://www.googleapis.com/auth/calendar"]
     )
     flow.redirect_uri = settings.google_redirect_uri
     
@@ -64,7 +64,7 @@ async def google_callback(code: str, state: str | None = None):
     
     flow = Flow.from_client_config(
         client_config,
-        scopes=["https://www.googleapis.com/auth/calendar", "https://www.googleapis.com/auth/gmail.send"]
+        scopes=["https://www.googleapis.com/auth/calendar"]
     )
     flow.redirect_uri = settings.google_redirect_uri
     
@@ -111,8 +111,11 @@ async def telegram_webhook(request: Request):
     from integrations import service
     settings = get_settings()
     
-    # In production, we'd validate the webhook secret via X-Telegram-Bot-Api-Secret-Token
-    # For now, we trust the incoming webhook since it's an internal test or the secret is configured in Telegram
+    if settings.telegram_webhook_secret:
+        secret_token = request.headers.get("x-telegram-bot-api-secret-token")
+        if secret_token != settings.telegram_webhook_secret:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+            
     payload = await request.json()
     
     # Run in background or await? We should probably just await since FastAPI can handle it asynchronously

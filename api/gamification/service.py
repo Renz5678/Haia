@@ -22,17 +22,6 @@ def award_xp_for_task(user_id: str, task: dict) -> dict:
     }
     event_record = client.schema("haia").table("xp_events").insert(event).execute().data[0]
     
-    # Python fallback to update user total_xp and level if trigger is missing
-    user = client.schema("haia").table("users").select("total_xp").eq("id", user_id).single().execute().data
-    new_xp = (user.get("total_xp") or 0) + xp
-    
-    # Calculate level (triangular formula inverse approx or just simple while loop)
-    level = 1
-    while int(level * (level + 1) / 2 * 50) <= new_xp:
-        level += 1
-        
-    client.schema("haia").table("users").update({"total_xp": new_xp, "current_level": level}).eq("id", user_id).execute()
-    
     return event_record
 
 

@@ -24,7 +24,6 @@ mailgun2>=1.0.0
 httpx>=0.28.0
 
 # Background jobs (if not using pg_cron)
-apscheduler>=3.10.4
 
 # Utilities
 python-multipart>=0.0.9      # file uploads (photos, PDFs)
@@ -45,4 +44,3 @@ pytest>=8.2.0
 pytest-asyncio>=0.23.0
 httpx>=0.28.0                # async test client for FastAPI
 structlog>=24.0.0
-apscheduler>=3.10.0

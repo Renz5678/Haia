@@ -45,8 +45,7 @@ async def lifespan(app: FastAPI):
         sentry_sdk.init(dsn=settings.sentry_dsn_api, environment=settings.app_env)
         logger.info("Sentry initialised")
         
-    from scheduler import start_scheduler
-    start_scheduler()
+    logger.info("Application startup complete.")
         
     yield
     # Shutdown

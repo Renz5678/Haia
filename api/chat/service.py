@@ -42,7 +42,7 @@ def process_message(user_id: str, data: ChatMessageCreate) -> dict:
     import json
 
     from gamification.service import get_user_stats
-    from gemini_client import _get_model, _load_prompt
+    from gemini_client import _get_client, _load_prompt
     from parsing.schemas import ParseTextRequest
     from parsing.service import parse_text
 
@@ -71,7 +71,7 @@ def process_message(user_id: str, data: ChatMessageCreate) -> dict:
     history = get_history(user_id, limit=5)
     
     # Just a simple text generation with context
-    model = _get_model("gemini-flash-latest")
+    client = _get_client()
     prompt_template = _load_prompt("chat_reply")
     
     # We aren't fetching recent tasks/goals in the stub, just stats for brevity
@@ -106,7 +106,10 @@ def process_message(user_id: str, data: ChatMessageCreate) -> dict:
     prompt = prompt.replace("{chat_history}", history_str)
     prompt += f"\n\nUser: {data.content}\nHaia:"
 
-    ai_res = model.generate_content(prompt)
+    ai_res = client.models.generate_content(
+        model="gemini-3.5-flash",
+        contents=prompt
+    )
     reply = ai_res.text.strip()
     
     saved = save_message(user_id=user_id, role="assistant", content=reply, channel=data.channel, intent="conversational")

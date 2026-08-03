@@ -144,6 +144,7 @@ export function createApiClient(accessToken: string) {
     },
     
     integrations: {
+      list: () => get<{integrations: string[]}>("/integrations"),
       telegram: {
         linkCode: () => post("/integrations/telegram/link-code", {}),
       },

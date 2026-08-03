@@ -10,6 +10,15 @@ from google_auth_oauthlib.flow import Flow
 router = APIRouter(prefix="/integrations", tags=["integrations"])
 
 
+@router.get("/")
+def list_integrations(user: dict = Depends(get_current_user)):
+    from core.supabase import get_supabase_service_client
+    client = get_supabase_service_client()
+    # return active integrations (without sensitive metadata)
+    res = client.schema("haia").table("integrations").select("service, is_active").eq("user_id", user["id"]).eq("is_active", True).execute()
+    return {"integrations": [r["service"] for r in res.data]}
+
+
 @router.get("/google/connect")
 def google_connect(user: dict = Depends(get_current_user)):
     """

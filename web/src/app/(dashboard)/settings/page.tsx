@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { User, Bell, Star, Palette, MessageCircle, Calendar } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { createClient } from "@/lib/supabase/client";
@@ -12,6 +12,8 @@ export default function SettingsPage() {
   const [questReminders, setQuestReminders] = useState(false);
   const [linkCode, setLinkCode] = useState<string | null>(null);
   const [isLinking, setIsLinking] = useState(false);
+  const [isGoogleConnected, setIsGoogleConnected] = useState(false);
+  const [isTelegramConnected, setIsTelegramConnected] = useState(false);
   
   const { user } = useAuthStore();
   const supabase = createClient();
@@ -50,6 +52,38 @@ export default function SettingsPage() {
       alert("Failed to initiate Google connection.");
     }
   };
+
+  useEffect(() => {
+    async function fetchIntegrations() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        
+        const api = createApiClient(session.access_token);
+        const res = await api.integrations.list();
+        if (res.integrations.includes("google_calendar")) {
+          setIsGoogleConnected(true);
+        }
+        if (res.integrations.includes("telegram")) {
+          setIsTelegramConnected(true);
+        }
+      } catch (err) {
+        console.error("Failed to fetch integrations", err);
+      }
+    }
+    fetchIntegrations();
+  }, [supabase.auth]);
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data === 'google_connected') {
+        setIsGoogleConnected(true);
+        alert("Google Calendar connected successfully!");
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
 
   return (
     <div className="flex-1 overflow-y-auto h-[calc(100vh-80px)] bg-[#f9f9f7] relative">
@@ -108,11 +142,11 @@ export default function SettingsPage() {
                 </div>
                 <button 
                   onClick={handleConnectTelegram}
-                  disabled={isLinking || !!linkCode}
-                  className="bg-[#2AABEE] text-white px-6 py-3 rounded-lg font-bold border-2 border-on-surface shadow-[4px_4px_0px_0px_#1a1c1b] active:translate-x-1 active:translate-y-1 active:shadow-[0px_0px_0px_0px_#1a1c1b] transition-all flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-70 disabled:cursor-not-allowed"
+                  disabled={isLinking || !!linkCode || isTelegramConnected}
+                  className={`bg-[#2AABEE] text-white px-6 py-3 rounded-lg font-bold border-2 border-on-surface shadow-[4px_4px_0px_0px_#1a1c1b] active:translate-x-1 active:translate-y-1 active:shadow-[0px_0px_0px_0px_#1a1c1b] transition-all flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-70 disabled:cursor-not-allowed ${isTelegramConnected ? "!bg-emerald-500 !text-white" : ""}`}
                 >
                   <MessageCircle size={20} />
-                  {isLinking ? "Generating..." : (linkCode ? "Code Generated" : "Connect Telegram")}
+                  {isTelegramConnected ? "Connected" : (isLinking ? "Generating..." : (linkCode ? "Code Generated" : "Connect Telegram"))}
                 </button>
               </div>
               {linkCode && (
@@ -132,10 +166,11 @@ export default function SettingsPage() {
                 </div>
                 <button 
                   onClick={handleConnectGoogle}
-                  className="bg-primary text-white px-6 py-3 rounded-lg font-bold border-2 border-on-surface shadow-[4px_4px_0px_0px_#1a1c1b] active:translate-x-1 active:translate-y-1 active:shadow-[0px_0px_0px_0px_#1a1c1b] transition-all flex items-center justify-center gap-2 whitespace-nowrap"
+                  disabled={isGoogleConnected}
+                  className={`bg-primary text-white px-6 py-3 rounded-lg font-bold border-2 border-on-surface shadow-[4px_4px_0px_0px_#1a1c1b] active:translate-x-1 active:translate-y-1 active:shadow-[0px_0px_0px_0px_#1a1c1b] transition-all flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-70 disabled:cursor-not-allowed ${isGoogleConnected ? "!bg-emerald-500 !text-white" : ""}`}
                 >
                   <Calendar size={20} />
-                  Connect Google
+                  {isGoogleConnected ? "Connected" : "Connect Google"}
                 </button>
               </div>
             </div>

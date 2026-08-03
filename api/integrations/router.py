@@ -83,7 +83,7 @@ async def google_callback(code: str, state: str | None = None):
     
     payload = {
         "user_id": user_id,
-        "service": "google",
+        "service": "google_calendar",
         "is_active": True,
         "external_id": credentials.client_id,
         "metadata": {
@@ -96,7 +96,7 @@ async def google_callback(code: str, state: str | None = None):
         }
     }
     
-    existing = client.schema("haia").table("integrations").select("id").eq("user_id", user_id).eq("service", "google").execute()
+    existing = client.schema("haia").table("integrations").select("id").eq("user_id", user_id).eq("service", "google_calendar").execute()
     if existing.data:
         client.schema("haia").table("integrations").update(payload).eq("id", existing.data[0]["id"]).execute()
     else:

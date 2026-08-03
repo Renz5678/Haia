@@ -40,6 +40,7 @@ def save_message(user_id: str, role: str, content: str, channel: str,
 
 def process_message(user_id: str, data: ChatMessageCreate) -> dict:
     import json
+    from datetime import datetime
 
     from gamification.service import get_user_stats
     from gemini_client import _get_client, _load_prompt
@@ -116,7 +117,10 @@ def process_message(user_id: str, data: ChatMessageCreate) -> dict:
     
     history_str = json.dumps([{"role": msg["role"], "content": msg["content"]} for msg in history])
     
-    prompt = prompt_template.replace("{user_stats}", json.dumps(stats.model_dump() if hasattr(stats, 'model_dump') else stats))
+    current_time_str = datetime.now().strftime("%A, %B %d, %Y %I:%M %p")
+
+    prompt = prompt_template.replace("{current_time}", current_time_str)
+    prompt = prompt.replace("{user_stats}", json.dumps(stats.model_dump() if hasattr(stats, 'model_dump') else stats))
     prompt = prompt.replace("{recent_tasks}", json.dumps(pending_tasks))
     prompt = prompt.replace("{recent_goals}", json.dumps(recent_goals))
     prompt = prompt.replace("{courses}", json.dumps(courses))

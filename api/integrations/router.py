@@ -179,5 +179,11 @@ def generate_telegram_link_code(user: dict = Depends(get_current_user)):
         "external_id": None,
         "metadata": {"link_code": code, "expires_at": expires_at}
     }
-    client.schema("haia").table("integrations").upsert(payload).execute()
+    
+    existing = client.schema("haia").table("integrations").select("id").eq("user_id", user["id"]).eq("service", "telegram").execute()
+    if existing.data:
+        client.schema("haia").table("integrations").update(payload).eq("id", existing.data[0]["id"]).execute()
+    else:
+        client.schema("haia").table("integrations").insert(payload).execute()
+        
     return {"link_code": code, "expires_in_minutes": 15}

@@ -22,7 +22,7 @@ export default function HabitsPage() {
       if (!session) return;
       
       const api = createApiClient(session.access_token);
-      const fetchedHabits = await api.habits.list(true); // active_only=true
+      const fetchedHabits = await api.habits.list(false); // active_only=false
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setHabits(fetchedHabits as any[]);
     } catch (err) {

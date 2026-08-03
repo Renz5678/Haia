@@ -6,7 +6,7 @@ from habits.schemas import HabitCreate, HabitLogCreate, HabitUpdate
 def create_habit(user_id: str, data: HabitCreate) -> dict:
     client = get_supabase_service_client()
     payload = {
-        **data.model_dump(exclude={"goal_ids", "target_time"}),
+        **data.model_dump(exclude={"goal_ids", "target_time", "target_count"}),
         "user_id": user_id,
         "subject_id": str(data.subject_id) if data.subject_id else None,
         "target_time": data.target_time.isoformat() if data.target_time else None,
@@ -95,6 +95,8 @@ def update_habit(user_id: str, habit_id: str, data: HabitUpdate) -> dict:
     # Exclude goal_ids from payload if present (though it's not in HabitUpdate schema yet, good to be safe)
     if "goal_ids" in payload:
         del payload["goal_ids"]
+    if "target_count" in payload:
+        del payload["target_count"]
 
     # Format time if present
     if "target_time" in payload and payload["target_time"] is not None:

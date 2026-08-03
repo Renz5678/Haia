@@ -29,14 +29,14 @@ class HabitResponse(BaseModel):
     id: UUID4
     user_id: UUID4
     name: str
-    description: str | None
+    description: str | None = None
     frequency: str
-    custom_days: list[int] | None
-    target_count: int | None
-    target_time: time | None
+    custom_days: list[int] | None = None
+    target_count: int | None = None
+    target_time: time | None = None
     xp_value: int
     is_active: bool
-    subject_id: UUID4 | None
+    subject_id: UUID4 | None = None
     created_at: datetime
     updated_at: datetime
     goal_ids: list[UUID4] = []

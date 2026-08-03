@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface AlertModalProps {
   isOpen: boolean;
@@ -8,9 +9,15 @@ interface AlertModalProps {
 }
 
 export function AlertModal({ isOpen, title, message, onClose }: AlertModalProps) {
-  if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
 
-  return (
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
+
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-0">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose}></div>
       <div className="relative bg-white border-4 border-on-surface p-6 sm:p-8 w-full max-w-md pop-shadow transform transition-all animate-fade-in-up">
@@ -29,6 +36,7 @@ export function AlertModal({ isOpen, title, message, onClose }: AlertModalProps)
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

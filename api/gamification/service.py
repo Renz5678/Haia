@@ -42,7 +42,7 @@ def award_xp_for_habit(user_id: str, habit_id: str, log_id: str, xp: int, logged
     from datetime import timedelta
     
     # Get habit details for flexible streaks
-    habit = client.schema("haia").table("habits").select("frequency, target_count").eq("id", habit_id).single().execute().data
+    habit = client.schema("haia").table("habits").select("frequency").eq("id", habit_id).single().execute().data
     
     streaks = client.schema("haia").table("streaks").select("*").eq("user_id", user_id).eq("habit_id", habit_id).execute().data
     

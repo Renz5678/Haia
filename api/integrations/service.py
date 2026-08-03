@@ -89,4 +89,12 @@ async def _send_telegram_message(chat_id: str, text: str):
         
     url = f"https://api.telegram.org/bot{settings.telegram_bot_token}/sendMessage"
     async with httpx.AsyncClient() as client:
-        await client.post(url, json={"chat_id": chat_id, "text": text})
+        # Gemini uses ** for bold, but Telegram's legacy Markdown uses * for bold
+        formatted_text = text.replace("**", "*")
+        
+        # Try sending with Markdown first
+        resp = await client.post(url, json={"chat_id": chat_id, "text": formatted_text, "parse_mode": "Markdown"})
+        
+        # If Telegram rejects it due to unclosed formatting tags, fallback to plain text
+        if resp.status_code == 400:
+            await client.post(url, json={"chat_id": chat_id, "text": text})

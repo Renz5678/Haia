@@ -58,6 +58,7 @@ async function request<T>(
 export function createApiClient(accessToken: string) {
   const get  = <T>(path: string) => request<T>(accessToken, "GET",    path);
   const post = <T>(path: string, body: unknown) => request<T>(accessToken, "POST",   path, body);
+  const put = <T>(path: string, body: unknown) => request<T>(accessToken, "PUT",    path, body);
   const patch = <T>(path: string, body: unknown) => request<T>(accessToken, "PATCH",  path, body);
   const del  = <T>(path: string) => request<T>(accessToken, "DELETE", path);
 
@@ -96,6 +97,7 @@ export function createApiClient(accessToken: string) {
       list:    (active_only?: boolean) =>
                  get(`/habits${active_only !== undefined ? `?active_only=${active_only}` : ""}`),
       create:  (body: unknown) => post("/habits", body),
+      update:  (id: string, body: unknown) => put(`/habits/${id}`, body),
       log:     (habitId: string, body: unknown) => post(`/habits/${habitId}/log`, body),
       getLogs: (habitId: string, limit?: number) =>
                  get(`/habits/${habitId}/logs${limit ? `?limit=${limit}` : ""}`),

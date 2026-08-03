@@ -14,6 +14,8 @@ export default function QuestsPage() {
   const [quests, setQuests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [editQuest, setEditQuest] = useState<any>(null);
   const supabase = createClient();
 
   async function fetchData() {
@@ -117,14 +119,21 @@ export default function QuestsPage() {
                 quest.checked 
                   ? 'opacity-60 translate-x-[4px] translate-y-[4px] shadow-none' 
                   : 'comic-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
-              }`}
+              } cursor-pointer`}
               style={{ animationDelay: `${index * 50}ms` }}
+              onClick={() => {
+                setEditQuest(quest);
+                setIsModalOpen(true);
+              }}
             >
               <div className="flex items-start gap-4 mb-4">
                 <input 
                   type="checkbox" 
                   checked={!!quest.checked}
-                  onChange={() => toggleQuest(quest.id)}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    toggleQuest(quest.id);
+                  }}
                   className="w-7 h-7 mt-1 rounded comic-border text-primary focus:ring-primary transition-all custom-checkbox cursor-pointer shrink-0" 
                 />
                 <div>
@@ -158,7 +167,10 @@ export default function QuestsPage() {
 
       {/* Floating Action Button */}
       <button 
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => {
+          setEditQuest(null);
+          setIsModalOpen(true);
+        }}
         className="fixed bottom-6 right-6 md:bottom-10 md:right-10 w-16 h-16 md:w-20 md:h-20 bg-primary-container text-white rounded-lg comic-border comic-shadow hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_#1a1c1b] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all flex items-center justify-center z-50 group"
       >
         <span className="material-symbols-outlined text-3xl font-black">add</span>
@@ -167,6 +179,7 @@ export default function QuestsPage() {
 
       <CreateQuestModal 
         isOpen={isModalOpen} 
+        initialData={editQuest}
         onClose={() => setIsModalOpen(false)} 
         onSuccess={fetchData} 
       />

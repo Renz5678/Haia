@@ -14,9 +14,11 @@ interface CreateQuestModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initialData?: any;
 }
 
-export function CreateQuestModal({ isOpen, onClose, onSuccess }: CreateQuestModalProps) {
+export function CreateQuestModal({ isOpen, onClose, onSuccess, initialData }: CreateQuestModalProps) {
   const [title, setTitle] = useState("");
   const [taskType, setTaskType] = useState("task");
   const [priority, setPriority] = useState("medium");
@@ -40,13 +42,21 @@ export function CreateQuestModal({ isOpen, onClose, onSuccess }: CreateQuestModa
     };
 
     if (isOpen) {
-      // Reset form
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setTitle("");
-      setTaskType("task");
-      setPriority("medium");
-      setDueDate("");
-      setSelectedGoals([]);
+      if (initialData) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setTitle(initialData.title || "");
+        setTaskType(initialData.task_type || "task");
+        setPriority(initialData.priority || "medium");
+        setDueDate(initialData.due_date ? initialData.due_date.substring(0, 10) : "");
+        setSelectedGoals(initialData.goal_ids || []);
+      } else {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setTitle("");
+        setTaskType("task");
+        setPriority("medium");
+        setDueDate("");
+        setSelectedGoals([]);
+      }
       fetchGoals();
     }
   }, [isOpen]);
@@ -62,13 +72,19 @@ export function CreateQuestModal({ isOpen, onClose, onSuccess }: CreateQuestModa
       if (!session) return;
       const api = createApiClient(session.access_token);
 
-      await api.tasks.create({
+      const payload = {
         title,
         task_type: taskType,
         priority,
         due_date: dueDate ? new Date(dueDate).toISOString() : null,
         goal_ids: selectedGoals,
-      });
+      };
+
+      if (initialData && initialData.id) {
+        await api.tasks.update(initialData.id, payload);
+      } else {
+        await api.tasks.create(payload);
+      }
 
       onSuccess();
       onClose();
@@ -96,8 +112,8 @@ export function CreateQuestModal({ isOpen, onClose, onSuccess }: CreateQuestModa
         {/* Header */}
         <div className="flex justify-between items-start mb-6 border-b-4 border-on-surface pb-4">
           <div>
-            <h2 className="font-headline-md text-headline-md anton-text text-on-surface leading-none uppercase">New Quest</h2>
-            <p className="font-black italic text-on-surface-variant text-sm mt-1">TIME FOR A NEW MISSION!</p>
+            <h2 className="font-headline-md text-headline-md anton-text text-on-surface leading-none uppercase">{initialData ? 'Edit Quest' : 'New Quest'}</h2>
+            <p className="font-black italic text-on-surface-variant text-sm mt-1">{initialData ? 'UPDATE YOUR MISSION!' : 'TIME FOR A NEW MISSION!'}</p>
           </div>
           <button 
             onClick={onClose}
@@ -197,7 +213,7 @@ export function CreateQuestModal({ isOpen, onClose, onSuccess }: CreateQuestModa
             disabled={loading}
             className="w-full p-4 bg-primary text-white rounded-lg comic-border font-headline-md text-headline-md anton-text uppercase tracking-wide hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0px_0px_#1a1c1b] transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-4"
           >
-            {loading ? 'SUMMONING...' : 'CREATE QUEST'}
+            {loading ? (initialData ? 'UPDATING...' : 'SUMMONING...') : (initialData ? 'SAVE CHANGES' : 'CREATE QUEST')}
           </button>
         </form>
       </div>

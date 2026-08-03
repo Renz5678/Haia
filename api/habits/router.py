@@ -7,6 +7,7 @@ from habits.schemas import (
     HabitLogCreate,
     HabitLogResponse,
     HabitResponse,
+    HabitUpdate,
 )
 
 router = APIRouter(prefix="/habits", tags=["habits"])
@@ -20,6 +21,11 @@ def list_habits(active_only: bool = True, user: dict = Depends(get_current_user)
 @router.post("/", response_model=HabitResponse, status_code=status.HTTP_201_CREATED)
 def create_habit(data: HabitCreate, user: dict = Depends(get_current_user)):
     return service.create_habit(user_id=user["id"], data=data)
+
+
+@router.put("/{habit_id}", response_model=HabitResponse)
+def update_habit(habit_id: str, data: HabitUpdate, user: dict = Depends(get_current_user)):
+    return service.update_habit(user_id=user["id"], habit_id=habit_id, data=data)
 
 
 @router.post("/{habit_id}/log", response_model=HabitLogResponse, status_code=status.HTTP_201_CREATED)

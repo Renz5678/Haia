@@ -1,6 +1,6 @@
 from core.supabase import get_supabase_service_client
 
-from habits.schemas import HabitCreate, HabitLogCreate
+from habits.schemas import HabitCreate, HabitLogCreate, HabitUpdate
 
 
 def create_habit(user_id: str, data: HabitCreate) -> dict:
@@ -87,3 +87,24 @@ def get_habit_logs(user_id: str, habit_id: str, limit: int = 90) -> list[dict]:
         .limit(limit)
         .execute().data
     )
+
+def update_habit(user_id: str, habit_id: str, data: HabitUpdate) -> dict:
+    client = get_supabase_service_client()
+    payload = {k: v for k, v in data.model_dump().items() if v is not None}
+    
+    # Exclude goal_ids from payload if present (though it's not in HabitUpdate schema yet, good to be safe)
+    if "goal_ids" in payload:
+        del payload["goal_ids"]
+
+    # Format time if present
+    if "target_time" in payload and payload["target_time"] is not None:
+        payload["target_time"] = payload["target_time"].isoformat()
+
+    result = (
+        client.schema("haia").table("habits")
+        .update(payload)
+        .eq("id", habit_id)
+        .eq("user_id", user_id)
+        .execute()
+    )
+    return result.data[0]

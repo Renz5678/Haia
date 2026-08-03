@@ -12,6 +12,8 @@ export default function HabitsPage() {
   const [habits, setHabits] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [editHabit, setEditHabit] = useState<any>(null);
   const supabase = createClient();
 
   async function fetchData() {
@@ -90,8 +92,12 @@ export default function HabitsPage() {
           habits.map((habit, index) => (
             <div 
               key={habit.id}
-              className={`group bg-white p-6 rounded-lg comic-border flex flex-col justify-between transition-all comic-shadow-sm animate-fade-in-up opacity-0`}
+              className={`group bg-white p-6 rounded-lg comic-border flex flex-col justify-between transition-all comic-shadow-sm animate-fade-in-up opacity-0 cursor-pointer`}
               style={{ animationDelay: `${index * 50}ms` }}
+              onClick={() => {
+                setEditHabit(habit);
+                setIsModalOpen(true);
+              }}
             >
               <div className="flex justify-between items-start mb-6">
                 <h3 className="font-body-lg text-xl font-black text-on-surface pr-4">
@@ -129,7 +135,10 @@ export default function HabitsPage() {
               </div>
 
               <button
-                onClick={() => toggleHabit(habit.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleHabit(habit.id);
+                }}
                 className={`w-full py-3 rounded-lg comic-border font-label-caps font-black italic uppercase transition-all ${
                   habit.completedToday 
                     ? 'bg-surface-container text-on-surface-variant border-dashed'
@@ -145,7 +154,10 @@ export default function HabitsPage() {
 
       {/* Floating Action Button */}
       <button 
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => {
+          setEditHabit(null);
+          setIsModalOpen(true);
+        }}
         className="fixed bottom-6 right-6 md:bottom-10 md:right-10 w-16 h-16 md:w-20 md:h-20 bg-secondary text-on-secondary rounded-lg comic-border comic-shadow hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_#1a1c1b] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all flex items-center justify-center z-50 group"
       >
         <span className="material-symbols-outlined text-3xl font-black">add</span>
@@ -154,6 +166,7 @@ export default function HabitsPage() {
 
       <CreateHabitModal 
         isOpen={isModalOpen} 
+        initialData={editHabit}
         onClose={() => setIsModalOpen(false)} 
         onSuccess={fetchData} 
       />

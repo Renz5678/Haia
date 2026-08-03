@@ -14,9 +14,11 @@ interface CreateHabitModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initialData?: any;
 }
 
-export function CreateHabitModal({ isOpen, onClose, onSuccess }: CreateHabitModalProps) {
+export function CreateHabitModal({ isOpen, onClose, onSuccess, initialData }: CreateHabitModalProps) {
   const [name, setName] = useState("");
   const [frequency, setFrequency] = useState("daily");
   const [targetCount, setTargetCount] = useState(1);
@@ -39,11 +41,19 @@ export function CreateHabitModal({ isOpen, onClose, onSuccess }: CreateHabitModa
     };
 
     if (isOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setName("");
-      setFrequency("daily");
-      setTargetCount(1);
-      setSelectedGoals([]);
+      if (initialData) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setName(initialData.name || "");
+        setFrequency(initialData.frequency || "daily");
+        setTargetCount(initialData.target_count || 1);
+        setSelectedGoals(initialData.goal_ids || []);
+      } else {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setName("");
+        setFrequency("daily");
+        setTargetCount(1);
+        setSelectedGoals([]);
+      }
       fetchGoals();
     }
   }, [isOpen]);
@@ -59,12 +69,18 @@ export function CreateHabitModal({ isOpen, onClose, onSuccess }: CreateHabitModa
       if (!session) return;
       const api = createApiClient(session.access_token);
 
-      await api.habits.create({
+      const payload = {
         name,
         frequency,
         target_count: frequency === "flexible" ? targetCount : undefined,
         goal_ids: selectedGoals,
-      });
+      };
+
+      if (initialData && initialData.id) {
+        await api.habits.update(initialData.id, payload);
+      } else {
+        await api.habits.create(payload);
+      }
 
       onSuccess();
       onClose();
@@ -92,8 +108,8 @@ export function CreateHabitModal({ isOpen, onClose, onSuccess }: CreateHabitModa
         {/* Header */}
         <div className="flex justify-between items-start mb-6 border-b-4 border-on-surface pb-4">
           <div>
-            <h2 className="font-headline-md text-headline-md anton-text text-on-surface leading-none uppercase">New Habit</h2>
-            <p className="font-black italic text-on-surface-variant text-sm mt-1">BUILD THAT STREAK!</p>
+            <h2 className="font-headline-md text-headline-md anton-text text-on-surface leading-none uppercase">{initialData ? 'Edit Habit' : 'New Habit'}</h2>
+            <p className="font-black italic text-on-surface-variant text-sm mt-1">{initialData ? 'UPDATE YOUR STREAK!' : 'BUILD THAT STREAK!'}</p>
           </div>
           <button 
             onClick={onClose}
@@ -180,7 +196,7 @@ export function CreateHabitModal({ isOpen, onClose, onSuccess }: CreateHabitModa
             disabled={loading}
             className="w-full p-4 bg-primary text-white rounded-lg comic-border font-headline-md text-headline-md anton-text uppercase tracking-wide hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0px_0px_#1a1c1b] transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-4"
           >
-            {loading ? 'SUMMONING...' : 'CREATE HABIT'}
+            {loading ? (initialData ? 'UPDATING...' : 'SUMMONING...') : (initialData ? 'SAVE CHANGES' : 'CREATE HABIT')}
           </button>
         </form>
       </div>

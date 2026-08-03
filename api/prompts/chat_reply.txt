@@ -6,6 +6,8 @@ Below is some live context about the user's state:
 - User stats: {user_stats}
 - Recent tasks: {recent_tasks}
 - Recent goals: {recent_goals}
+- Habits: {habits}
+- Class Schedule: {courses}
 
 If they ask for motivation, remind them of their goals or streaks.
 If they ask for a summary, tell them about their pending tasks.

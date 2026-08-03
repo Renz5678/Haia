@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 from core.config import get_settings
 from core.dependencies import get_current_user
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, Request, HTTPException, BackgroundTasks
 from fastapi.responses import HTMLResponse
 from google_auth_oauthlib.flow import Flow
 
@@ -53,7 +53,7 @@ def google_connect(user: dict = Depends(get_current_user)):
 
 
 @router.get("/google/callback")
-async def google_callback(code: str, state: str | None = None):
+async def google_callback(code: str, background_tasks: BackgroundTasks, state: str | None = None):
     """
     Step 2 of Google OAuth: exchange code for tokens, store in integrations table.
     Phase 5 — full implementation.
@@ -110,6 +110,9 @@ async def google_callback(code: str, state: str | None = None):
         client.schema("haia").table("integrations").update(payload).eq("id", existing.data[0]["id"]).execute()
     else:
         client.schema("haia").table("integrations").insert(payload).execute()
+        
+    from integrations.gcal import back_sync_gcal
+    background_tasks.add_task(back_sync_gcal, user_id)
     
     return HTMLResponse(
         "<script>window.opener.postMessage('google_connected', '*'); window.close();</script>"

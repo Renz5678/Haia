@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 def get_gcal_service(user_id: str):
     client = get_supabase_service_client()
-    integration = client.schema("haia").table("integrations").select("*").eq("user_id", user_id).eq("service", "google").eq("is_active", True).execute().data
+    integration = client.schema("haia").table("integrations").select("*").eq("user_id", user_id).eq("service", "google_calendar").eq("is_active", True).execute().data
     if not integration:
         return None
         
@@ -176,3 +176,18 @@ def sync_course_to_gcal(user_id: str, course: dict):
             
     except Exception as e:
         logger.error(f"Failed to sync course {course['id']} to GCal for user {user_id}: {e}")
+
+def back_sync_gcal(user_id: str):
+    """Sync all existing courses and tasks with a due date to Google Calendar for a newly connected account."""
+    client = get_supabase_service_client()
+    
+    # Sync Courses
+    courses = client.schema("haia").table("courses").select("*").eq("user_id", user_id).execute().data
+    for course in courses:
+        sync_course_to_gcal(user_id, course)
+        
+    # Sync Tasks (only pending ones with a due date)
+    tasks = client.schema("haia").table("tasks").select("*").eq("user_id", user_id).eq("status", "pending").not_.is_("due_date", "null").execute().data
+    for task in tasks:
+        sync_task_to_gcal(user_id, task)
+

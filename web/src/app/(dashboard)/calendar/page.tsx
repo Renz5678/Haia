@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, PlusCircle, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
+import { AlertModal } from "@/components/ui/AlertModal";
 
 const DAYS_OF_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -15,6 +16,13 @@ export default function CalendarPage() {
   const [habits, setHabits] = useState<any[]>([]);
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  
+  // Alert Modal state
+  const [alertConfig, setAlertConfig] = useState<{isOpen: boolean; title: string; message: string}>({
+    isOpen: false,
+    title: "",
+    message: ""
+  });
   
   const currentDate = new Date();
   const currentMonth = currentDate.toLocaleString('default', { month: 'long' }).toUpperCase();
@@ -60,10 +68,18 @@ export default function CalendarPage() {
       if (!session) return;
       const api = createApiClient(session.access_token);
       await api.integrations.google.sync();
-      alert("Sync started in the background!");
+      setAlertConfig({
+        isOpen: true,
+        title: "Sync Started",
+        message: "Sync started in the background!"
+      });
     } catch (err) {
       console.error(err);
-      alert("Failed to sync to Google Calendar.");
+      setAlertConfig({
+        isOpen: true,
+        title: "Sync Failed",
+        message: "Failed to sync to Google Calendar."
+      });
     } finally {
       setIsSyncing(false);
     }
@@ -278,6 +294,12 @@ export default function CalendarPage() {
         </div>
       </aside>
 
+      <AlertModal 
+        isOpen={alertConfig.isOpen}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onClose={() => setAlertConfig(prev => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }

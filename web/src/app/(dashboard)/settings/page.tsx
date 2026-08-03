@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { createClient } from "@/lib/supabase/client";
 
 import { createApiClient } from "@/lib/api";
+import { AlertModal } from "@/components/ui/AlertModal";
 
 export default function SettingsPage() {
   const [deepWork, setDeepWork] = useState(true);
@@ -14,6 +15,13 @@ export default function SettingsPage() {
   const [isLinking, setIsLinking] = useState(false);
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [isTelegramConnected, setIsTelegramConnected] = useState(false);
+  
+  // Alert Modal state
+  const [alertConfig, setAlertConfig] = useState<{isOpen: boolean; title: string; message: string}>({
+    isOpen: false,
+    title: "",
+    message: ""
+  });
   
   const { user } = useAuthStore();
   const supabase = createClient();
@@ -30,7 +38,11 @@ export default function SettingsPage() {
       setLinkCode(res.link_code);
     } catch (err) {
       console.error("Failed to generate link code", err);
-      alert("Failed to generate linking code. Make sure you are logged in.");
+      setAlertConfig({
+        isOpen: true,
+        title: "Error",
+        message: "Failed to generate linking code. Make sure you are logged in."
+      });
     } finally {
       setIsLinking(false);
     }
@@ -49,7 +61,11 @@ export default function SettingsPage() {
       }
     } catch (err) {
       console.error("Failed to connect Google", err);
-      alert("Failed to initiate Google connection.");
+      setAlertConfig({
+        isOpen: true,
+        title: "Error",
+        message: "Failed to initiate Google connection."
+      });
     }
   };
 
@@ -78,7 +94,11 @@ export default function SettingsPage() {
     const handleMessage = (event: MessageEvent) => {
       if (event.data === 'google_connected') {
         setIsGoogleConnected(true);
-        alert("Google Calendar connected successfully!");
+        setAlertConfig({
+          isOpen: true,
+          title: "Connection Successful",
+          message: "Google Calendar connected successfully!"
+        });
       }
     };
     window.addEventListener("message", handleMessage);
@@ -284,6 +304,13 @@ export default function SettingsPage() {
         </footer>
 
       </div>
+      
+      <AlertModal 
+        isOpen={alertConfig.isOpen}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onClose={() => setAlertConfig(prev => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }

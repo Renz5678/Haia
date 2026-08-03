@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, PlusCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, PlusCircle, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
 
@@ -13,6 +13,8 @@ export default function CalendarPage() {
   const [courses, setCourses] = useState<any[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [habits, setHabits] = useState<any[]>([]);
+  const [isGoogleConnected, setIsGoogleConnected] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   
   const currentDate = new Date();
   const currentMonth = currentDate.toLocaleString('default', { month: 'long' }).toUpperCase();
@@ -29,10 +31,15 @@ export default function CalendarPage() {
         if (!session) return;
         const api = createApiClient(session.access_token);
         
-        const [fetchedCourses, fetchedHabits] = await Promise.all([
+        const [fetchedCourses, fetchedHabits, integrationsRes] = await Promise.all([
           api.courses.list(),
-          api.habits.list()
+          api.habits.list(),
+          api.integrations.list()
         ]);
+        
+        if (integrationsRes.integrations.includes("google_calendar")) {
+          setIsGoogleConnected(true);
+        }
         
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         setCourses(fetchedCourses as any[]);
@@ -44,6 +51,23 @@ export default function CalendarPage() {
     }
     fetchData();
   }, []);
+
+  const handleSync = async () => {
+    setIsSyncing(true);
+    try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const api = createApiClient(session.access_token);
+      await api.integrations.google.sync();
+      alert("Sync started in the background!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to sync to Google Calendar.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const getDayInfo = (dayInt: number) => {
     const d = new Date(currentYear, currentDate.getMonth(), dayInt);
@@ -139,6 +163,16 @@ export default function CalendarPage() {
               <div className="flex gap-1">
                 <button className="ink-border-2 p-1 bg-white hover:bg-surface-container-low"><ChevronLeft size={20} /></button>
                 <button className="ink-border-2 p-1 bg-white hover:bg-surface-container-low"><ChevronRight size={20} /></button>
+                {isGoogleConnected && (
+                  <button 
+                    onClick={handleSync} 
+                    disabled={isSyncing}
+                    title="Sync to Google Calendar"
+                    className="ink-border-2 p-1 ml-2 bg-primary text-white hover:opacity-90 disabled:opacity-50"
+                  >
+                    <RefreshCw size={20} className={isSyncing ? "animate-spin" : ""} />
+                  </button>
+                )}
               </div>
             </div>
             <div className="flex gap-4">

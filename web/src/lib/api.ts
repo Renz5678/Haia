@@ -150,6 +150,7 @@ export function createApiClient(accessToken: string) {
       },
       google: {
         connect: () => get("/integrations/google/connect"),
+        sync: () => post("/integrations/google/sync", {}),
       }
     }
   };

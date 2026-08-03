@@ -52,6 +52,21 @@ def google_connect(user: dict = Depends(get_current_user)):
     return {"auth_url": auth_url}
 
 
+@router.post("/google/sync")
+def google_sync(background_tasks: BackgroundTasks, user: dict = Depends(get_current_user)):
+    """
+    Manually trigger a sync of all existing courses and tasks to Google Calendar.
+    """
+    from core.supabase import get_supabase_service_client
+    client = get_supabase_service_client()
+    integration = client.schema("haia").table("integrations").select("id").eq("user_id", user["id"]).eq("service", "google_calendar").eq("is_active", True).execute().data
+    if not integration:
+        raise HTTPException(status_code=400, detail="Google Calendar not connected")
+        
+    from integrations.gcal import back_sync_gcal
+    background_tasks.add_task(back_sync_gcal, user["id"])
+    return {"ok": True, "message": "Sync started in background"}
+
 @router.get("/google/callback")
 async def google_callback(code: str, background_tasks: BackgroundTasks, state: str | None = None):
     """

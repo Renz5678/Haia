@@ -62,8 +62,9 @@ def process_message(user_id: str, data: ChatMessageCreate) -> dict:
         else:
             reply = f"🎯 Goal set: {res.data.get('title')}"
         
+        db_intent = res.intent if res.intent in ["task", "goal"] else "task"
         saved = save_message(user_id=user_id, role="assistant", content=reply, channel=data.channel, 
-                             intent=res.intent, linked_item_type=res.parsed_type, linked_item_id=res.saved_id)
+                             intent=db_intent, linked_item_type=res.parsed_type, linked_item_id=res.saved_id)
         return saved
         
     # 4. Conversational branch
@@ -98,11 +99,28 @@ def process_message(user_id: str, data: ChatMessageCreate) -> dict:
         .execute().data
     )
     
+    courses = (
+        client.schema("haia").table("courses")
+        .select("code, name, days, start_time, end_time")
+        .eq("user_id", user_id)
+        .execute().data
+    )
+    
+    habits = (
+        client.schema("haia").table("habits")
+        .select("name, frequency, custom_days")
+        .eq("user_id", user_id)
+        .eq("is_active", True)
+        .execute().data
+    )
+    
     history_str = json.dumps([{"role": msg["role"], "content": msg["content"]} for msg in history])
     
     prompt = prompt_template.replace("{user_stats}", json.dumps(stats.model_dump() if hasattr(stats, 'model_dump') else stats))
     prompt = prompt.replace("{recent_tasks}", json.dumps(pending_tasks))
     prompt = prompt.replace("{recent_goals}", json.dumps(recent_goals))
+    prompt = prompt.replace("{courses}", json.dumps(courses))
+    prompt = prompt.replace("{habits}", json.dumps(habits))
     prompt = prompt.replace("{chat_history}", history_str)
     prompt += f"\n\nUser: {data.content}\nHaia:"
 

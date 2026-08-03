@@ -63,7 +63,13 @@ def process_message(user_id: str, data: ChatMessageCreate) -> dict:
         else:
             reply = f"🎯 Goal set: {res.data.get('title')}"
         
-        db_intent = res.intent if res.intent in ["task", "goal"] else "task"
+        intent_map = {
+            "task": "new_task",
+            "habit": "new_habit",
+            "goal": "new_goal",
+            "conversational": "conversational",
+        }
+        db_intent = intent_map.get(res.intent, "unknown")
         saved = save_message(user_id=user_id, role="assistant", content=reply, channel=data.channel, 
                              intent=db_intent, linked_item_type=res.parsed_type, linked_item_id=res.saved_id)
         return saved

@@ -33,7 +33,8 @@ def google_connect(user: dict = Depends(get_current_user)):
     
     flow = Flow.from_client_config(
         client_config,
-        scopes=["https://www.googleapis.com/auth/calendar"]
+        scopes=["https://www.googleapis.com/auth/calendar"],
+        autogenerate_code_verifier=False
     )
     flow.redirect_uri = settings.google_redirect_uri
     
@@ -64,7 +65,8 @@ async def google_callback(code: str, state: str | None = None):
     
     flow = Flow.from_client_config(
         client_config,
-        scopes=["https://www.googleapis.com/auth/calendar"]
+        scopes=["https://www.googleapis.com/auth/calendar"],
+        autogenerate_code_verifier=False
     )
     flow.redirect_uri = settings.google_redirect_uri
     

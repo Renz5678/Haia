@@ -56,3 +56,50 @@ export function GoalCardSkeleton() {
     </div>
   );
 }
+
+export function CalendarSkeleton() {
+  return (
+    <div className="flex w-full h-full animate-pulse">
+      <div className="flex-1 p-4 md:p-gutter flex flex-col">
+        <div className="flex justify-between mb-8">
+          <Skeleton className="h-10 w-48" />
+          <div className="flex gap-4">
+             <Skeleton className="h-6 w-20" />
+             <Skeleton className="h-6 w-20" />
+             <Skeleton className="h-6 w-20" />
+          </div>
+        </div>
+        <div className="border-2 border-black bg-black flex-1 flex flex-col">
+          <div className="grid grid-cols-7 gap-0 border-b-2 border-black">
+            {[1, 2, 3, 4, 5, 6, 7].map(i => <div key={i} className="bg-surface-muted h-8 border-r border-black" />)}
+          </div>
+          <div className="grid grid-cols-7 gap-0 bg-white flex-1 min-h-[500px]">
+             {Array.from({ length: 35 }).map((_, i) => (
+                <div key={i} className="border-r border-b border-black p-2 flex flex-col gap-2">
+                  <Skeleton className="h-6 w-6 rounded" />
+                  {i % 5 === 0 && <Skeleton className="h-4 w-full" />}
+                  {i % 8 === 0 && <Skeleton className="h-4 w-3/4" />}
+                </div>
+             ))}
+          </div>
+        </div>
+      </div>
+      <div className="hidden xl:flex w-80 border-l-2 border-black bg-surface-container-low flex-col p-6 space-y-6">
+         <div>
+            <Skeleton className="h-4 w-24 mb-2" />
+            <Skeleton className="h-8 w-40" />
+         </div>
+         <div>
+            <Skeleton className="h-6 w-32 mb-4" />
+            <Skeleton className="h-16 w-full rounded-lg mb-2" />
+            <Skeleton className="h-16 w-full rounded-lg" />
+         </div>
+         <div>
+            <Skeleton className="h-6 w-32 mb-4" />
+            <Skeleton className="h-12 w-full rounded-lg" />
+         </div>
+      </div>
+    </div>
+  );
+}
+

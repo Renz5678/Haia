@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, PlusCircle, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
 import { AlertModal } from "@/components/ui/AlertModal";
+import { CalendarSkeleton } from "@/components/ui/Skeleton";
 
 const DAYS_OF_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -181,14 +182,13 @@ export default function CalendarPage() {
       `}} />
       <div className="absolute inset-0 calendar-bg pointer-events-none z-[-1]"></div>
 
-      {isLoading && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#FAFAF8] bg-opacity-80 backdrop-blur-sm">
-          <div className="w-16 h-16 border-4 border-black border-t-primary rounded-full animate-spin"></div>
-          <p className="mt-4 font-headline-md font-bold comic-text tracking-widest animate-pulse">LOADING CALENDAR...</p>
+      {isLoading ? (
+        <div className="absolute inset-0 z-50 bg-[#FAFAF8]">
+          <CalendarSkeleton />
         </div>
-      )}
-
-      {/* Left Side: Calendar Grid */}
+      ) : (
+        <>
+          {/* Left Side: Calendar Grid */}
       <section className="flex-1 p-4 md:p-gutter overflow-y-auto halftone-pattern min-w-0">
         <div className="max-w-max-width-content mx-auto">
           {/* Calendar Header */}
@@ -313,12 +313,14 @@ export default function CalendarPage() {
         </div>
       </aside>
 
-      <AlertModal 
-        isOpen={alertConfig.isOpen}
-        title={alertConfig.title}
-        message={alertConfig.message}
-        onClose={() => setAlertConfig(prev => ({ ...prev, isOpen: false }))}
-      />
+        <AlertModal 
+          isOpen={alertConfig.isOpen}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          onClose={() => setAlertConfig(prev => ({ ...prev, isOpen: false }))}
+        />
+        </>
+      )}
     </div>
   );
 }

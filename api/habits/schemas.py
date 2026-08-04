@@ -40,6 +40,8 @@ class HabitResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     goal_ids: list[UUID4] = []
+    current_streak: int = 0
+    last_activity_date: date | None = None
 
     model_config = {"from_attributes": True}
 

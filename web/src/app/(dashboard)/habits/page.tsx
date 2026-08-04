@@ -25,8 +25,15 @@ export default function HabitsPage() {
       
       const api = createApiClient(session.access_token);
       const fetchedHabits = await api.habits.list(false); // active_only=false
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setHabits(fetchedHabits as any[]);
+      
+      const now = new Date();
+      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      
+      const enrichedHabits = (fetchedHabits as any[]).map(h => ({
+        ...h,
+        completedToday: h.last_activity_date === today
+      }));
+      setHabits(enrichedHabits);
     } catch {
       showToast("error", "Couldn't load your habits. Check your connection and try again.");
     } finally {
@@ -58,7 +65,8 @@ export default function HabitsPage() {
       if (!session) throw new Error("Not signed in");
       
       const api = createApiClient(session.access_token);
-      const today = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
       await api.habits.log(id, { logged_date: today });
       showToast("success", "Habit logged! Keep the streak alive 🔥");
     } catch (err: unknown) {

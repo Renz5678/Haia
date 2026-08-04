@@ -45,8 +45,14 @@ def list_habits(user_id: str, active_only: bool = True) -> list[dict]:
     for hg in hg_response.data:
         goal_map.setdefault(hg["habit_id"], []).append(hg["goal_id"])
         
+    streaks = client.schema("haia").table("streaks").select("habit_id, current_streak, last_activity_date").in_("habit_id", habit_ids).execute().data
+    streak_map = {s["habit_id"]: s for s in streaks}
+        
     for h in habits:
         h["goal_ids"] = goal_map.get(h["id"], [])
+        s = streak_map.get(h["id"], {})
+        h["current_streak"] = s.get("current_streak", 0)
+        h["last_activity_date"] = s.get("last_activity_date")
         
     return habits
 

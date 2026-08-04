@@ -23,12 +23,15 @@ mailgun2>=1.0.0
 # HTTP client
 httpx>=0.28.0
 
-# Background jobs (if not using pg_cron)
+# Background jobs (in-process async scheduler — complements pg_cron)
+apscheduler>=3.10.0
 
 # Utilities
 python-multipart>=0.0.9      # file uploads (photos, PDFs)
 python-jose[cryptography]>=3.3.0
 python-dotenv>=1.0.0
+pytz>=2024.1                  # timezone-aware datetime for GCal sync
+
 
 # PDF parsing (syllabus import)
 pypdf>=4.2.0

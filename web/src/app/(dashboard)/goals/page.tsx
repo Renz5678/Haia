@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
 import { GoalCardSkeleton, Skeleton } from "@/components/ui/Skeleton";
 import { CreateGoalModal } from "@/components/CreateGoalModal";
+import { useToast, ToastContainer } from "@/components/ui/Toast";
 
 export default function GoalsPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -15,6 +16,8 @@ export default function GoalsPage() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const supabase = createClient();
+  const { toasts, showToast, dismiss } = useToast();
+
 
   const fetchData = async () => {
       try {
@@ -31,9 +34,10 @@ export default function GoalsPage() {
         setHabits((fetchedHabits as any[]) || []);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         setGoals((fetchedGoals as any[]) || []);
-      } catch (err) {
-        console.error("Failed to fetch goals data:", err);
+      } catch {
+        showToast("error", "Couldn't load your goals. Check your connection and try again.");
       } finally {
+
         setLoading(false);
       }
   };
@@ -54,14 +58,17 @@ export default function GoalsPage() {
       await api.habits.log(habitId, {});
       
       // Optimistic refresh logic could go here, but for simplicity we refetch or just toggle
-    } catch (err) {
-      console.error("Failed to log habit:", err);
+    } catch {
+      showToast("error", "Couldn't log that habit. Try again?");
     }
   };
+
 
   return (
     <div className="flex-1 w-full bg-[#f9f9f7] relative z-0 min-h-[calc(100vh-80px)] overflow-y-auto">
       <main className="px-4 md:px-margin-desktop py-8 md:py-12 w-full max-w-max-width-content mx-auto">
+        <ToastContainer toasts={toasts} dismiss={dismiss} />
+
         <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <h2 className="font-display-hero text-4xl md:text-display-hero ink-header mb-2 anton-text tracking-normal">QUOTAS & HABITS</h2>
@@ -206,7 +213,10 @@ export default function GoalsPage() {
       <CreateGoalModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        onSuccess={fetchData} 
+        onSuccess={() => {
+          fetchData();
+          showToast("success", "New sprint launched! Go crush it.");
+        }} 
       />
     </div>
   );

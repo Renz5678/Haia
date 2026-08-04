@@ -114,33 +114,78 @@ def sync_course_to_gcal(user_id: str, course: dict):
     created = None
     
     try:
-        # Convert days to RRULE format
+        # ------------------------------------------------------------------
+        # 1. Resolve user timezone (default Asia/Manila per schema)
+        # ------------------------------------------------------------------
+        user_row = client.schema("haia").table("users").select("timezone").eq("id", user_id).single().execute().data
+        user_tz = (user_row.get("timezone") or "Asia/Manila") if user_row else "Asia/Manila"
+
+        # ------------------------------------------------------------------
+        # 2. Convert days to RRULE format
+        # ------------------------------------------------------------------
         day_map = {"Mon": "MO", "Tue": "TU", "Wed": "WE", "Thu": "TH", "Fri": "FR", "Sat": "SA", "Sun": "SU"}
+        # Python weekday(): Mon=0 … Sun=6
+        py_weekday_map = {"Mon": 0, "Tue": 1, "Wed": 2, "Thu": 3, "Fri": 4, "Sat": 5, "Sun": 6}
         days = course.get("days", [])
         byday = ",".join([day_map.get(d, "MO") for d in days])
-        
-        # Start date: use today as the base
-        today = datetime.utcnow().date()
-        start_time_str = course.get("start_time")
-        end_time_str = course.get("end_time")
-        
-        start_dt = datetime.strptime(start_time_str, "%H:%M:%S").replace(year=today.year, month=today.month, day=today.day)
-        end_dt = datetime.strptime(end_time_str, "%H:%M:%S").replace(year=today.year, month=today.month, day=today.day)
-        
+
+        # ------------------------------------------------------------------
+        # 3. Compute anchor date = next upcoming occurrence of the course's
+        #    first scheduled weekday, in the user's local timezone.
+        # ------------------------------------------------------------------
+        import pytz
+
+        tz = pytz.timezone(user_tz)
+        today = datetime.now(tz).date()
+
+        if days:
+            first_day_name = days[0]
+            target_weekday = py_weekday_map.get(first_day_name, 0)
+            # days_ahead=0 means today is already the right weekday — use it
+            days_ahead = (target_weekday - today.weekday()) % 7
+            anchor_date = today + timedelta(days=days_ahead)
+        else:
+            anchor_date = today
+
+        # ------------------------------------------------------------------
+        # 4. Build start/end datetimes in the user's local timezone
+        # ------------------------------------------------------------------
+        start_time_str = course.get("start_time", "08:00:00")
+        end_time_str = course.get("end_time", "09:00:00")
+
+        # Normalise to HH:MM:SS (DB stores as time, may include microseconds)
+        start_time_str = str(start_time_str)[:8].ljust(8, "0")
+        end_time_str   = str(end_time_str)[:8].ljust(8, "0")
+
+        start_dt_naive = datetime.strptime(f"{anchor_date} {start_time_str}", "%Y-%m-%d %H:%M:%S")
+        end_dt_naive   = datetime.strptime(f"{anchor_date} {end_time_str}",   "%Y-%m-%d %H:%M:%S")
+
+        # Localise — pytz.localize is correct for wall-clock class times
+        start_dt = tz.localize(start_dt_naive)
+        end_dt   = tz.localize(end_dt_naive)
+
+        # ------------------------------------------------------------------
+        # 5. Build the Google Calendar event body
+        # ------------------------------------------------------------------
         event = {
             'summary': f"{course.get('code')} - {course.get('name') or 'Class'}",
-            'description': f"Instructor: {course.get('instructor') or 'TBD'}\\nRoom: {course.get('room') or 'TBD'}\\nModality: {course.get('modality')}\\n\\n[Managed by Haia]",
+            'description': (
+                f"Instructor: {course.get('instructor') or 'TBD'}\n"
+                f"Room: {course.get('room') or 'TBD'}\n"
+                f"Modality: {course.get('modality')}\n\n"
+                "[Managed by Haia]"
+            ),
             'start': {
-                'dateTime': start_dt.isoformat() + "Z",
-                'timeZone': 'UTC',
+                'dateTime': start_dt.isoformat(),
+                'timeZone': user_tz,
             },
             'end': {
-                'dateTime': end_dt.isoformat() + "Z",
-                'timeZone': 'UTC',
+                'dateTime': end_dt.isoformat(),
+                'timeZone': user_tz,
             },
             'recurrence': [
                 f'RRULE:FREQ=WEEKLY;BYDAY={byday}'
-            ] if byday else []
+            ] if byday else [],
         }
         
         # Add Meet link for online/hybrid

@@ -102,23 +102,24 @@ def award_xp_for_habit(user_id: str, habit_id: str, log_id: str, xp: int, logged
         
     # --- Regular daily streak logic ---
     if last_date == logged_date:
+        # Already logged today — idempotent, nothing to update
         return
-            
-        # If logged yesterday, increment streak
-        if last_date and last_date == logged_date - timedelta(days=1):
-            new_current = streak["current_streak"] + 1
-            new_longest = max(streak["longest_streak"], new_current)
-            client.schema("haia").table("streaks").update({
-                "current_streak": new_current,
-                "longest_streak": new_longest,
-                "last_activity_date": logged_date.isoformat()
-            }).eq("id", streak["id"]).execute()
-        else:
-            # Streak broken
-            client.schema("haia").table("streaks").update({
-                "current_streak": 1,
-                "last_activity_date": logged_date.isoformat()
-            }).eq("id", streak["id"]).execute()
+
+    # If logged yesterday, increment streak
+    if last_date and last_date == logged_date - timedelta(days=1):
+        new_current = streak["current_streak"] + 1
+        new_longest = max(streak["longest_streak"], new_current)
+        client.schema("haia").table("streaks").update({
+            "current_streak": new_current,
+            "longest_streak": new_longest,
+            "last_activity_date": logged_date.isoformat()
+        }).eq("id", streak["id"]).execute()
+    else:
+        # Streak broken — reset to 1
+        client.schema("haia").table("streaks").update({
+            "current_streak": 1,
+            "last_activity_date": logged_date.isoformat()
+        }).eq("id", streak["id"]).execute()
 
 
 def get_user_stats(user_id: str) -> dict:

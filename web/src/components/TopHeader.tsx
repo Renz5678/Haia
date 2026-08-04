@@ -1,13 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Zap, Bell, Calendar, Menu, Sparkles, Send, MessageCircle } from "lucide-react";
+import { Zap, Bell, Calendar, Menu, Sparkles, Send, MessageCircle, Loader2 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { createApiClient } from "@/lib/api";
 
 export default function TopHeader({ onOpenChat }: { onOpenChat?: () => void }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [query, setQuery] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: "success" | "error"; msg: string } | null>(null);
 
   const pageTitles: Record<string, string> = {
     "/dashboard": "HOME",
@@ -21,12 +26,41 @@ export default function TopHeader({ onOpenChat }: { onOpenChat?: () => void }) {
 
   const title = pageTitles[pathname] || "DASHBOARD";
 
-  const handleCaptureSubmit = (e: React.FormEvent) => {
+  const handleCaptureSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!query.trim()) return;
-    // TODO: Send to API
-    console.log("Quick capture:", query);
-    setQuery("");
+    if (!query.trim() || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setFeedback(null);
+
+    try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setFeedback({ type: "error", msg: "Not signed in." });
+        return;
+      }
+
+      const api = createApiClient(session.access_token);
+      await api.parse.text(query.trim(), "typed");
+
+      setQuery("");
+      setFeedback({ type: "success", msg: "Got it! Check your Quests." });
+      setTimeout(() => setFeedback(null), 3000);
+
+      // If we're already on the quests page, a hard refresh will pick up the new item.
+      // Otherwise a soft push is fine — the quests page fetches on mount.
+      if (pathname !== "/quests") {
+        router.push("/quests");
+      } else {
+        router.refresh();
+      }
+    } catch {
+      setFeedback({ type: "error", msg: "Couldn't parse that — try rephrasing?" });
+      setTimeout(() => setFeedback(null), 4000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -42,7 +76,7 @@ export default function TopHeader({ onOpenChat }: { onOpenChat?: () => void }) {
       </div>
       
       {/* Center: Global AI Quick Capture */}
-      <div className="hidden md:flex flex-1 max-w-xl mx-4">
+      <div className="hidden md:flex flex-1 max-w-xl mx-4 flex-col gap-1">
         <form onSubmit={handleCaptureSubmit} className="w-full relative flex items-center group">
           <div className="absolute left-4 text-primary group-focus-within:text-secondary transition-colors">
             <Sparkles size={20} />
@@ -52,12 +86,25 @@ export default function TopHeader({ onOpenChat }: { onOpenChat?: () => void }) {
             placeholder="Log a task, habit, or goal..." 
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full h-12 bg-surface-container-low border-2 border-on-surface rounded-full pl-12 pr-12 font-body-lg focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white comic-shadow-sm transition-all"
+            disabled={isSubmitting}
+            className="w-full h-12 bg-surface-container-low border-2 border-on-surface rounded-full pl-12 pr-12 font-body-lg focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white comic-shadow-sm transition-all disabled:opacity-60"
           />
-          <button type="submit" className="absolute right-3 w-8 h-8 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary/90 transition-colors comic-border">
-            <Send size={14} className="mr-0.5" />
+          <button
+            type="submit"
+            disabled={isSubmitting || !query.trim()}
+            className="absolute right-3 w-8 h-8 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary/90 transition-colors comic-border disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting
+              ? <Loader2 size={14} className="animate-spin" />
+              : <Send size={14} className="mr-0.5" />
+            }
           </button>
         </form>
+        {feedback && (
+          <p className={`text-xs font-bold italic px-4 animate-fade-in-up ${feedback.type === "success" ? "text-secondary" : "text-error"}`}>
+            {feedback.msg}
+          </p>
+        )}
       </div>
 
       {/* Right: Stats & Settings */}
@@ -77,7 +124,8 @@ export default function TopHeader({ onOpenChat }: { onOpenChat?: () => void }) {
           <button className="hidden sm:flex w-10 h-10 md:w-12 md:h-12 rounded-full comic-border bg-white hover:bg-surface-container transition-colors items-center justify-center comic-shadow-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
             <Bell size={20} />
           </button>
-          <Link href="/calendar" className="w-10 h-10 md:w-12 md:h-12 rounded-full comic-border bg-white hover:bg-surface-container transition-colors flex items-center justify-center comic-shadow-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
+          {/* Fixed: was pointing to /calendar (404), correct route is /schedule */}
+          <Link href="/schedule" className="w-10 h-10 md:w-12 md:h-12 rounded-full comic-border bg-white hover:bg-surface-container transition-colors flex items-center justify-center comic-shadow-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
             <Calendar size={20} />
           </Link>
         </div>
@@ -85,3 +133,5 @@ export default function TopHeader({ onOpenChat }: { onOpenChat?: () => void }) {
     </header>
   );
 }
+
+

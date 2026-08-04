@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
 import { HabitCardSkeleton } from "@/components/ui/Skeleton";
 import { CreateHabitModal } from "@/components/CreateHabitModal";
+import { useToast, ToastContainer } from "@/components/ui/Toast";
 
 export default function HabitsPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -15,6 +16,7 @@ export default function HabitsPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [editHabit, setEditHabit] = useState<any>(null);
   const supabase = createClient();
+  const { toasts, showToast, dismiss } = useToast();
 
   async function fetchData() {
     try {
@@ -25,42 +27,59 @@ export default function HabitsPage() {
       const fetchedHabits = await api.habits.list(false); // active_only=false
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setHabits(fetchedHabits as any[]);
-    } catch (err) {
-      console.error("Failed to fetch habits:", err);
+    } catch {
+      showToast("error", "Couldn't load your habits. Check your connection and try again.");
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleHabit = async (id: string) => {
+    // --- Optimistic update ---
+    const previousHabits = habits;
+    setHabits(habits.map(h => {
+      if (h.id === id) {
+        return {
+          ...h,
+          completedToday: !h.completedToday,
+          current_streak: !h.completedToday ? h.current_streak + 1 : Math.max(0, h.current_streak - 1),
+        };
+      }
+      return h;
+    }));
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session) throw new Error("Not signed in");
       
       const api = createApiClient(session.access_token);
       const today = new Date().toISOString().split('T')[0];
-      // Determine if completed today. In real gamification, this log determines streak.
       await api.habits.log(id, { logged_date: today });
-      
-      setHabits(habits.map(h => {
-        if (h.id === id) {
-          // Optimistically update the UI
-          return { ...h, completedToday: !h.completedToday, current_streak: !h.completedToday ? h.current_streak + 1 : h.current_streak - 1 };
-        }
-        return h;
-      }));
-    } catch (err) {
-      console.error("Failed to log habit:", err);
+      showToast("success", "Habit logged! Keep the streak alive 🔥");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "";
+      // unique constraint = already logged today — not a real error, just inform
+      if (message.includes("23505") || message.includes("unique")) {
+        // Roll back the optimistic toggle (it was already done today)
+        setHabits(previousHabits);
+        showToast("warning", "Already logged for today — come back tomorrow!");
+      } else {
+        // --- Rollback on unexpected failure ---
+        setHabits(previousHabits);
+        showToast("error", "Couldn't log that habit. Try again?");
+      }
     }
   };
 
   return (
     <div className="max-w-[1100px] mx-auto px-4 md:px-margin-desktop py-12 space-y-10">
+      <ToastContainer toasts={toasts} dismiss={dismiss} />
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-on-surface pb-6">
         <div>
@@ -92,7 +111,7 @@ export default function HabitsPage() {
           habits.map((habit, index) => (
             <div 
               key={habit.id}
-              className={`group bg-white p-6 rounded-lg comic-border flex flex-col justify-between transition-all comic-shadow-sm animate-fade-in-up opacity-0 cursor-pointer`}
+              className="group bg-white p-6 rounded-lg comic-border flex flex-col justify-between transition-all comic-shadow-sm animate-fade-in-up opacity-0 cursor-pointer"
               style={{ animationDelay: `${index * 50}ms` }}
               onClick={() => {
                 setEditHabit(habit);
@@ -145,7 +164,7 @@ export default function HabitsPage() {
                     : 'bg-primary-container text-white comic-shadow-sm hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-none active:bg-primary'
                 }`}
               >
-                {habit.completedToday ? "Completed" : "Mark Done"}
+                {habit.completedToday ? "Completed ✓" : "Mark Done"}
               </button>
             </div>
           ))
@@ -168,7 +187,10 @@ export default function HabitsPage() {
         isOpen={isModalOpen} 
         initialData={editHabit}
         onClose={() => setIsModalOpen(false)} 
-        onSuccess={fetchData} 
+        onSuccess={() => {
+          fetchData();
+          showToast("success", editHabit ? "Habit updated!" : "New habit added — build that streak! 🔥");
+        }} 
       />
     </div>
   );

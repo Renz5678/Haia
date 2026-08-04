@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Check, Filter, Search, Target } from "lucide-react";
+import { Check, Search, Target } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
 import { TaskCardSkeleton } from "@/components/ui/Skeleton";
 import { CreateQuestModal } from "@/components/CreateQuestModal";
+import { useToast, ToastContainer } from "@/components/ui/Toast";
 
 export default function QuestsPage() {
   const [filter, setFilter] = useState("ALL");
@@ -17,6 +18,7 @@ export default function QuestsPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [editQuest, setEditQuest] = useState<any>(null);
   const supabase = createClient();
+  const { toasts, showToast, dismiss } = useToast();
 
   async function fetchData() {
     try {
@@ -27,28 +29,34 @@ export default function QuestsPage() {
       const fetchedTasks = await api.tasks.list();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setQuests(fetchedTasks as any[]);
-    } catch (err) {
-      console.error("Failed to fetch quests:", err);
+    } catch {
+      showToast("error", "Couldn't load your quests. Check your connection and try again.");
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleQuest = async (id: number | string) => {
+    // --- Optimistic update ---
+    const previousQuests = quests;
+    setQuests(quests.filter(q => q.id !== id));
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session) throw new Error("Not signed in");
       
       const api = createApiClient(session.access_token);
       await api.tasks.complete(id.toString());
-      setQuests(quests.filter(q => q.id !== id));
-    } catch (err) {
-      console.error("Failed to complete quest:", err);
+      showToast("success", "Quest completed! XP earned 🎉");
+    } catch {
+      // --- Rollback on failure ---
+      setQuests(previousQuests);
+      showToast("error", "Couldn't complete that quest. Try again?");
     }
   };
 
@@ -60,6 +68,8 @@ export default function QuestsPage() {
 
   return (
     <div className="max-w-[1100px] mx-auto px-4 md:px-margin-desktop py-12 space-y-10">
+      <ToastContainer toasts={toasts} dismiss={dismiss} />
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-4 border-on-surface pb-6">
         <div>
@@ -157,7 +167,7 @@ export default function QuestsPage() {
               </div>
               <div className="flex justify-end border-t-2 border-surface-container pt-4 mt-auto">
                 <div className="bg-surface-container-high text-on-surface px-4 py-1.5 comic-border rounded-full font-label-xp text-label-xp items-center gap-1 font-black italic flex">
-                  <span>+{quest.xp || 50}</span> <span className="text-[10px] opacity-70">XP</span>
+                  <span>+{quest.xp_value || quest.xp || 50}</span> <span className="text-[10px] opacity-70">XP</span>
                 </div>
               </div>
             </div>
@@ -181,7 +191,10 @@ export default function QuestsPage() {
         isOpen={isModalOpen} 
         initialData={editQuest}
         onClose={() => setIsModalOpen(false)} 
-        onSuccess={fetchData} 
+        onSuccess={() => {
+          fetchData();
+          showToast("success", editQuest ? "Quest updated!" : "New quest added to the log!");
+        }} 
       />
     </div>
   );

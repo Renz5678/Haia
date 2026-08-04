@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/store/useAuthStore";
+import { API_BASE } from "@/lib/api";
+
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { setUser, setLoading } = useAuthStore();
@@ -17,7 +19,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session) {
         try {
           // You can also fetch the full profile from the backend using the token
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000"}/api/v1/users/me`, {
+          const res = await fetch(`${API_BASE}/api/v1/users/me`, {
             headers: {
               Authorization: `Bearer ${session.access_token}`
             }
@@ -55,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000"}/api/v1/users/me`, {
+          const res = await fetch(`${API_BASE}/api/v1/users/me`, {
             headers: {
               Authorization: `Bearer ${session.access_token}`
             }

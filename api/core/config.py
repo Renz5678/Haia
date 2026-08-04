@@ -51,7 +51,37 @@ class Settings(BaseSettings):
     def is_production(self) -> bool:
         return self.app_env == "production"
 
+    def validate_for_production(self) -> None:
+        """
+        Fail fast at startup if the app is running in production with
+        insecure placeholder values. Call this once during app initialisation.
+        """
+        if not self.is_production:
+            return
+
+        errors: list[str] = []
+
+        if "localhost" in self.api_base_url:
+            errors.append("API_BASE_URL still points to localhost — set the public URL.")
+        if "localhost" in self.web_base_url:
+            errors.append("WEB_BASE_URL still points to localhost — set the public URL.")
+        if "localhost" in self.cors_origins:
+            errors.append("CORS_ORIGINS still points to localhost — set the production origin.")
+        if self.secret_key == "change-me-in-production":
+            errors.append("SECRET_KEY is still the default placeholder. Run: openssl rand -hex 32")
+        if "localhost" in self.google_redirect_uri:
+            errors.append("GOOGLE_REDIRECT_URI still points to localhost — set the production callback URL.")
+
+        if errors:
+            bullet_list = "\n  • ".join(errors)
+            raise RuntimeError(
+                f"[Haia] Production misconfiguration — fix before deploying:\n  • {bullet_list}"
+            )
+
 
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    settings = Settings()
+    settings.validate_for_production()
+    return settings
+

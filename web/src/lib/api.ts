@@ -25,7 +25,41 @@ export interface Habit {
   goal_ids?: string[];
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
+/**
+ * Resolve the API base URL.
+ *
+ * • In development: falls back to localhost:8000 with a console warning so
+ *   local dev still works even without a .env.local file.
+ * • In production: throws immediately if NEXT_PUBLIC_API_BASE_URL is missing
+ *   so a bad deploy fails loudly rather than silently hitting localhost.
+ */
+function resolveApiBase(): string {
+  const configured = process.env.NEXT_PUBLIC_API_BASE_URL;
+  if (configured) return configured;
+
+  const isProd =
+    process.env.NODE_ENV === "production" ||
+    process.env.NEXT_PUBLIC_APP_ENV === "production";
+
+  if (isProd) {
+    throw new Error(
+      "[Haia] NEXT_PUBLIC_API_BASE_URL is not set. " +
+        "Add it to your deployment environment variables."
+    );
+  }
+
+  // Dev-only fallback — warn once so developers notice
+  if (typeof window !== "undefined") {
+    console.warn(
+      "[Haia] NEXT_PUBLIC_API_BASE_URL is not set. Falling back to http://localhost:8000. " +
+        "Create web/.env.local and set NEXT_PUBLIC_API_BASE_URL for your environment."
+    );
+  }
+  return "http://localhost:8000";
+}
+
+export const API_BASE = resolveApiBase();
+
 
 function makeHeaders(token: string): HeadersInit {
   return {

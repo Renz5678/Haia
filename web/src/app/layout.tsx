@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Hanken_Grotesk, Anton } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
+import NextTopLoader from "nextjs-toploader";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -44,6 +45,12 @@ export default function RootLayout({
         `}</style>
       </head>
       <body>
+        <NextTopLoader 
+          color="#4F46E5" 
+          showSpinner={false} 
+          height={4} 
+          shadow="0 0 10px #4F46E5,0 0 5px #4F46E5"
+        />
         <AuthProvider>
           {children}
         </AuthProvider>

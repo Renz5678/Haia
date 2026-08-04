@@ -43,7 +43,14 @@ export default function TopHeader({ onOpenChat }: { onOpenChat?: () => void }) {
       }
 
       const api = createApiClient(session.access_token);
-      await api.parse.text(query.trim(), "typed");
+      const result: any = await api.parse.text(query.trim(), "typed");
+      
+      if (result.intent === "unknown") {
+        setFeedback({ type: "error", msg: "AI is too busy right now (High Demand) or couldn't parse that. Try again in a bit!" });
+        setTimeout(() => setFeedback(null), 5000);
+        setIsSubmitting(false);
+        return;
+      }
 
       setQuery("");
       setFeedback({ type: "success", msg: "Got it! Check your Quests." });
@@ -56,8 +63,13 @@ export default function TopHeader({ onOpenChat }: { onOpenChat?: () => void }) {
       } else {
         router.refresh();
       }
-    } catch {
-      setFeedback({ type: "error", msg: "Couldn't parse that — try rephrasing?" });
+    } catch (err: any) {
+      const errMsg = err?.message || "";
+      if (errMsg.includes("503") || errMsg.includes("429")) {
+        setFeedback({ type: "error", msg: "The AI model is currently experiencing high demand. Please try again later." });
+      } else {
+        setFeedback({ type: "error", msg: "Couldn't parse that — try rephrasing?" });
+      }
       setTimeout(() => setFeedback(null), 4000);
     } finally {
       setIsSubmitting(false);

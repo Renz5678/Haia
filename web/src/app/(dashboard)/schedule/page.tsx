@@ -247,9 +247,14 @@ export default function SchedulePage() {
       
       await currentApi.courses.parseSchedule(file);
       await fetchCourses();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setError("Failed to parse schedule photo.");
+      const errMsg = err?.message || "";
+      if (errMsg.includes("503") || errMsg.includes("429")) {
+        setError("The AI model is currently experiencing high demand. Please try again later.");
+      } else {
+        setError("Failed to parse schedule photo.");
+      }
     } finally {
       setUploading(false);
       e.target.value = '';

@@ -137,7 +137,7 @@ export default function CalendarPage() {
           }`}
         >
           <span className={`font-headline-md font-bold comic-text ${isActive ? 'text-white' : 'text-on-surface'}`}>{i}</span>
-          <div className="flex flex-col gap-1 mt-1 overflow-y-auto custom-scrollbar h-[calc(100%-30px)] pb-1 relative z-10">
+          <div className="flex flex-col gap-1 mt-1 overflow-hidden h-[calc(100%-30px)] pb-1 relative z-10">
             {dayCourses.map(c => (
               <div key={c.id} className={`px-1 py-0.5 text-[9px] font-bold rounded truncate ink-border-2 shrink-0 ${isActive ? 'bg-white text-black' : 'bg-indigo-deep text-white'}`}>
                 {c.code}

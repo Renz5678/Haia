@@ -11,6 +11,8 @@ Raw model output is never trusted directly.
 
 import json
 import logging
+import time
+import asyncio
 from pathlib import Path
 from typing import Any, TypeVar
 
@@ -81,19 +83,28 @@ def parse_text_to_schema(
     )
 
     client = _get_client()
-    try:
-        response = client.models.generate_content(
-            model="gemini-3.5-flash",
-            contents=full_prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                response_schema=schema,
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            response = client.models.generate_content(
+                model="gemini-3.5-flash",
+                contents=full_prompt,
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                    response_schema=schema,
+                )
             )
-        )
-        raw_json = response.text
-    except Exception as e:
-        logger.error("Gemini API call failed: %s", e)
-        raise
+            raw_json = response.text
+            break
+        except Exception as e:
+            err_str = str(e)
+            if ("503" in err_str or "429" in err_str) and attempt < max_retries - 1:
+                sleep_time = 2 ** attempt
+                logger.warning("Gemini API unavailable/rate limited (attempt %d). Retrying in %ds...", attempt + 1, sleep_time)
+                time.sleep(sleep_time)
+            else:
+                logger.error("Gemini API call failed after %d attempts: %s", attempt + 1, e)
+                raise
 
     try:
         data = _parse_json_response(raw_json)
@@ -128,22 +139,31 @@ async def parse_file_to_schema(
     )
 
     client = _get_client()
-    try:
-        response = client.models.generate_content(
-            model="gemini-3.5-flash",
-            contents=[
-                types.Part.from_bytes(data=file_bytes, mime_type=mime_type),
-                full_prompt,
-            ],
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                response_schema=schema,
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            response = client.models.generate_content(
+                model="gemini-3.5-flash",
+                contents=[
+                    types.Part.from_bytes(data=file_bytes, mime_type=mime_type),
+                    full_prompt,
+                ],
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                    response_schema=schema,
+                )
             )
-        )
-        raw_json = response.text
-    except Exception as e:
-        logger.error("Gemini vision API call failed: %s", e)
-        raise
+            raw_json = response.text
+            break
+        except Exception as e:
+            err_str = str(e)
+            if ("503" in err_str or "429" in err_str) and attempt < max_retries - 1:
+                sleep_time = 2 ** attempt
+                logger.warning("Gemini vision API unavailable/rate limited (attempt %d). Retrying in %ds...", attempt + 1, sleep_time)
+                await asyncio.sleep(sleep_time)
+            else:
+                logger.error("Gemini vision API call failed after %d attempts: %s", attempt + 1, e)
+                raise
 
     data = _parse_json_response(raw_json)
     return schema(**data)

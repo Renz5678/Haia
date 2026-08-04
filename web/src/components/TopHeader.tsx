@@ -20,6 +20,7 @@ export default function TopHeader({ onOpenChat }: { onOpenChat?: () => void }) {
     "/habits": "HABITS",
     "/goals": "GOALS",
     "/schedule": "SCHEDULE",
+    "/calendar": "CALENDAR",
     "/chat": "HAIA",
     "/settings": "SETTINGS",
   };
@@ -124,8 +125,7 @@ export default function TopHeader({ onOpenChat }: { onOpenChat?: () => void }) {
           <button className="hidden sm:flex w-10 h-10 md:w-12 md:h-12 rounded-full comic-border bg-white hover:bg-surface-container transition-colors items-center justify-center comic-shadow-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
             <Bell size={20} />
           </button>
-          {/* Fixed: was pointing to /calendar (404), correct route is /schedule */}
-          <Link href="/schedule" className="w-10 h-10 md:w-12 md:h-12 rounded-full comic-border bg-white hover:bg-surface-container transition-colors flex items-center justify-center comic-shadow-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
+          <Link href="/calendar" className="w-10 h-10 md:w-12 md:h-12 rounded-full comic-border bg-white hover:bg-surface-container transition-colors flex items-center justify-center comic-shadow-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
             <Calendar size={20} />
           </Link>
         </div>

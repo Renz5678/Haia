@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, CheckSquare, RefreshCw, Target, Calendar, MessageSquare, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, CheckSquare, RefreshCw, Target, Calendar, CalendarDays, MessageSquare, Settings, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/store/useAuthStore";
 
@@ -36,6 +36,7 @@ export default function Sidebar() {
     { name: "Habits", href: "/habits", icon: RefreshCw },
     { name: "Goals", href: "/goals", icon: Target },
     { name: "Schedule", href: "/schedule", icon: Calendar },
+    { name: "Calendar", href: "/calendar", icon: CalendarDays },
     { name: "Haia", href: "/chat", icon: MessageSquare },
   ];
 

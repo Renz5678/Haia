@@ -53,9 +53,14 @@ export default function Sidebar() {
           <div className="w-10 h-10 rounded-full border-2 border-on-surface overflow-hidden bg-white shrink-0">
             <div className="w-full h-full bg-primary-fixed-dim"></div>
           </div>
-          <div className="min-w-0">
-            <p className="text-label-md font-bold truncate uppercase">{user?.display_name || "Hero"} LVL {user?.current_level || 1}</p>
-            <p className="text-[10px] text-on-surface-variant uppercase tracking-wider truncate">Novice</p>
+          <div className="min-w-0 flex-1">
+            <p className="text-label-md font-bold truncate uppercase" title={user?.display_name || "Hero"}>
+              {user?.display_name || "Hero"}
+            </p>
+            <div className="flex justify-between items-center mt-0.5">
+              <p className="text-[10px] text-on-surface-variant uppercase tracking-wider truncate">Novice</p>
+              <p className="text-[10px] font-bold text-primary uppercase">LVL {user?.current_level || 1}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -99,7 +104,6 @@ export default function Sidebar() {
           <LogOut className="shrink-0" size={20} />
           <span className="font-label-md font-bold">Sign Out</span>
         </button>
-        <p className="px-4 py-2 text-[10px] uppercase font-bold text-on-surface-variant opacity-50">v2.4.0 Comics Edition</p>
       </div>
     </aside>
   );

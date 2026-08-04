@@ -54,7 +54,7 @@ export default function Sidebar() {
             <div className="w-full h-full bg-primary-fixed-dim"></div>
           </div>
           <div className="min-w-0">
-            <p className="text-label-md font-bold truncate">Hero Level {user?.current_level || 1}</p>
+            <p className="text-label-md font-bold truncate uppercase">{user?.display_name || "Hero"} LVL {user?.current_level || 1}</p>
             <p className="text-[10px] text-on-surface-variant uppercase tracking-wider truncate">Novice</p>
           </div>
         </div>

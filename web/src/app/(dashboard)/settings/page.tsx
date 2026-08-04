@@ -132,17 +132,19 @@ export default function SettingsPage() {
               <div className="p-6 bg-white border border-on-surface pop-shadow rounded-xl">
                 <label className="block font-label-caps text-label-caps text-on-surface-variant mb-2">Display Name</label>
                 <input 
-                  className="w-full bg-surface-bright border border-on-surface p-3 font-body-lg focus:ring-0 focus:border-indigo-deep outline-none" 
+                  className="w-full bg-surface-container-low border border-on-surface/20 text-on-surface-variant p-3 font-body-lg cursor-not-allowed outline-none" 
                   type="text" 
-                  defaultValue={user?.email ? "Haia Ace" : ""}
+                  value={user?.display_name || ""}
+                  readOnly
                 />
               </div>
               <div className="p-6 bg-white border border-on-surface pop-shadow rounded-xl">
                 <label className="block font-label-caps text-label-caps text-on-surface-variant mb-2">Email Address</label>
                 <input 
-                  className="w-full bg-surface-bright border border-on-surface p-3 font-body-lg focus:ring-0 focus:border-indigo-deep outline-none" 
+                  className="w-full bg-surface-container-low border border-on-surface/20 text-on-surface-variant p-3 font-body-lg cursor-not-allowed outline-none" 
                   type="email" 
-                  defaultValue={user?.email || ""}
+                  value={user?.email || ""}
+                  readOnly
                 />
               </div>
             </div>

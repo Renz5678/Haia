@@ -8,6 +8,8 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 export default function DashboardPage() {
+  const user = useAuthStore((state) => state.user);
+  const [activeTab, setActiveTab] = useState("all");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [tasks, setTasks] = useState<any[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,11 +60,11 @@ export default function DashboardPage() {
         {/* Hero Header */}
         <section className="relative">
           <p className="font-label-caps text-label-caps uppercase tracking-[0.3em] text-on-surface-variant mb-4 font-black italic">
-            TODAY • FRIDAY
+            TODAY • {new Date().toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase()}
           </p>
           <div className="relative inline-block">
-            <h1 className="font-display-hero text-6xl md:text-display-hero anton-text leading-none text-on-surface drop-shadow-[4px_4px_0px_#4F46E5]">
-              HEY HERO 👋
+            <h1 className="font-display-hero text-6xl md:text-display-hero anton-text leading-none text-on-surface drop-shadow-[4px_4px_0px_#4F46E5] uppercase">
+              HEY {user?.display_name || "HERO"} 👋
             </h1>
           </div>
         </section>
@@ -105,12 +107,18 @@ export default function DashboardPage() {
 
         {/* Filter & Content Layout */}
         <div className="space-y-8">
-          {/* Segmented Control */}
           <div className="flex overflow-x-auto bg-surface-container-high p-1.5 rounded-lg comic-border w-fit comic-shadow-sm max-w-full">
-            <button className="px-6 md:px-8 py-2.5 bg-primary text-white rounded font-label-caps text-label-caps font-black italic uppercase">All</button>
-            <button className="px-6 md:px-8 py-2.5 text-on-surface-variant font-label-caps text-label-caps hover:text-on-surface transition-colors font-black italic uppercase">School</button>
-            <button className="px-6 md:px-8 py-2.5 text-on-surface-variant font-label-caps text-label-caps hover:text-on-surface transition-colors font-black italic uppercase">Personal</button>
-            <button className="px-6 md:px-8 py-2.5 text-on-surface-variant font-label-caps text-label-caps hover:text-on-surface transition-colors font-black italic uppercase">Habits</button>
+            {["all", "school", "personal", "habit"].map(tab => (
+              <button 
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-6 md:px-8 py-2.5 rounded font-label-caps text-label-caps font-black italic uppercase transition-colors ${
+                  activeTab === tab ? "bg-primary text-white" : "text-on-surface-variant hover:text-on-surface"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
           </div>
 
           {/* Main Dashboard Grid */}
@@ -139,10 +147,10 @@ export default function DashboardPage() {
                     </div>
                   </div>
                 </div>
-              ) : tasks.length === 0 ? (
+              ) : tasks.filter(t => activeTab === "all" || (t.task_type || "personal").toLowerCase() === activeTab.toLowerCase()).length === 0 ? (
                 <div className="py-8 text-center text-on-surface-variant italic font-bold animate-fade-in-up">No active missions right now. You&apos;re clear!</div>
               ) : (
-                tasks.map((task, index) => (
+                tasks.filter(t => activeTab === "all" || (t.task_type || "personal").toLowerCase() === activeTab.toLowerCase()).map((task, index) => (
                   <div 
                     key={task.id}
                     className={`group bg-white p-6 rounded-lg comic-border flex items-center justify-between transition-all animate-fade-in-up opacity-0 ${

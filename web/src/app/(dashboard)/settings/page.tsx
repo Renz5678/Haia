@@ -15,6 +15,8 @@ export default function SettingsPage() {
   const [isLinking, setIsLinking] = useState(false);
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [isTelegramConnected, setIsTelegramConnected] = useState(false);
+  const [displayName, setDisplayName] = useState("");
+  const [isUpdatingUser, setIsUpdatingUser] = useState(false);
   
   // Alert Modal state
   const [alertConfig, setAlertConfig] = useState<{isOpen: boolean; title: string; message: string}>({
@@ -105,6 +107,30 @@ export default function SettingsPage() {
     return () => window.removeEventListener("message", handleMessage);
   }, []);
 
+  useEffect(() => {
+    if (user?.display_name) {
+      setDisplayName(user.display_name);
+    }
+  }, [user?.display_name]);
+
+  const handleUpdateName = async () => {
+    if (displayName === user?.display_name) return;
+    setIsUpdatingUser(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const api = createApiClient(session.access_token);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const updatedUser: any = await api.users.updateMe({ display_name: displayName });
+      useAuthStore.getState().setUser(updatedUser);
+      setAlertConfig({ isOpen: true, title: "Success", message: "Display name updated!" });
+    } catch (err) {
+      setAlertConfig({ isOpen: true, title: "Error", message: "Failed to update display name" });
+    } finally {
+      setIsUpdatingUser(false);
+    }
+  };
+
   return (
     <div className="flex-1 overflow-y-auto h-[calc(100vh-80px)] bg-[#f9f9f7] relative">
       <style dangerouslySetInnerHTML={{__html: `
@@ -130,12 +156,23 @@ export default function SettingsPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="p-6 bg-white border border-on-surface pop-shadow rounded-xl">
-                <label className="block font-label-caps text-label-caps text-on-surface-variant mb-2">Display Name</label>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="font-label-caps text-label-caps text-on-surface-variant">Display Name</label>
+                  {displayName !== user?.display_name && (
+                    <button 
+                      onClick={handleUpdateName}
+                      disabled={isUpdatingUser}
+                      className="text-[10px] font-bold uppercase bg-primary text-white px-3 py-1 rounded"
+                    >
+                      {isUpdatingUser ? "Saving..." : "Save"}
+                    </button>
+                  )}
+                </div>
                 <input 
-                  className="w-full bg-surface-container-low border border-on-surface/20 text-on-surface-variant p-3 font-body-lg cursor-not-allowed outline-none" 
+                  className="w-full bg-surface-bright border border-on-surface p-3 font-body-lg focus:ring-0 focus:border-indigo-deep outline-none" 
                   type="text" 
-                  value={user?.display_name || ""}
-                  readOnly
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
                 />
               </div>
               <div className="p-6 bg-white border border-on-surface pop-shadow rounded-xl">

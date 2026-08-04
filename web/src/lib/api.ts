@@ -127,6 +127,10 @@ export function createApiClient(accessToken: string) {
       delete:   (id: string) => del(`/tasks/${id}`),
     },
 
+    users: {
+      updateMe: (body: { display_name?: string }) => patch("/users/me", body),
+    },
+
     habits: {
       list:    (active_only?: boolean) =>
                  get(`/habits${active_only !== undefined ? `?active_only=${active_only}` : ""}`),

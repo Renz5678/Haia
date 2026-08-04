@@ -126,8 +126,19 @@ def sync_course_to_gcal(user_id: str, course: dict):
         day_map = {"Mon": "MO", "Tue": "TU", "Wed": "WE", "Thu": "TH", "Fri": "FR", "Sat": "SA", "Sun": "SU"}
         # Python weekday(): Mon=0 … Sun=6
         py_weekday_map = {"Mon": 0, "Tue": 1, "Wed": 2, "Thu": 3, "Fri": 4, "Sat": 5, "Sun": 6}
+        norm_map = {
+            "m": "Mon", "mo": "Mon", "mon": "Mon", "monday": "Mon",
+            "t": "Tue", "tu": "Tue", "tue": "Tue", "tuesday": "Tue",
+            "w": "Wed", "we": "Wed", "wed": "Wed", "wednesday": "Wed",
+            "th": "Thu", "thu": "Thu", "thursday": "Thu",
+            "f": "Fri", "fr": "Fri", "fri": "Fri", "friday": "Fri",
+            "s": "Sat", "sa": "Sat", "sat": "Sat", "saturday": "Sat",
+            "su": "Sun", "sun": "Sun", "sunday": "Sun",
+        }
+        
         days = course.get("days", [])
-        byday = ",".join([day_map.get(d, "MO") for d in days])
+        norm_days = [norm_map.get(str(d).lower().strip(), "Mon") for d in days]
+        byday = ",".join([day_map.get(d, "MO") for d in norm_days])
 
         # ------------------------------------------------------------------
         # 3. Compute anchor date = next upcoming occurrence of the course's
@@ -138,8 +149,8 @@ def sync_course_to_gcal(user_id: str, course: dict):
         tz = pytz.timezone(user_tz)
         today = datetime.now(tz).date()
 
-        if days:
-            first_day_name = days[0]
+        if norm_days:
+            first_day_name = norm_days[0]
             target_weekday = py_weekday_map.get(first_day_name, 0)
             # days_ahead=0 means today is already the right weekday — use it
             days_ahead = (target_weekday - today.weekday()) % 7

@@ -14,12 +14,14 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const supabase = createClient();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
     setLoading(true);
     
     try {
@@ -41,7 +43,7 @@ export default function SignupPage() {
       }
       
       // Successfully sent the verification email
-      setError("Success! Check your email for the confirmation link to join the guild.");
+      setSuccess("Success! Check your email for the confirmation link to join the guild.");
       // We purposefully don't redirect yet because they need to click the link first.
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -119,6 +121,11 @@ export default function SignupPage() {
         {error && (
           <div className="bg-error-container text-on-error-container p-2 rounded-lg comic-border font-bold text-xs">
             {error}
+          </div>
+        )}
+        {success && (
+          <div className="bg-[#e6f4ea] text-[#137333] p-2 rounded-lg comic-border font-bold text-xs">
+            {success}
           </div>
         )}
 

@@ -3,7 +3,7 @@ from typing import Any
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from core.supabase import get_supabase_anon_client
+from core.supabase import get_supabase_anon_client, get_supabase_service_client
 from supabase import Client
 
 bearer_scheme = HTTPBearer(auto_error=False)
@@ -33,7 +33,8 @@ async def get_optional_user(
         # but for auth middleware it's safer to use the anon client for validation, then fetch 
         # from haia.users using service role if needed, or just let RLS handle it.
         # RLS in 001_initial_schema.sql allows users to select their own row.
-        db_resp = client.schema("haia").table("users").select("*").eq("id", user_id).execute()
+        service_client = get_supabase_service_client()
+        db_resp = service_client.schema("haia").table("users").select("*").eq("id", user_id).execute()
         
         if not db_resp.data:
             # User exists in Auth but not in public.users yet (trigger might have failed or delayed)

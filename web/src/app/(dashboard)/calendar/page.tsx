@@ -14,6 +14,7 @@ export default function CalendarPage() {
   const [courses, setCourses] = useState<any[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [habits, setHabits] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   
@@ -34,6 +35,7 @@ export default function CalendarPage() {
   useEffect(() => {
     async function fetchData() {
       try {
+        setIsLoading(true);
         const supabase = createClient();
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
@@ -55,6 +57,8 @@ export default function CalendarPage() {
         setHabits(fetchedHabits as any[]);
       } catch (err) {
         console.error("Failed to load calendar data", err);
+      } finally {
+        setIsLoading(false);
       }
     }
     fetchData();
@@ -176,6 +180,13 @@ export default function CalendarPage() {
         }
       `}} />
       <div className="absolute inset-0 calendar-bg pointer-events-none z-[-1]"></div>
+
+      {isLoading && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#FAFAF8] bg-opacity-80 backdrop-blur-sm">
+          <div className="w-16 h-16 border-4 border-black border-t-primary rounded-full animate-spin"></div>
+          <p className="mt-4 font-headline-md font-bold comic-text tracking-widest animate-pulse">LOADING CALENDAR...</p>
+        </div>
+      )}
 
       {/* Left Side: Calendar Grid */}
       <section className="flex-1 p-4 md:p-gutter overflow-y-auto halftone-pattern min-w-0">

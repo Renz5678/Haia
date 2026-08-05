@@ -1,16 +1,38 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Flame, TrendingUp, Target } from "lucide-react";
+import { Flame, TrendingUp, Target, Calendar } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
 import { HabitCardSkeleton } from "@/components/ui/Skeleton";
 import { CreateHabitModal } from "@/components/CreateHabitModal";
 import { useToast, ToastContainer } from "@/components/ui/Toast";
 
+/** Returns a YYYY-MM-DD string for a date offset by `daysAgo` from today (local time). */
+function dateOffsetLocal(daysAgo: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() - daysAgo);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+const today = dateOffsetLocal(0);
+
+/**
+ * Build a 7-element boolean array representing the last 7 days (oldest → newest).
+ * true = habit was logged on that day.
+ */
+function buildHeatmap(logs: { logged_date: string }[]): boolean[] {
+  const logDates = new Set(logs.map((l) => l.logged_date.slice(0, 10)));
+  return Array.from({ length: 7 }, (_, i) => logDates.has(dateOffsetLocal(6 - i)));
+}
+
+const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
 export default function HabitsPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [habits, setHabits] = useState<any[]>([]);
+  // Real 7-day logs per habit: { [habitId]: boolean[] }
+  const [heatmaps, setHeatmaps] = useState<Record<string, boolean[]>>({});
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -22,18 +44,30 @@ export default function HabitsPage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
-      
+
       const api = createApiClient(session.access_token);
-      const fetchedHabits = await api.habits.list(false); // active_only=false
-      
-      const now = new Date();
-      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-      
-      const enrichedHabits = (fetchedHabits as any[]).map(h => ({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const fetchedHabits = (await api.habits.list(false)) as any[];
+
+      const enrichedHabits = fetchedHabits.map((h) => ({
         ...h,
-        completedToday: h.last_activity_date === today
+        completedToday: h.last_activity_date === today,
       }));
       setHabits(enrichedHabits);
+
+      // Fetch 7-day logs for each habit in parallel
+      const logsResults = await Promise.all(
+        fetchedHabits.map((h) =>
+          api.habits.getLogs(h.id, 7).catch(() => [])
+        )
+      );
+
+      const newHeatmaps: Record<string, boolean[]> = {};
+      fetchedHabits.forEach((h, i) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        newHeatmaps[h.id] = buildHeatmap(logsResults[i] as any[]);
+      });
+      setHeatmaps(newHeatmaps);
     } catch {
       showToast("error", "Couldn't load your habits. Check your connection and try again.");
     } finally {
@@ -49,36 +83,47 @@ export default function HabitsPage() {
   const toggleHabit = async (id: string) => {
     // --- Optimistic update ---
     const previousHabits = habits;
-    setHabits(habits.map(h => {
-      if (h.id === id) {
-        return {
-          ...h,
-          completedToday: !h.completedToday,
-          current_streak: !h.completedToday ? h.current_streak + 1 : Math.max(0, h.current_streak - 1),
-        };
-      }
-      return h;
+    const previousHeatmaps = heatmaps;
+
+    setHabits(habits.map((h) => {
+      if (h.id !== id) return h;
+      return {
+        ...h,
+        completedToday: !h.completedToday,
+        current_streak: !h.completedToday
+          ? h.current_streak + 1
+          : Math.max(0, h.current_streak - 1),
+      };
     }));
+
+    // Optimistically update today's heatmap dot
+    setHeatmaps((prev) => {
+      const dots = [...(prev[id] ?? Array(7).fill(false))];
+      dots[6] = !dots[6]; // today is always index 6
+      return { ...prev, [id]: dots };
+    });
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not signed in");
-      
+
       const api = createApiClient(session.access_token);
-      const now = new Date();
-      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
       await api.habits.log(id, { logged_date: today });
       showToast("success", "Habit logged! Keep the streak alive 🔥");
+
+      // Refresh logs for this habit to get accurate data
+      const freshLogs = await api.habits.getLogs(id, 7).catch(() => []);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setHeatmaps((prev) => ({ ...prev, [id]: buildHeatmap(freshLogs as any[]) }));
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "";
-      // unique constraint = already logged today — not a real error, just inform
       if (message.includes("23505") || message.includes("unique")) {
-        // Roll back the optimistic toggle (it was already done today)
         setHabits(previousHabits);
+        setHeatmaps(previousHeatmaps);
         showToast("warning", "Already logged for today — come back tomorrow!");
       } else {
-        // --- Rollback on unexpected failure ---
         setHabits(previousHabits);
+        setHeatmaps(previousHeatmaps);
         showToast("error", "Couldn't log that habit. Try again?");
       }
     }
@@ -116,71 +161,99 @@ export default function HabitsPage() {
             No routines found. Time to build some!
           </div>
         ) : (
-          habits.map((habit, index) => (
-            <div 
-              key={habit.id}
-              className="group bg-white p-6 rounded-lg comic-border flex flex-col justify-between transition-all comic-shadow-sm animate-fade-in-up opacity-0 cursor-pointer"
-              style={{ animationDelay: `${index * 50}ms` }}
-              onClick={() => {
-                setEditHabit(habit);
-                setIsModalOpen(true);
-              }}
-            >
-              <div className="flex justify-between items-start mb-6">
-                <h3 className="font-body-lg text-xl font-black text-on-surface pr-4">
-                  {habit.name}
-                </h3>
-                <div className="flex items-center gap-1 bg-surface-container-high px-3 py-1 rounded-full comic-border">
-                  <Flame className={habit.completedToday ? "text-secondary" : "text-on-surface-variant"} size={16} fill={habit.completedToday ? "currentColor" : "none"} />
-                  <span className="font-headline-sm font-black anton-text">{habit.current_streak || 0}</span>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-4 mb-6">
-                <div className="flex items-center gap-2">
-                  <TrendingUp size={16} className="text-on-surface-variant" />
-                  <span className="text-sm font-bold text-on-surface-variant italic uppercase">
-                    Frequency: {habit.frequency === "flexible" ? `Flexible (${habit.target_count || 1}x / week)` : habit.frequency || "Daily"}
-                  </span>
-                </div>
-                {habit.goal_ids && habit.goal_ids.length > 0 && (
-                  <span className="bg-surface-container-high text-on-surface-variant px-2 py-0.5 rounded font-black italic text-[10px] comic-border flex items-center gap-1">
-                    <Target size={10} /> {habit.goal_ids.length} GOAL{habit.goal_ids.length > 1 ? 'S' : ''}
-                  </span>
-                )}
-              </div>
-
-              {/* Visual Heatmap */}
-              <div className="flex justify-between px-1 mb-6">
-                {[0,1,2,3,4,5,6].map((dayIndex) => (
-                  <div 
-                    key={dayIndex}
-                    className={`habit-dot ${dayIndex < (habit.current_streak || 0) % 7 ? 'active' : 'bg-surface-container-low'}`}
-                    title={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][dayIndex]}
-                  ></div>
-                ))}
-              </div>
-
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleHabit(habit.id);
+          habits.map((habit, index) => {
+            const dots: boolean[] = heatmaps[habit.id] ?? Array(7).fill(false);
+            return (
+              <div
+                key={habit.id}
+                className="group bg-white p-6 rounded-lg comic-border flex flex-col justify-between transition-all comic-shadow-sm animate-fade-in-up opacity-0 cursor-pointer"
+                style={{ animationDelay: `${index * 50}ms` }}
+                onClick={() => {
+                  setEditHabit(habit);
+                  setIsModalOpen(true);
                 }}
-                className={`w-full py-3 rounded-lg comic-border font-label-caps font-black italic uppercase transition-all ${
-                  habit.completedToday 
-                    ? 'bg-surface-container text-on-surface-variant border-dashed'
-                    : 'bg-primary-container text-white comic-shadow-sm hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-none active:bg-primary'
-                }`}
               >
-                {habit.completedToday ? "Completed ✓" : "Mark Done"}
-              </button>
-            </div>
-          ))
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="font-body-lg text-xl font-black text-on-surface pr-4">{habit.name}</h3>
+                  <div className="flex items-center gap-1 bg-surface-container-high px-3 py-1 rounded-full comic-border shrink-0">
+                    <Flame
+                      className={habit.completedToday ? "text-secondary" : "text-on-surface-variant"}
+                      size={16}
+                      fill={habit.completedToday ? "currentColor" : "none"}
+                    />
+                    <span className="font-headline-sm font-black anton-text">{habit.current_streak || 0}</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-4 mb-4">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp size={16} className="text-on-surface-variant" />
+                    <span className="text-sm font-bold text-on-surface-variant italic uppercase">
+                      {habit.frequency === "flexible"
+                        ? `Flexible (${habit.target_count || 1}x / week)`
+                        : habit.frequency || "Daily"}
+                    </span>
+                  </div>
+                  {habit.goal_ids && habit.goal_ids.length > 0 && (
+                    <span className="bg-surface-container-high text-on-surface-variant px-2 py-0.5 rounded font-black italic text-[10px] comic-border flex items-center gap-1">
+                      <Target size={10} /> {habit.goal_ids.length} GOAL{habit.goal_ids.length > 1 ? "S" : ""}
+                    </span>
+                  )}
+                </div>
+
+                {/* Real 7-day heatmap */}
+                <div className="mb-4">
+                  <div className="flex justify-between px-1 mb-1">
+                    {dots.map((done, i) => (
+                      <div
+                        key={i}
+                        title={DAY_LABELS[i]}
+                        className={`w-7 h-7 rounded-md border-2 border-on-surface transition-all ${
+                          done
+                            ? "bg-secondary shadow-[2px_2px_0px_0px_#1a1c1b]"
+                            : "bg-surface-container-low"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <div className="flex justify-between px-1">
+                    {DAY_LABELS.map((d) => (
+                      <span key={d} className="text-[9px] font-bold text-on-surface-variant w-7 text-center">
+                        {d}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Last logged */}
+                {habit.last_activity_date && (
+                  <div className="flex items-center gap-1 text-[10px] text-on-surface-variant font-bold mb-3">
+                    <Calendar size={10} />
+                    Last: {new Date(habit.last_activity_date + "T00:00:00").toLocaleDateString()}
+                  </div>
+                )}
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleHabit(habit.id);
+                  }}
+                  className={`w-full py-3 rounded-lg comic-border font-label-caps font-black italic uppercase transition-all ${
+                    habit.completedToday
+                      ? "bg-surface-container text-on-surface-variant border-dashed"
+                      : "bg-primary-container text-white comic-shadow-sm hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-none active:bg-primary"
+                  }`}
+                >
+                  {habit.completedToday ? "Completed Today ✓" : "Mark Done"}
+                </button>
+              </div>
+            );
+          })
         )}
       </div>
 
       {/* Floating Action Button */}
-      <button 
+      <button
         onClick={() => {
           setEditHabit(null);
           setIsModalOpen(true);
@@ -191,14 +264,14 @@ export default function HabitsPage() {
         <span className="absolute right-20 md:right-24 bg-on-surface text-white px-5 py-2 comic-border text-sm font-black italic opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none uppercase">NEW HABIT</span>
       </button>
 
-      <CreateHabitModal 
-        isOpen={isModalOpen} 
+      <CreateHabitModal
+        isOpen={isModalOpen}
         initialData={editHabit}
-        onClose={() => setIsModalOpen(false)} 
+        onClose={() => setIsModalOpen(false)}
         onSuccess={() => {
           fetchData();
           showToast("success", editHabit ? "Habit updated!" : "New habit added — build that streak! 🔥");
-        }} 
+        }}
       />
     </div>
   );

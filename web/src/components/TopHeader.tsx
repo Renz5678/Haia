@@ -1,18 +1,42 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Zap, Bell, Calendar, Menu, Sparkles, Send, MessageCircle, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createApiClient } from "@/lib/api";
 
-export default function TopHeader({ onOpenChat }: { onOpenChat?: () => void }) {
+export default function TopHeader({
+  onOpenChat,
+  onMenuToggle,
+}: {
+  onOpenChat?: () => void;
+  onMenuToggle?: () => void;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; msg: string } | null>(null);
+  const [currentStreak, setCurrentStreak] = useState<number | null>(null);
+
+  useEffect(() => {
+    async function fetchStreak() {
+      try {
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        const api = createApiClient(session.access_token);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const stats: any = await api.gamification.stats();
+        setCurrentStreak(stats?.current_streak ?? 0);
+      } catch {
+        setCurrentStreak(0);
+      }
+    }
+    fetchStreak();
+  }, []);
 
   const pageTitles: Record<string, string> = {
     "/dashboard": "HOME",
@@ -80,7 +104,10 @@ export default function TopHeader({ onOpenChat }: { onOpenChat?: () => void }) {
     <header className="h-20 px-4 md:px-margin-desktop flex justify-between items-center bg-surface border-b-2 border-on-surface sticky top-0 z-40 shadow-[4px_4px_0px_0px_rgba(20,27,43,1)]">
       {/* Left: Mobile Menu & Page Title */}
       <div className="flex items-center gap-4 md:gap-8 flex-1 md:flex-none">
-        <button className="md:hidden w-12 h-12 flex items-center justify-center comic-border rounded-lg hover:bg-surface-container transition-colors">
+        <button
+          onClick={onMenuToggle}
+          className="md:hidden w-12 h-12 flex items-center justify-center comic-border rounded-lg hover:bg-surface-container transition-colors"
+        >
           <Menu size={24} />
         </button>
         <h2 className="hidden md:block font-headline-md text-2xl anton-text uppercase tracking-wide text-on-surface w-32">
@@ -124,7 +151,9 @@ export default function TopHeader({ onOpenChat }: { onOpenChat?: () => void }) {
       <div className="flex items-center gap-3 md:gap-6 shrink-0">
         <div className="hidden sm:flex items-center bg-surface-container-high comic-border rounded-full px-5 py-1.5 gap-2 comic-shadow-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none cursor-default">
           <Zap className="text-secondary" fill="currentColor" size={20} />
-          <span className="font-label-caps text-label-caps font-black italic">STREAK: 0</span>
+          <span className="font-label-caps text-label-caps font-black italic">
+            STREAK: {currentStreak === null ? "—" : currentStreak}
+          </span>
         </div>
         
         <div className="flex gap-2 md:gap-3">

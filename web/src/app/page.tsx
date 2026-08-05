@@ -53,7 +53,7 @@ export default function LandingPage() {
       {/* Header Wordmark */}
       <header className="relative z-20 px-4 md:px-margin-desktop py-2 md:py-4 flex justify-center items-center">
         <div className="w-24 md:w-32">
-          <Image src="/images/name.png" alt="HAIA Wordmark" className="w-full h-auto" width={128} height={40} priority />
+          <Image src="/images/name.png" alt="HAIA Wordmark" className="w-full h-auto" style={{ width: '100%', height: 'auto' }} width={128} height={40} priority />
         </div>
       </header>
 

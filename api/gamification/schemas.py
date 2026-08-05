@@ -33,5 +33,9 @@ class UserStatsResponse(BaseModel):
     total_xp: int
     current_level: int
     xp_to_next_level: int
+    xp_for_next_level: int
     longest_streak: int
+    current_streak: int
+    today_xp: int
     tasks_completed: int
+    habits_completed: int

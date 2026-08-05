@@ -144,12 +144,37 @@ def get_user_stats(user_id: str) -> dict:
     xp_to_next = xp_for_next - total_xp
 
     longest = max((s["longest_streak"] for s in streaks), default=0)
+    current = max((s["current_streak"] for s in streaks), default=0)
+
+    # XP earned today (UTC)
+    from datetime import datetime, timezone
+    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
+    today_xp_rows = (
+        client.schema("haia").table("xp_events")
+        .select("xp_amount")
+        .eq("user_id", user_id)
+        .gte("earned_at", today_start)
+        .execute().data
+    )
+    today_xp = sum(r["xp_amount"] for r in today_xp_rows)
+
+    # Habits completed ever
+    habits_completed = (
+        client.schema("haia").table("habit_logs")
+        .select("id", count="exact")
+        .eq("user_id", user_id)
+        .execute().count or 0
+    )
 
     return {
         "user_id": user_id,
         "total_xp": total_xp,
         "current_level": level,
+        "xp_for_next_level": xp_for_next,
         "xp_to_next_level": max(xp_to_next, 0),
         "longest_streak": longest,
+        "current_streak": current,
+        "today_xp": today_xp,
         "tasks_completed": tasks_completed,
+        "habits_completed": habits_completed,
     }

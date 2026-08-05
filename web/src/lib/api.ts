@@ -128,7 +128,9 @@ export function createApiClient(accessToken: string) {
     },
 
     users: {
-      updateMe: (body: { display_name?: string }) => patch("/users/me", body),
+      me:           ()                                   => get<unknown>("/users/me"),
+      updateMe:     (body: { display_name?: string; notification_preferences?: Record<string, boolean> }) => patch("/users/me", body),
+      deleteAccount: ()                                  => del("/users/me"),
     },
 
     habits: {

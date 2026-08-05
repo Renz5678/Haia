@@ -39,3 +39,10 @@ def delete_goal(goal_id: str, user: dict = Depends(get_current_user)):
 @router.get("/{goal_id}/progress")
 def get_goal_progress(goal_id: str, user: dict = Depends(get_current_user)):
     return service.get_goal_progress(user_id=user["id"], goal_id=goal_id)
+
+
+@router.post("/{goal_id}/recalculate")
+def recalculate_goal_progress(goal_id: str, user: dict = Depends(get_current_user)):
+    """Re-compute task-based progress % and write it back to the goal row.
+    Called by the Sync button on the Goals page."""
+    return service.recalculate_goal_progress(user_id=user["id"], goal_id=goal_id)

@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from pydantic import UUID4, BaseModel
+from pydantic import UUID4, BaseModel, model_validator
 
 
 class GoalCreate(BaseModel):
@@ -34,5 +34,19 @@ class GoalResponse(BaseModel):
     subject_id: UUID4 | None
     created_at: datetime
     updated_at: datetime
+    # Computed from current_value / target_value — always 0-100
+    progress: float = 0.0
 
     model_config = {"from_attributes": True}
+
+    @model_validator(mode="after")
+    def compute_progress(self) -> "GoalResponse":
+        """Derive progress % from current_value/target_value after model hydration."""
+        if self.target_value and self.target_value > 0:
+            self.progress = round(
+                min(100.0, (self.current_value or 0) / self.target_value * 100), 2
+            )
+        else:
+            # current_value IS the percentage when there's no target_value
+            self.progress = float(self.current_value or 0)
+        return self

@@ -46,17 +46,25 @@ export default function GoalsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /** Sync Google Calendar: push tasks + courses for all active goals */
+  /** Recalculate progress for all goals then refetch */
   const handleSync = async () => {
     setIsSyncing(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not signed in");
       const api = createApiClient(session.access_token);
-      await api.integrations.google.sync();
-      showToast("success", "Synced to Google Calendar! ✅");
+
+      // Recalculate progress for each goal
+      await Promise.all(goals.map((g) => api.goals.recalculate(g.id).catch(() => null)));
+
+      // Also push calendar sync if connected
+      await api.integrations.google.sync().catch(() => null);
+
+      // Refetch goals so progress bars update
+      await fetchData();
+      showToast("success", "Progress recalculated & calendar synced! ✅");
     } catch {
-      showToast("error", "Sync failed — make sure Google Calendar is connected in Settings.");
+      showToast("error", "Sync failed — check your connection and try again.");
     } finally {
       setIsSyncing(false);
     }
@@ -123,13 +131,13 @@ export default function GoalsPage() {
                     <div className="absolute inset-0 halftone" />
                     <div
                       className="h-full bg-indigo-deep border-r-2 border-on-surface relative transition-all duration-700"
-                      style={{ width: `${Math.min(100, Math.max(0, goal.progress || 0))}%` }}
+                      style={{ width: `${Math.min(100, Math.max(0, goal.current_value || 0))}%` }}
                     >
                       <div className="absolute inset-0 halftone opacity-30" />
                     </div>
                   </div>
                   <div className="flex justify-between mt-2 text-[10px] md:text-xs font-bold text-on-surface uppercase tracking-wider">
-                    <span>{goal.progress || 0}% Complete</span>
+                    <span>{Math.round(goal.current_value || 0)}% Complete</span>
                     <span>{goal.target_date ? `Due ${new Date(goal.target_date).toLocaleDateString()}` : "No Deadline"}</span>
                   </div>
                 </div>

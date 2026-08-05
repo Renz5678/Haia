@@ -111,11 +111,28 @@ def complete_task(user_id: str, task_id: str) -> dict:
     )
     task = result.data[0]
     award_xp_for_task(user_id=user_id, task=task)
-    
+
     from integrations.gcal import sync_task_to_gcal
     sync_task_to_gcal(user_id, task)
-    
+
+    # Recalculate progress for every goal this task is linked to
+    try:
+        goal_links = (
+            client.schema("haia").table("task_goals")
+            .select("goal_id")
+            .eq("task_id", task_id)
+            .execute().data
+        )
+        if goal_links:
+            from goals.service import recalculate_goal_progress
+            for link in goal_links:
+                recalculate_goal_progress(user_id=user_id, goal_id=link["goal_id"])
+    except Exception as exc:
+        import logging
+        logging.getLogger(__name__).warning("Goal progress recalc failed: %s", exc)
+
     return task
+
 
 
 def delete_task(user_id: str, task_id: str) -> None:

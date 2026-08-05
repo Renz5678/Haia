@@ -161,5 +161,31 @@ def get_goal_progress(user_id: str, goal_id: str) -> dict:
         return {"progress_pct": 0.0}
 
     completed = sum(1 for t in tasks if t["status"] == "completed")
-    return {"progress_pct": round((completed / total) * 100, 2)}
+    pct = round((completed / total) * 100, 2)
+    return {"progress_pct": pct}
+
+
+def recalculate_goal_progress(user_id: str, goal_id: str) -> dict:
+    """Re-compute task-completion progress for a goal and persist it to DB."""
+    client = get_supabase_service_client()
+    task_links = client.schema("haia").table("task_goals").select("task_id").eq("goal_id", goal_id).execute().data
+
+    if not task_links:
+        pct = 0.0
+    else:
+        task_ids = [link["task_id"] for link in task_links]
+        tasks = client.schema("haia").table("tasks").select("status").in_("id", task_ids).eq("user_id", user_id).execute().data
+        total = len(tasks)
+        if total == 0:
+            pct = 0.0
+        else:
+            completed = sum(1 for t in tasks if t["status"] == "completed")
+            pct = round((completed / total) * 100, 2)
+
+    # Persist back so GoalResponse.progress stays accurate
+    client.schema("haia").table("goals").update(
+        {"current_value": pct}
+    ).eq("id", goal_id).eq("user_id", user_id).execute()
+
+    return {"goal_id": goal_id, "progress_pct": pct}
 

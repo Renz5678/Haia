@@ -144,10 +144,12 @@ export function createApiClient(accessToken: string) {
     },
 
     goals: {
-      list:   (goal_status?: string) =>
-                get(`/goals${goal_status ? `?goal_status=${goal_status}` : ""}`),
-      create: (body: unknown) => post("/goals", body),
-      update: (id: string, body: unknown) => patch(`/goals/${id}`, body),
+      list:        (goal_status?: string) =>
+                     get(`/goals${goal_status ? `?goal_status=${goal_status}` : ""}`),
+      create:      (body: unknown) => post("/goals", body),
+      update:      (id: string, body: unknown) => patch(`/goals/${id}`, body),
+      delete:      (id: string) => del(`/goals/${id}`),
+      recalculate: (id: string) => post(`/goals/${id}/recalculate`, {}),
     },
 
     courses: {
@@ -170,20 +172,21 @@ export function createApiClient(accessToken: string) {
                  post("/chat/message", { content, channel }),
     },
 
+    parse: {
+      text:     (raw_input: string, channel = "typed") =>
+                  post("/parse/text", { raw_input, channel }),
+      photo:    (file: File) => uploadFile("/parse/photo", file),
+      voice:    (file: File) => uploadFile<unknown>("/parse/voice", file, "audio"),
+      syllabus: (file: File) => uploadFile("/parse/syllabus", file),
+    },
+
     subjects: {
       list:   (area?: string) => get(`/subjects${area ? `?area=${area}` : ""}`),
       create: (body: unknown) => post("/subjects", body),
     },
 
-    parse: {
-      text: (raw_input: string, channel = "typed") =>
-              post("/parse/text", { raw_input, channel }),
-      photo: (file: File) => uploadFile("/parse/photo", file),
-      voice: (file: File) => uploadFile("/parse/voice", file),
-      syllabus: (file: File) => uploadFile("/parse/syllabus", file),
-    },
-    
     integrations: {
+
       list: () => get<{integrations: string[]}>("/integrations"),
       telegram: {
         linkCode: () => post("/integrations/telegram/link-code", {}),

@@ -156,41 +156,96 @@ async def telegram_webhook(request: Request):
 async def email_inbound(request: Request):
     """
     Mailgun inbound email webhook.
+    Handles:
+     - Plain-text emails → structured task/habit/goal via parse_text
+     - Image attachments → parse_photo
+     - PDF/Word attachments → parse_syllabus (bulk deadline extraction)
     """
+    import logging as _logging
+    _logger = _logging.getLogger(__name__)
+
     form_data = await request.form()
     sender = form_data.get("sender")
     subject = form_data.get("subject", "")
     body_text = form_data.get("stripped-text", "")
-    
+
     if not sender:
         return {"ok": False, "error": "No sender"}
-        
+
     from core.supabase import get_supabase_service_client
     client = get_supabase_service_client()
-    
-    # Identify user by email
+
+    # Identify user by their forwarding email address
     user_res = client.schema("haia").table("users").select("id").eq("email", sender).execute()
     if not user_res.data:
         return {"ok": False, "error": "User not found"}
-        
+
     user_id = user_res.data[0]["id"]
-    
-    # Combine subject and body for the parser
+
+    # ── Attachment pipeline ───────────────────────────────────────────────────
+    # Mailgun sends attachments as multipart fields: attachment-1, attachment-2 …
+    # and an attachment-count integer field.
+    from parsing.service import parse_photo, parse_syllabus
+    from fastapi import UploadFile
+    import io
+
+    attachment_count = int(form_data.get("attachment-count", 0))
+    parsed_attachment = False
+
+    for i in range(1, attachment_count + 1):
+        attachment = form_data.get(f"attachment-{i}")
+        if attachment is None:
+            continue
+
+        # UploadFile fields in FastAPI form data expose .filename and .content_type
+        filename = getattr(attachment, "filename", f"attachment-{i}")
+        content_type = getattr(attachment, "content_type", "application/octet-stream")
+        file_bytes = await attachment.read() if hasattr(attachment, "read") else b""
+
+        if not file_bytes:
+            continue
+
+        upload = UploadFile(
+            filename=filename,
+            file=io.BytesIO(file_bytes),
+        )
+        upload.content_type = content_type
+
+        try:
+            if content_type.startswith("image/"):
+                # Image attachment → photo parser
+                await parse_photo(user_id=user_id, file=upload)
+                parsed_attachment = True
+            elif content_type in (
+                "application/pdf",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "application/msword",
+            ) or filename.lower().endswith((".pdf", ".docx", ".doc")):
+                # Document attachment → syllabus bulk parser
+                await parse_syllabus(user_id=user_id, file=upload)
+                parsed_attachment = True
+            else:
+                _logger.info("email_inbound: skipping unsupported attachment type %s", content_type)
+        except Exception as e:
+            _logger.error("email_inbound: failed to parse attachment %s: %s", filename, e)
+
+    # ── Text body pipeline ───────────────────────────────────────────────────
+    # Always attempt to parse the body text too (it may contain task descriptions
+    # alongside or instead of attachments).
     raw_input = f"{subject}\n{body_text}".strip()
-    if not raw_input:
-        return {"ok": True, "message": "Empty email body"}
-        
-    from parsing.schemas import ParseTextRequest
-    from parsing.service import parse_text
-    
-    req = ParseTextRequest(raw_input=raw_input, channel="email")
-    try:
-        parse_text(user_id, req)
-    except Exception as e:
-        import logging
-        logging.getLogger(__name__).error(f"Failed to parse email: {e}")
-        
+    if raw_input and not parsed_attachment:
+        from parsing.schemas import ParseTextRequest
+        from parsing.service import parse_text
+
+        req = ParseTextRequest(raw_input=raw_input, channel="email")
+        try:
+            parse_text(user_id, req)
+        except Exception as e:
+            _logger.error("email_inbound: failed to parse body text: %s", e)
+
     return {"ok": True}
+
+
 
 
 @router.post("/telegram/link-code")

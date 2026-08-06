@@ -143,7 +143,7 @@ async def parse_file_to_schema(
     for attempt in range(max_retries):
         try:
             response = client.models.generate_content(
-                model="gemini-3.5-flash",
+                model="gemini-2.0-flash",
                 contents=[
                     types.Part.from_bytes(data=file_bytes, mime_type=mime_type),
                     full_prompt,

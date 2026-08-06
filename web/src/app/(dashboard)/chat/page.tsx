@@ -131,11 +131,24 @@ export default function ChatPage() {
       // Refresh stats so XP bar updates after AI might have logged something
       const freshStats = await api.gamification.stats().catch(() => null);
       if (freshStats) setStats(freshStats);
-    } catch {
+    } catch (err: any) {
+      let errorMsg = "Sorry boss, I'm having trouble connecting right now. Try again in a sec?";
+      
+      // Graceful degradation for 503/429
+      if (err?.message?.includes("503") || err?.message?.includes("429")) {
+        try {
+          const jsonStr = err.message.substring(err.message.indexOf("{"));
+          const parsed = JSON.parse(jsonStr);
+          if (parsed.detail) errorMsg = parsed.detail;
+        } catch {
+          errorMsg = "The AI is resting right now due to high demand. Please try again in a moment!";
+        }
+      }
+
       setMessages((prev) => [...prev, {
         id: Date.now().toString() + "err",
         sender: "Haia",
-        text: "Sorry boss, I'm having trouble connecting right now. Try again in a sec?",
+        text: errorMsg,
         time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         hasAction: false,
       }]);

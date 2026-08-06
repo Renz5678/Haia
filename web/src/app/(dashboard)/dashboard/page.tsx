@@ -31,8 +31,8 @@ export default function DashboardPage() {
   const supabase = createClient();
   const { toasts, showToast, dismiss } = useToast();
 
-  // Pick a random tip once on mount
-  const [tip] = useState(() => RADAR_TIPS[Math.floor(Math.random() * RADAR_TIPS.length)]);
+  const [tip, setTip] = useState(RADAR_TIPS[0]);
+  const [mounted, setMounted] = useState(false);
 
   async function fetchData() {
     try {
@@ -55,6 +55,8 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
+    setMounted(true);
+    setTip(RADAR_TIPS[Math.floor(Math.random() * RADAR_TIPS.length)]);
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -279,7 +281,11 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <p className="font-body-md font-black text-on-surface mb-2 uppercase italic text-sm">HAIA&apos;S RADAR</p>
-                    <p className="text-on-surface-variant font-medium text-sm leading-relaxed italic">&quot;{tip}&quot;</p>
+                    {mounted ? (
+                      <p suppressHydrationWarning className="text-on-surface-variant font-medium text-sm leading-relaxed italic">&quot;{tip}&quot;</p>
+                    ) : (
+                      <div className="h-4 bg-surface-container rounded w-64 animate-pulse mt-1" />
+                    )}
                   </div>
                 </div>
               </div>

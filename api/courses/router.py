@@ -1,5 +1,5 @@
 from core.dependencies import get_current_user
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, UploadFile, status
 
 from courses import service
 from courses.schemas import CourseCreate, CourseResponse, CourseUpdate, ParsedSchedule
@@ -35,8 +35,19 @@ def delete_course(course_id: str, user: dict = Depends(get_current_user)):
     service.delete_course(user_id=user["id"], course_id=course_id)
 
 
+@router.get("/schedule-png")
+async def get_schedule_png(user: dict = Depends(get_current_user)):
+    """
+    Render the user's current courses as a styled weekly-grid PNG using Playwright.
+    Uploads the result to Supabase Storage and returns a public URL.
+    The PNG can be re-downloaded at any time; it is regenerated on each call.
+    """
+    return await service.render_and_upload_schedule_png(user_id=user["id"])
+
+
 @router.post("/parse-schedule", response_model=list[CourseResponse], status_code=status.HTTP_201_CREATED)
 async def parse_schedule_photo(
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     semester_id: str | None = None,
     user: dict = Depends(get_current_user),
@@ -49,4 +60,9 @@ async def parse_schedule_photo(
         prompt_name="parse_schedule",
         schema=ParsedSchedule,
     )
-    return service.save_parsed_schedule(user_id=user["id"], parsed=parsed_schedule, semester_id=semester_id)
+    saved_courses = service.save_parsed_schedule(
+        user_id=user["id"], parsed=parsed_schedule, semester_id=semester_id
+    )
+    # Kick off PNG render in the background so the API response is instant
+    background_tasks.add_task(service.render_and_upload_schedule_png, user["id"])
+    return saved_courses

@@ -28,7 +28,7 @@ def save_parsed_schedule(user_id: str, parsed: ParsedSchedule, semester_id: str 
 
     from integrations.gcal import sync_course_to_gcal
     import asyncio
-    
+
     # We can trigger it asynchronously or just block
     for row in rows:
         try:
@@ -36,8 +36,76 @@ def save_parsed_schedule(user_id: str, parsed: ParsedSchedule, semester_id: str 
         except Exception as e:
             import logging
             logging.getLogger(__name__).error(f"Failed to sync course {row['id']} to GCal: {e}")
-            
+
     return rows
+
+
+async def render_and_upload_schedule_png(user_id: str) -> dict:
+    """
+    Render a styled weekly-grid PNG from the user's courses using Playwright,
+    upload it to Supabase Storage (bucket: 'schedules'), and return the public URL.
+
+    Falls back gracefully with an error dict if Playwright is not installed,
+    so this never crashes the calling request.
+    """
+    import logging
+    import os
+    import tempfile
+
+    _logger = logging.getLogger(__name__)
+
+    try:
+        from courses.renderer import render_schedule_png
+    except ImportError:
+        _logger.warning("Playwright not installed — skipping PNG render. Run: playwright install chromium")
+        return {"ok": False, "error": "Playwright not installed on this server."}
+
+    client = get_supabase_service_client()
+
+    # Fetch the user's courses
+    courses = (
+        client.schema("haia").table("courses")
+        .select("*")
+        .eq("user_id", user_id)
+        .order("start_time")
+        .execute().data
+    )
+
+    if not courses:
+        return {"ok": False, "error": "No courses found. Upload a schedule photo first."}
+
+    # Render the PNG to a temp file
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp:
+        output_path = tmp.name
+
+    try:
+        await render_schedule_png(courses=courses, output_path=output_path)
+
+        with open(output_path, "rb") as f:
+            png_bytes = f.read()
+    finally:
+        if os.path.exists(output_path):
+            os.remove(output_path)
+
+    # Upload to Supabase Storage
+    storage_path = f"{user_id}/schedule.png"
+    try:
+        # upsert=True overwrites any previous render for this user
+        client.storage.from_("schedules").upload(
+            path=storage_path,
+            file=png_bytes,
+            file_options={"content-type": "image/png", "upsert": "true"},
+        )
+    except Exception as e:
+        _logger.error("Failed to upload schedule PNG to Supabase Storage: %s", e)
+        return {"ok": False, "error": "PNG rendered but upload to storage failed."}
+
+    # Get a long-lived public URL
+    public_url = client.storage.from_("schedules").get_public_url(storage_path)
+
+    _logger.info("Schedule PNG rendered and uploaded for user %s: %s", user_id, public_url)
+    return {"ok": True, "png_url": public_url}
+
 
 
 def create_course(user_id: str, data: "CourseCreate") -> dict:

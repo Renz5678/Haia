@@ -13,5 +13,5 @@ def get_history(limit: int = 50, user: dict = Depends(get_current_user)):
 
 
 @router.post("/message", response_model=ChatMessageResponse)
-def send_message(data: ChatMessageCreate, user: dict = Depends(get_current_user)):
-    return service.process_message(user_id=user["id"], data=data)
+async def send_message(data: ChatMessageCreate, user: dict = Depends(get_current_user)):
+    return await service.process_message(user_id=user["id"], data=data)

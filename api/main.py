@@ -43,9 +43,8 @@ settings = get_settings()
 async def job_deadline_reminders() -> None:
     """
     Daily job: send Telegram messages for tasks due within the next 24 hours.
-    Runs at 08:00 local time (Asia/Manila). Complements the pg_cron daily digest
-    which covers classes; this covers user tasks/quests.
-    """
+    Runs at 08:00 local time (Asia/Manila).
+    ""
     import logging
     from datetime import datetime, timedelta, timezone
 
@@ -170,6 +169,124 @@ async def job_backfill_embeddings() -> None:
         job_logger.error("backfill_embeddings job failed: %s", exc, exc_info=True)
 
 
+async def job_streak_reset() -> None:
+    """
+    Midnight job (Asia/Manila): reset current_streak to 0 for any streak whose
+    last_activity_date is more than 1 day in the past.
+    Replaces the equivalent pg_cron SQL job in 003_pg_cron_jobs.sql.
+    """
+    import logging
+    from datetime import date, timedelta
+
+    job_logger = logging.getLogger("jobs.streak_reset")
+    try:
+        from core.supabase import get_supabase_service_client
+
+        client = get_supabase_service_client()
+        yesterday = (date.today() - timedelta(days=1)).isoformat()
+
+        result = (
+            client.schema("haia")
+            .table("streaks")
+            .update({"current_streak": 0})
+            .lt("last_activity_date", yesterday)
+            .gt("current_streak", 0)  # Only touch rows that are non-zero (idempotent)
+            .execute()
+        )
+        job_logger.info("streak_reset: updated %d row(s)", len(result.data or []))
+    except Exception as exc:
+        job_logger.error("streak_reset job failed: %s", exc, exc_info=True)
+
+
+async def job_daily_digest() -> None:
+    """
+    7:00 AM job (Asia/Manila): send each user a Telegram message listing today's
+    classes.  Replaces the pg_cron / pg_net PL/pgSQL function in
+    003_pg_cron_jobs.sql so all scheduling lives in the Python layer.
+    """
+    import logging
+    from datetime import datetime
+
+    import httpx
+
+    job_logger = logging.getLogger("jobs.daily_digest")
+    try:
+        from core.supabase import get_supabase_service_client
+
+        bot_token = settings.telegram_bot_token
+        if not bot_token:
+            job_logger.warning("daily_digest: TELEGRAM_BOT_TOKEN not set — skipping")
+            return
+
+        client = get_supabase_service_client()
+
+        # Day abbreviation matching the DB 'days' array (e.g. ['Mon','Wed'])
+        day_abbr = datetime.now().strftime("%a")  # e.g. 'Mon'
+
+        # Fetch all active Telegram integrations
+        integrations = (
+            client.schema("haia").table("integrations")
+            .select("user_id, metadata")
+            .eq("service", "telegram")
+            .eq("is_active", True)
+            .execute().data
+        )
+
+        if not integrations:
+            job_logger.info("daily_digest: no active Telegram integrations")
+            return
+
+        async with httpx.AsyncClient(timeout=10) as http:
+            for integration in integrations:
+                user_id = integration["user_id"]
+                chat_id = integration.get("metadata", {}).get("chat_id")
+                if not chat_id:
+                    continue
+
+                # Fetch courses that occur today
+                courses = (
+                    client.schema("haia").table("courses")
+                    .select("code, start_time, end_time, room, modality")
+                    .eq("user_id", user_id)
+                    .contains("days", [day_abbr])
+                    .order("start_time")
+                    .execute().data
+                )
+
+                if not courses:
+                    msg = f"Good morning! You have no classes scheduled for today ({day_abbr}). Enjoy your free day! 🎉"
+                else:
+                    lines = [f"Good morning! Here is your schedule for today ({day_abbr}):\n"]
+                    for c in courses:
+                        start = str(c.get("start_time", ""))[:5]
+                        end = str(c.get("end_time", ""))[:5]
+                        lines.append(f"📚 *{c['code']}* ({c.get('modality', 'f2f')})")
+                        lines.append(f"⏰ {start} – {end}")
+                        if c.get("room"):
+                            lines.append(f"📍 {c['room']}")
+                        lines.append("")
+                    lines.append("Have a great day, boss! 🚀")
+                    msg = "\n".join(lines)
+
+                try:
+                    resp = await http.post(
+                        f"https://api.telegram.org/bot{bot_token}/sendMessage",
+                        json={"chat_id": chat_id, "text": msg, "parse_mode": "Markdown"},
+                    )
+                    if resp.status_code == 400:
+                        # Fallback to plain text on Markdown parse error
+                        await http.post(
+                            f"https://api.telegram.org/bot{bot_token}/sendMessage",
+                            json={"chat_id": chat_id, "text": msg},
+                        )
+                    job_logger.info("daily_digest: sent to chat_id=%s", chat_id)
+                except Exception as send_exc:
+                    job_logger.error("daily_digest: failed for chat_id=%s — %s", chat_id, send_exc)
+
+    except Exception as exc:
+        job_logger.error("daily_digest job failed: %s", exc, exc_info=True)
+
+
 # ─── App Lifespan ─────────────────────────────────────────────────────────────
 
 @asynccontextmanager
@@ -203,6 +320,26 @@ async def lifespan(app: FastAPI):
         name="Goal Embedding Backfill",
         replace_existing=True,
         misfire_grace_time=1800,
+    )
+
+    # Streak reset: midnight (replaces pg_cron SQL job)
+    scheduler.add_job(
+        job_streak_reset,
+        CronTrigger(hour=0, minute=0, timezone="Asia/Manila"),
+        id="streak_reset",
+        name="Streak Reset",
+        replace_existing=True,
+        misfire_grace_time=3600,
+    )
+
+    # Daily schedule digest: 07:00 (replaces pg_cron / pg_net PL/pgSQL function)
+    scheduler.add_job(
+        job_daily_digest,
+        CronTrigger(hour=7, minute=0, timezone="Asia/Manila"),
+        id="daily_digest",
+        name="Daily Schedule Digest",
+        replace_existing=True,
+        misfire_grace_time=3600,
     )
 
     scheduler.start()

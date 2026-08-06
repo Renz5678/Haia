@@ -73,7 +73,7 @@ async def handle_telegram_webhook(payload: dict):
 
     msg_data = ChatMessageCreate(content=text, channel="telegram")
     try:
-        res = process_message(user_id, msg_data)
+        res = await process_message(user_id, msg_data)
         reply = res.get("content", "I couldn't quite understand that. Could you rephrase?")
     except Exception as e:
         logger.error(f"Error processing telegram message: {e}")
